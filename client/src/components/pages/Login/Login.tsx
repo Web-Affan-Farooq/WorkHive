@@ -1,4 +1,4 @@
-import { departments } from "../../../constants/departments";
+import { departments } from "../../../constants/constants";
 import {LoginSchema} from "../../../validations";
 import * as z from "zod";
 import { useForm } from 'react-hook-form'

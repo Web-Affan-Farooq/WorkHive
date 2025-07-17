@@ -1,4 +1,5 @@
-import {ManagementSidebar} from "../../layout";
+import { ManagementSidebar } from "../../layout";
+import Paper from '@mui/material/Paper';
 
 const notifications = [
     {
@@ -79,15 +80,15 @@ const NotificationCard = ({
     date: string;
 }) => {
     return (
-        <div className="bg-white shadow-md p-4 rounded-xl border border-gray-200 w-full max-w-2xl">
-            <div className="flex justify-between items-start">
-                <h2 className="font-semibold text-lg text-gray-800">{notificationTitle}</h2>
-                <span className="text-sm text-gray-400 whitespace-nowrap">
-                    {timeAgo(date)}
-                </span>
-            </div>
-            <p className="mt-2 text-gray-600 text-sm">{notificationText}</p>
-        </div>
+        <Paper elevation={5} className="bg-white p-4 rounded-2xl w-full max-w-2xl">
+                <div className="flex justify-between items-start">
+                    <h2 className="font-semibold text-lg text-gray-800">{notificationTitle}</h2>
+                    <span className="text-sm text-gray-400 whitespace-nowrap">
+                        {timeAgo(date)}
+                    </span>
+                </div>
+                <p className="mt-2 text-gray-600 text-sm">{notificationText}</p>
+        </Paper>
     );
 };
 
@@ -113,65 +114,3 @@ const Notifications = () => {
 };
 
 export default Notifications;
-
-// import DashboardSidebar from "../components/Dashboard/Sidebar";
-
-// const notifications = [
-//     {
-//         notificationText: "dfjdf kdjlfkjdslkjfkldjslkfjlskdjfds",
-//         notificationTitle: "dlfkdlkfl;dfgoifdopgiopfdigopifdopgiopfdigopfdipogifodpigopfigopdifpogidfpoigpofipogifopgiopfdigopfdigopidfopgfipgoiokfldksfl;kdsl;fkd",
-//         date: "2025-07-17T16:03:47.262Z",
-//     },
-//     {
-//         notificationText: "dfjdf kdjlfkjdslkjfkldjslkfjlskdjfds",
-//         notificationTitle: "dlfkdlkfl;dkfldksfl;kdsl;fkd",
-//         date: "2025-07-17T16:03:47.262Z",
-//     },
-//     {
-//         notificationText: "dfjdf kdjlfkjdslkjfkldjslkfjlskdjfds",
-//         notificationTitle: "dlfkdlkfl;dkfldksfl;kdsl;fkd",
-//         date: "2025-07-17T16:03:47.262Z",
-//     },
-//     {
-//         notificationText: "dfjdf kdjlfkjdslkjfkldjslkfjlskdjfds",
-//         notificationTitle: "dlfkdlkfl;dkfldksfl;kdsl;fkd",
-//         date: "2025-07-17T16:03:47.262Z",
-//     },
-//     {
-//         notificationText: "dfjdf kdjlfkjdslkjfkldjslkfjlskdjfds",
-//         notificationTitle: "dlfkdlkfl;dkfldksfl;kdsl;fkd",
-//         date: "2025-07-17T16:03:47.262Z",
-//     },
-// ]
-// const NotificationCard = ({ notificationTitle, notificationText, date }: { notificationText: string; notificationTitle: string; date: string; }) => {
-//     const currentDate = new Date();
-//     return (
-//         <div
-//             className="bg-white shadow-md p-2 rounded-xl flex items-start gap-4 border border-gray-200 w-full max-w-md">
-//             <div className="text-sm text-black w-full">
-//                 <div className='flex flex-row justify-between items-center'>
-//                     <h1 className="font-semibold text-base">{notificationTitle}</h1>
-//                     <span className='text-gray-400'>{currentDate.toLocaleDateString()}</span>
-//                 </div>
-//                 <p className="mt-1 text-gray-700">{notificationText}</p>
-//             </div>
-//         </div>
-//     )
-// }
-
-// const Notifications = () => {
-//     return (
-//         <main className="flex min-h-screen">
-//             <DashboardSidebar />
-//             <section className="flex-1 bg-gray-300 min-h-screen">
-//                 <h1 className="text-[23px] font-bold mb-6 text-gray-800 px-8 mt-9">Notifications</h1>
-//                 <div className="flex flex-col gap-4 px-8 max-sm:px-3">
-//                     {notifications.map((notification, idx) => (
-//                         <NotificationCard notificationText={notification.notificationText} notificationTitle={notification.notificationTitle} date={notification.date} key={idx} />
-//                     ))}
-//                 </div>
-//             </section>
-//         </main>
-//     )
-// }
-// export default Notifications;

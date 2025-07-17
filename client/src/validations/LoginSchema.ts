@@ -1,5 +1,5 @@
 import z from "zod";
-import { departments } from "../constants/departments";
+import { departments } from "../constants/constants";
 
 const LoginSchema = z.object(
     {
