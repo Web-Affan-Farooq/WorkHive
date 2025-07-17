@@ -1,5 +1,5 @@
-import { departments } from "../constants/departments";
-import LoginSchema from "../validations/LoginSchema";
+import { departments } from "../../../constants/departments";
+import {LoginSchema} from "../../../validations";
 import * as z from "zod";
 import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod";
