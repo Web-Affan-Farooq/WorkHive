@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("NEON_CONNECTION_STRING")
+}
+
+// datasource db {
+//   provider = "sqlite"
+//   url      = "file:./database/database.db"
+// }
+
+model Organization {
+  id               String     @id @default(uuid())
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  name             String
+  industryType     String
+  address          String
+  telephone        String
+  email            String     @unique
+  password         String
+  employees        Workers[]
+  managers         Managers[]
+  maximumEmployees Int
+  maximumManagers  Int
+}
+
+model Managers {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  email     String   @unique
+  password  String
+
+  Organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String
+}
+
+model Workers {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  email     String   @unique
+  password  String
+
+  tasks          Task[]
+  Organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  assignedOn  DateTime @default(now())
+  dueDate     DateTime
+
+  // Many-to-many relation with users
+  assignedTo Workers @relation(fields: [userId], references: [id])
+  userId     String
+}
