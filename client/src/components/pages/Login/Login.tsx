@@ -4,10 +4,12 @@ import * as z from "zod";
 import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 type LoginFormData = z.infer<typeof LoginSchema>
 
 export default function Login() {
+  const {id} = useParams()
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>(
     {
       resolver: zodResolver(LoginSchema)
@@ -15,8 +17,12 @@ export default function Login() {
   )
 
   const formSubmission = async (data:LoginFormData) => {
+    const organizationData = {
+      ...data,
+      id:id
+    }
     try {
-      const response = await axios.post("http://127.0.0.1:8000/login",data)
+      const response = await axios.post("http://127.0.0.1:8000/login",organizationData)
       console.log(await response.data);
     } catch (err) {
       alert("An error occured")

@@ -16,10 +16,28 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
+interface Task {
+      title: string,
+    note: string,
+    description:string,
+    dueDate: string,
+    status: string,
+    assignedTo:{name:string ; id:number}
+}
+
+const updatedTasks = tasks.map((task) => {
+  const requiredEmployee = employees.find((em) => em.id === task.assignedTo)!;
+      return {
+    ...task ,assignedTo:{
+      name:requiredEmployee.name,
+      id:requiredEmployee.id
+    }
+  }
+})
 
 const Tasks = () => {
   const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
+  const handleClose = () =>setOpen(false);
   const [newTask, setnewTask] = useState({
     title: "",
     note: "",
@@ -27,13 +45,14 @@ const Tasks = () => {
       "",
     dueDate: "",
     status: "Pending",
-    assignedTo: ""
+    assignedTo: 0
   });
   const handleCreateTask = (e: React.FormEvent) => {
     e.preventDefault()
     console.log("new task : ", newTask);
     tasks.push(newTask);
     console.log("Updated tasks : ", tasks);
+    setOpen(false)
   }
 
   return (
@@ -62,7 +81,8 @@ const Tasks = () => {
             }}></textarea>
             <label htmlFor="Assigned this task to">Assigned to :</label>
             <select name="employees" id="employees" onChange={(e) => {
-              setnewTask({ ...newTask, assignedTo: e.target.value })
+              console.log(typeof(e.target.value));              
+              setnewTask({ ...newTask, assignedTo: Number(e.target.value) })
             }}>
               {
                 employees.map((employee, idx) => (
@@ -91,7 +111,7 @@ const Tasks = () => {
         </div>
 
         <div className="flex flex-row flex-wrap gap-6">
-          {tasks.map((task, idx) => {
+          {updatedTasks.map((task:Task, idx) => {
             const date = new Date(task.dueDate);
             return (
               <div
@@ -116,7 +136,7 @@ const Tasks = () => {
                 <div className="mt-auto text-sm space-y-1">
                   <p>
                     <span className="font-semibold text-gray-700">Assigned to:</span>{" "}
-                    {task.assignedTo}
+                    {task.assignedTo.name}
                   </p>
                   <p>
                     <span className="font-semibold text-gray-700">Due:</span>{" "}

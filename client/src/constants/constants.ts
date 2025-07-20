@@ -7,15 +7,18 @@ const departments: string[] = [
     "Marketers",
     "Customercare",
     "Sales",
-    "Humanresource"
+    "Humanresource",
+    "Network engineers",
+    "Hardware maintanance"
 ]
+
 
 const employees = [
     {
         id:1,
         name:"Muhammad affan",
         email:"example1@gmail.com",
-        department:departments[3]
+        department:departments[3],
     },
     {
         id:2,
@@ -45,7 +48,7 @@ const tasks = [
       "Implement caching mechanism to reduce backend load and improve response time for frequent sales queries.",
     dueDate: "2025-07-17T14:15:00.774Z",
     status: "Pending",
-    assignedTo: employees[0].name
+    assignedTo: employees[0].id
   },
   {
     title: "Cache implementation",
@@ -54,7 +57,7 @@ const tasks = [
       "Implement caching mechanism to reduce backend load and improve response time for frequent sales queries.",
     dueDate: "2025-07-17T14:15:00.774Z",
     status: "Pending",
-    assignedTo: employees[1].name
+    assignedTo: employees[1].id
   },
   {
     title: "Cache implementation",
@@ -63,7 +66,7 @@ const tasks = [
       "Implement caching mechanism to reduce backend load and improve response time for frequent sales queries.",
     dueDate: "2025-07-17T14:15:00.774Z",
     status: "Pending",
-    assignedTo: employees[2].name
+    assignedTo: employees[2].id
   },
   {
     title: "Cache implementation",
@@ -72,13 +75,22 @@ const tasks = [
       "Implement caching mechanism to reduce backend load and improve response time for frequent sales queries.",
     dueDate: "2025-07-17T14:15:00.774Z",
     status: "Pending",
-    assignedTo: employees[3].name
+    assignedTo: employees[3].id
   },
 
 ];
 
+const industryTypes = [
+  "IT",
+  "Education",
+  "Finance",
+  "Health care",
+  "Other"
+]
+
 export {
     departments,
     employees,
-    tasks
+    tasks,
+    industryTypes
 }

@@ -1,0 +1,4 @@
+i am thinking that when organization is created , the frontend make request on backend route , the backend take htis data and return response , then again frontend accept the login backend route response and redirects the user on a page for getting a 6 digti otp code (sent to email ), then sends the otf from frontend to backend and backend verify it , and create a row in neon database in organizations table  then redirects user to the management dashboard  i am creating a new table in neon for storing otps, can you tell me how to implement 
+
+Accounts :
+exampleorganization3@gmail.com 
