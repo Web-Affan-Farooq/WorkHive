@@ -5,12 +5,15 @@ import AssignmentSharpIcon from '@mui/icons-material/AssignmentSharp';
 import CircleNotificationsSharpIcon from '@mui/icons-material/CircleNotificationsSharp';
 import GridViewSharpIcon from '@mui/icons-material/GridViewSharp';
 import PeopleOutlineSharpIcon from '@mui/icons-material/PeopleOutlineSharp';
+import DomainIcon from '@mui/icons-material/Domain';
+
 
 const ManagementSidebar = () => {
     const menuItems = [
         { href: `/organization/`, label: "Dashboard", icon: <GridViewSharpIcon className="group-hover:text-white" /> },
         { href: `/organization/tasks`, label: "Tasks", icon: <AssignmentSharpIcon className="group-hover:text-white" /> },
         { href: `/organization/people`, label: "People", icon: <PeopleOutlineSharpIcon className="group-hover:text-white" /> },
+        { href: `/organization/departments`, label: "Departments", icon: <DomainIcon className="group-hover:text-white" /> },
 
         { href: `/organization/notifications`, label: "Notifications", icon: <CircleNotificationsSharpIcon className="group-hover:text-white" /> },
     ];

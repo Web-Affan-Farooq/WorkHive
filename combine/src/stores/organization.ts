@@ -1,0 +1,35 @@
+import { create } from "zustand";
+import { persist ,createJSONStorage} from "zustand/middleware";
+
+import { Users } from "@/@types/Users";
+import { Task } from "@/@types/Task";
+import { Department } from "@/@types/Departments";
+
+interface OrganizationState {
+  users: Users[];
+  tasks:Task[];
+  departments:Department[];
+  feedTasks:(task:Task[]) => void;
+  feedDepartments:(departments:Department[]) => void;
+   feedUsers: (users: Users[]) => void;
+  clearUsers: () => void;
+}
+
+export const useOrganizationDashboard = create<OrganizationState>()(
+  persist(
+    (set) => ({
+      users: [],
+      tasks:[],
+      departments:[],
+      feedDepartments:(departments:Department[]) => set({departments:departments}),
+      feedTasks:(tasks:Task[]) => set({tasks:tasks}),
+      feedUsers: (users) => set({ users }),
+      clearUsers: () => set({ users: [] }),
+    })
+    ,
+    {
+      name: 'dashboard-data',
+      storage: createJSONStorage(() => sessionStorage),
+    }
+  )
+);

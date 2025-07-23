@@ -4,10 +4,8 @@ import Link from "next/link";
 import { Modal, Box, Typography } from '@mui/material';
 import AddSharpIcon from '@mui/icons-material/AddSharp';
 import { useEffect, useState } from 'react';
-import { Employee } from '@/@types/Worker';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { useOrganizationDashboard } from '@/stores/organization';
 
 const Card = ({ employeeData }: { employeeData: any }) => {
     return (
@@ -57,31 +55,15 @@ const style = {
 };
 
 const Peoples = () => {
-    const router = useRouter();
     const [open, setOpen] = useState(false);
     const handleClose = () => setOpen(false);
-    const [employees, setemployees] = useState<Employee[]>([]);
-    const [id, setId] = useState("");
+    const [id, setId] = useState<string | null>("");
+    const { users} = useOrganizationDashboard();
 
-useEffect(() => {
-    const getData = async () => {
-        const employeesFetched = await axios.get("/api/employees");
-        setemployees(employeesFetched.data.employees);
-    };
-
-    getData();
-
-    if (typeof window !== "undefined") {
-        const orgId = window.localStorage.getItem("ID");
-        console.log("id:", orgId);
-
-        if (!orgId) {
-            router.push("/login-org");
-        } else {
-            setId(orgId);
-        }
-    }
-}, []);
+    useEffect(() => {
+        const orgId = window.localStorage.getItem("org-id");
+        setId(orgId)
+    }, []);
 
     return (
         <main className="flex h-screen bg-white">
@@ -103,16 +85,18 @@ useEffect(() => {
                                 {id}
                             </div>
                             <button type="button" className='bg-gray-400 px-[10px] py-[1px] rounded-md' onClick={(e) => {
-                                window.navigator.clipboard.writeText(id)
-                                e.currentTarget.innerText = "Copied"
+                                if (id) {
+                                    window.navigator.clipboard.writeText(id)
+                                    e.currentTarget.innerText = "Copied"
+                                }
                             }}>copy</button>
                         </div>
                     </div>
                     <div className='mt-2 flex flex-row flex-nowrap justify-center items-start gap-[10px]'>
-                        <CheckCircleOutlineIcon className='text-green-500'/>
+                        <CheckCircleOutlineIcon className='text-green-500' />
                         <span className='text-gray-500 text-sm'>Send this id to the employees, this will be required for login</span>
                     </div>
-                    
+
                 </Box>
             </Modal>
 
@@ -126,8 +110,8 @@ useEffect(() => {
                 </div>
                 <div>
                     {
-                        employees.length <= 0 ? <p className='text-gray-400'>No People for this organization found ...</p> : employees.map((employee, idx) => (
-                            <Link href={`/management/people/${employee.id}`} key={idx}>
+                        users.length <= 0 ? <p className='text-gray-400'>No People for this organization found ...</p> : users.map((employee, idx) => (
+                            <Link href={`/organization/people/${employee.id}`} key={idx}>
                                 <Card employeeData={employee} />
                             </Link>
                         ))

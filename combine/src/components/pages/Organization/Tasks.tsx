@@ -1,13 +1,12 @@
 "use client"
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ManagementSidebar } from "../../layout";
 import AddSharpIcon from '@mui/icons-material/AddSharp';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import axios from "axios";
-import { Employee } from "@/@types/Worker";
 import { Task } from "@/@types/Task";
+import { useOrganizationDashboard } from "@/stores/organization";
 
 const style = {
   position: 'absolute',
@@ -60,20 +59,7 @@ const Card = ({ task }: { task: Task }) => {
 const Tasks = () => {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
-
-  const [employees, setemployees] = useState<Employee[]>([]);
-  const [tasks, settasks] = useState<Task[]>([])
-
-  useEffect(() => {
-    const getData = async () => {
-      const response = await axios.get("/api/tasks");
-      const { data } = response;
-      settasks(data.tasks);
-      const employeesFetched = await axios.get("/api/employees");
-      setemployees(employeesFetched.data.employees);
-    }
-    getData();
-  }, []);
+  const  {users , tasks} = useOrganizationDashboard();
 
   const [newTask, setnewTask] = useState({
     title: "",
@@ -81,8 +67,10 @@ const Tasks = () => {
       "",
     dueDate: "",
     status: "Pending",
-    assignedTo: 0
+    assignedTo: 0,
+    assignedOn:new Date().toISOString(),
   });
+  
   const handleCreateTask = (e: React.FormEvent) => {
     e.preventDefault()
   }
@@ -114,7 +102,7 @@ const Tasks = () => {
               setnewTask({ ...newTask, assignedTo: Number(e.target.value) })
             }}>
               {
-                employees.map((employee, idx) => (
+                users.map((employee, idx) => (
                   <option value={employee.name} key={idx}>{employee.name}</option>
                 ))
               }

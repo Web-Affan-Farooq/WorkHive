@@ -1,9 +1,9 @@
 import React from 'react';
-import {CreateOrganizationForm} from "@/components/pages"
+import {CreateEmployeeForm} from "@/components/pages"
 
 const CreateEmployee = () => {
   return (
-    <CreateOrganizationForm/>
+    <CreateEmployeeForm/>
   )
 }
 

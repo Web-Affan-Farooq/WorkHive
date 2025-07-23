@@ -4,3 +4,5 @@ export {default as LoginOrganizationForm} from "./LoginOrganization/Login";
 export {default as OrganizationHomeSection} from "./Organization/Organization";
 export {default as OrganizationTasks} from "./Organization/Tasks" 
 export {default as OrganizationProfiles} from "./Organization/People";
+
+export {default as CreateEmployeeForm} from "./CreateEmployee/Form";

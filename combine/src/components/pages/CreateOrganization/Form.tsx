@@ -5,13 +5,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { OrganizationSchema } from "@/validations";
 import axios from "axios";
+import ClearIcon from '@mui/icons-material/Clear';
+import { useRouter } from "next/navigation";
 
 type OrganizationFormData = z.infer<typeof OrganizationSchema>;
 
 const OrganizationForm = () => {
-    const [step, setStep] = useState(1);
-    const [disabled, setdisabled] = useState(false)
+    /* ____ For redirecting logic ... */
+    const router = useRouter();
 
+    /* ____ For controlling form steps ... */
+    const [step, setStep] = useState(1);
+    const [disabled, setdisabled] = useState(false);
+
+    /* ____ For controlling departments input ... */
+    const [department, setdepartment] = useState("");
+
+    /* ____ For storing selected departments ... */
+    const [departments, setdepartments] = useState<string[]>([]);
+
+    /* ___ react hook form ... */
     const {
         register,
         handleSubmit,
@@ -22,25 +35,23 @@ const OrganizationForm = () => {
         mode: "onChange",
     });
 
+    /* ___ Event on form ... */
     const onSubmit = async (data: OrganizationFormData) => {
-        const numbers = data.staffSize.split(" ").filter((chunk) => typeof (Number(chunk)) === "number")
-        const newData = {
+        console.log("Data : ", data);
+        const payload = {
             ...data,
-            staffSize: {
-                managers: Number(numbers[0]),
-                employees: Number(numbers[2])
-            }
+            departments: departments,
         }
-        console.log("New data : ",newData);
-        
-        const response = await axios.post("/api/create-organization",newData)
-        console.log("Response : ", response.data);
+        const response = await axios.post("/api/create-org", payload);
+        router.push(response.data.redirect);
+        window.localStorage.setItem("org-id", response.data.organization.id)
         setdisabled(false)
     };
 
-    const goNext = () => {
+    const goNext1 = () => {
+        /* ___ Checks all fields in form step 1 and proceed furthur ... */
         const values = getValues(["orgName", "industryType", "orgAddress"]);
-        console.log("Values : ",values);
+        console.log("Values : ", values);
         const allCleared = values.every((val) => val && val !== "")
         if (allCleared) {
             setStep(2);
@@ -48,6 +59,30 @@ const OrganizationForm = () => {
             alert("Please fill all organization info fields.");
         }
     };
+
+
+    const goNext2 = () => {
+        /* ___ Checks all fields in form step 2 and proceed furthur ... */
+        const values = getValues(["orgEmail", "orgPassword", "orgPhone", "staffSize"]);
+        console.log("Values : ", values);
+        const allCleared = values.every((val) => val && val !== "")
+        if (allCleared) {
+            setStep(3);
+        } else {
+            alert("Please fill all organization info fields.");
+        }
+    };
+
+    /*  ______ For adding and deleting departments ...*/
+    const addDepartments = () => {
+        if (!departments.includes(department.toLowerCase()) && department !== "") {
+            setdepartments([...departments, department.toLowerCase()])
+        }
+    }
+    const deleteDepartment = (dept: string) => {
+        const filtered = departments.filter((department) => department.toLowerCase() !== dept)
+        setdepartments([...filtered]);
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
@@ -86,6 +121,38 @@ const OrganizationForm = () => {
                                 </select>
                                 {errors.industryType && <p className="text-red-400 text-sm">{errors.industryType.message}</p>}
                             </div>
+                            {/* departments */}
+                            <div>
+                                <label className="block text-slate-700 font-medium mb-1">Departments</label>
+                                <div className="flex flex-row flex-nowrap  gap-[10px]">
+                                    <input
+                                        type="text"
+                                        onChange={(e) => {
+                                            setdepartment(e.target.value);
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key.toLowerCase() === "enter") {
+                                                addDepartments()
+                                                e.currentTarget.value = ""
+                                            }
+                                        }}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Example firm Pvt Ltd"
+                                    />
+
+                                    <button type="button" className="px-[10px] py-[5px] rounded-md bg-blue-600" onClick={addDepartments}>Add</button>
+
+                                </div>
+                                <br />
+                                <div className="flex flex-row flex-wrap gap-[10px]">
+                                    {departments.map((department, idx) => (<span className="border border-green-400 rounded-2xl px-1 text-sm text-white bg-green-400" key={idx}>{department}<ClearIcon className="w-4 h-4" onClick={() => {
+                                        deleteDepartment(department)
+                                    }} /></span>))}
+
+                                </div>
+                                {departments.length <= 0 && <p className="text-red-400 text-sm">At least one department is required</p>}
+                            </div>
+
 
                             {/* orgAddress */}
                             <div>
@@ -101,10 +168,10 @@ const OrganizationForm = () => {
 
                             <button
                                 type="button"
-                                onClick={goNext}
+                                onClick={goNext1}
                                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
                             >
-                                Continue to Contact Info
+                                Continue
                             </button>
                         </>
                     )}
@@ -117,7 +184,7 @@ const OrganizationForm = () => {
                                 <input
                                     type="email"
                                     {...register("orgEmail")}
-                                    placeholder="organization@example.com"
+                                    placeholder="abc@example.com"
                                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                                 {errors.orgEmail && <p className="text-red-400 text-sm">{errors.orgEmail.message}</p>}
@@ -149,27 +216,77 @@ const OrganizationForm = () => {
 
                             {/* staffSize */}
                             <div>
-                                <label className="block text-slate-700 font-medium mb-1">Staff Size</label>
-                                <select
-                                    {...register("staffSize")}
+                                <label className="block text-slate-700 font-medium mb-1">Staff size</label>
+                                <input
+                                    type="number"
+                                    {...register("staffSize", {
+                                        valueAsNumber: true,
+                                    })}
                                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="">Select Staff</option>
-                                    <option value="4 heads, 10 employees">4 heads, 10 employees</option>
-                                    <option value="10 heads, 40 employees">10 heads, 40 employees</option>
-                                    <option value="20 heads, 100 employees">20 heads, 100 employees</option>
-                                </select>
+                                />
                                 {errors.staffSize && <p className="text-red-400 text-sm">{errors.staffSize.message}</p>}
                             </div>
 
                             <button
                                 type="submit"
-                                className={`${disabled? "bg-green-700":"bg-green-500"} w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}
+                                className={`bg-green-500 w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}
+                                onClick={() => {
+                                    goNext2()
+                                }}
+                            >
+                                Go next
+                            </button>
+                        </>
+                    )}
+
+                    {step === 3 && (
+                        <>
+                            {/* userName*/}
+                            <div>
+                                <label className="block text-slate-700 font-medium mb-1">Your name</label>
+                                <input
+                                    type="text"
+                                    {...register("userName")}
+                                    placeholder="abc"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                {errors.userName && <p className="text-red-400 text-sm">{errors.userName.message}</p>}
+                            </div>
+
+                            {/* userEmail */}
+                            <div>
+                                <label className="block text-slate-700 font-medium mb-1">Your email</label>
+                                <input
+                                    type="email"
+                                    {...register("userEmail")}
+                                    placeholder="organization@example.com"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                {errors.userEmail && <p className="text-red-400 text-sm">{errors.userEmail.message}</p>}
+                            </div>
+
+                            {/* user Password */}
+                            <div>
+                                <label className="block text-slate-700 font-medium mb-1">User Password </label>
+                                <input
+                                    type="password"
+                                    {...register("userPassword")}
+                                    placeholder="••••••••"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                {errors.userPassword && <p className="text-red-400 text-sm">{errors.userPassword.message}</p>}
+                            </div>
+
+                            <p className="text-sm text-green-400">You're being added as manager of organization {getValues(["orgName"])[0]}</p>
+
+                            <button
+                                type="submit"
+                                className={`bg-green-500 w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}
                                 onClick={() => {
                                     setdisabled(true)
                                 }}
                             >
-                                Create Organization
+                                Create organization
                             </button>
                         </>
                     )}

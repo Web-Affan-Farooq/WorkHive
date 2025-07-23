@@ -1,15 +1,13 @@
-import { Employee } from "./Worker"
+import {Users} from "./Users"
 
-type Task = {
-  id :string;
-  title :string
-  description :string;
-  assignedOn:  string;
-  dueDate     :string;
-    // Many-to-many relation with users
-  assignedTo: Employee;
-  userId    :string;
-}
-export type {
-    Task,
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  assignedOn: Date;
+  dueDate: Date;
+  assignedTo: Users;       // relation
+  userId: string;
+  completed: boolean;
+  completedOn: Date;
 }

@@ -27,7 +27,7 @@ const EmployeeSchema = z.object(
             .refine((val) => /[@$!%*?&]/.test(val), {
                 message: "Password must include special characters"
             }),
-        organizationId: z.uuid()
+            organizationId:z.uuid(),
     }
 ).strict();
 
