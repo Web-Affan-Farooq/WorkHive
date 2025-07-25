@@ -1,51 +1,50 @@
 "use client"
 import React, { useState } from "react";
 import { ManagementSidebar } from "../../layout";
-import AddSharpIcon from '@mui/icons-material/AddSharp';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
 import { Task } from "@/@types/Task";
 import { useOrganizationDashboard } from "@/stores/organization";
+import { Plus } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { v4 } from "uuid";
+import convertToTitleCase from "@/lib/Convert";
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '60%',
-  transform: 'translate(-50%, -50%)',
-  width: "auto",
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-};
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  // AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 const Card = ({ task }: { task: Task }) => {
   const dueDate = new Date(task.dueDate);
-  // const assignedDate = new Date(task.assignedOn);
+  const {users} = useOrganizationDashboard();
+  const requiredUser = users.find((user) => user.id === task.userId)!;
 
   return (
     <div
       className="bg-white cursor-pointer w-md max-sm:w-full relative shadow-lg p-6 rounded-xl flex flex-col border-l-4 border-blue-500 hover:border-indigo-600 transition-all duration-300">
       <h2 className="text-xl font-semibold text-gray-800 mb-2">
-        {task.title}
+        {convertToTitleCase(task.title)}
       </h2>
-      {/* <span
-        className={`absolute top-7 right-7 px-2 py-1 rounded-full text-white text-xs font-semibold ${task.status === "Pending"
-          ? "bg-yellow-500"
-          : task.status === "Working"
-            ? "bg-blue-500"
-            : "bg-green-500"
-          }`}
+      <span
+        className={`absolute top-7 right-7 px-2 py-1 rounded-full text-white text-xs font-semibold ${task.completed ? "bg-green-500" :  "bg-yellow-500" }`}
       >
-        {task.status}
-      </span> */}
+        {task.completed ? "Completed":"Pending"}
+      </span>
       {/* <p className="text-gray-600 mb-2">{task.note}</p> */}
       <p className="text-sm text-gray-500 mb-4">{task.description}</p>
 
       <div className="mt-auto text-sm space-y-1">
         <p>
           <span className="font-semibold text-gray-700">Assigned to:</span>{" "}
-          {task.assignedTo.name}
+          {convertToTitleCase(requiredUser.name)}
         </p>
         <p>
           <span className="font-semibold text-gray-700">Due:</span>{" "}
@@ -57,83 +56,96 @@ const Card = ({ task }: { task: Task }) => {
 }
 
 const Tasks = () => {
-  const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
-  const  {users , tasks} = useOrganizationDashboard();
+  const { users, tasks, addTasks } = useOrganizationDashboard();
 
   const [newTask, setnewTask] = useState({
+    id: v4(),
     title: "",
-    description:
-      "",
-    dueDate: "",
-    status: "Pending",
-    assignedTo: 0,
-    assignedOn:new Date().toISOString(),
+    description: "",
+    userId: '',
+    assignedOn: new Date(),
+    dueDate: new Date(),
+    completed: false,
+    completedOn: null
   });
-  
-  const handleCreateTask = (e: React.FormEvent) => {
-    e.preventDefault()
+
+  const handleCreateTask = async () => {
+    try {
+      const response = await axios.post("/api/tasks/create", newTask);
+      addTasks(newTask);
+      toast.success(response.data.message)
+    } catch (err) {
+      toast.error("Error while fetching")
+      console.log(err);
+      
+    }
   }
 
   return (
-    <main className="relative flex h-screen bg-white">
-      <ManagementSidebar />
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        className="border-none w-[80vw]"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Create Task
-          </Typography>
-          <form onSubmit={handleCreateTask}>
-            <input type="text" name="title" id="title" placeholder="Title" className="border border-black placeholder:text-sm py-[4px] px-[15px] rounded-md w-full" onChange={(e) => {
-              setnewTask({ ...newTask, title: e.target.value })
-            }} />
-            <textarea name="description" id="description" className="border border-black placeholder:text-sm py-[4px] px-[15px] h-[100px] rounded-md w-full" placeholder="Description" onChange={(e) => {
-              setnewTask({ ...newTask, description: e.target.value })
-            }}></textarea>
-            <label htmlFor="Assigned this task to">Assigned to :</label>
-            <select name="employees" id="employees" onChange={(e) => {
-              console.log(typeof (e.target.value));
-              setnewTask({ ...newTask, assignedTo: Number(e.target.value) })
-            }}>
-              {
-                users.map((employee, idx) => (
-                  <option value={employee.name} key={idx}>{employee.name}</option>
-                ))
-              }
-            </select>
-            <input type="datetime-local" name="dueDate" id="due-date" className="border border-black py-[4px] px-[15px] rounded-md w-full" onChange={(e) => {
-              setnewTask({ ...newTask, dueDate: e.target.value })
-            }} />
-            <button type="submit" className="bg-gray-900 cursor-pointer px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]">
-              <AddSharpIcon className="size-sm" />
+    <AlertDialog>
+      <main className="relative flex h-screen bg-white">
+        <ManagementSidebar />
+        <section className="flex-1 h-screen overflow-y-auto p-10 max-sm:px-5 max-sm:py-7">
+          <div className="flex flex-row flex-nowrap justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">Tasks Assigned</h1>
+
+            <AlertDialogTrigger className="bg-gray-900 cursor-pointer px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]">
+              <Plus className="size-sm" />
               <span>Create</span>
-            </button>
-          </form>
-        </Box>
-      </Modal>
+            </AlertDialogTrigger>
 
-      <section className="flex-1 h-screen overflow-y-auto p-10 max-sm:px-5 max-sm:py-7">
-        <div className="flex flex-row flex-nowrap justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Tasks Assigned</h1>
-          <button onClick={() => { setOpen(!open) }} type="button" className="bg-gray-900 cursor-pointer px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]">
-            <AddSharpIcon className="size-sm" />
-            <span>Create</span>
-          </button>
-        </div>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              </AlertDialogHeader>
 
-        <div className="flex flex-row flex-wrap gap-6">
-          {tasks.length <= 0 ? <p className="text-gray-400">No tasks found ...</p> : tasks.map((task: Task, idx) => (
-            <Card task={task} key={idx} />
-          ))}
-        </div>
-      </section>
-    </main>
+              <form className="flex flex-col gap-[10px]">
+                {/* title ... */}
+                <label htmlFor="title" className="font-semibold text-sm">Title :</label>
+                <input type="text" name="title" id="title" placeholder="Title" className="placeholder:text-sm py-[4px] px-[15px] rounded-md w-full" onChange={(e) => {
+                  setnewTask({ ...newTask, title: e.target.value })
+                }} />
+                {/* description ... */}
+                <label htmlFor="description" className="font-semibold text-sm">Description :</label>
+                <textarea name="description" id="description" className="placeholder:text-sm py-[4px] px-[15px] h-[100px] rounded-md w-full" placeholder="Description" onChange={(e) => {
+                  setnewTask({ ...newTask, description: e.target.value })
+                }}></textarea>
+
+                {/*  assigned to  ... */}
+                <label htmlFor="Assigned this task to" className="font-semibold text-sm">Assigned to :</label>
+                <select className="placeholder:text-sm py-[4px] px-[15px] rounded-md w-full" name="employees" id="employees" onChange={(e) => {
+                  setnewTask({ ...newTask, userId: e.target.value })
+                }}>
+                  {
+                    users.map((employee, idx) => (
+                      <option value={employee.id} key={idx}>{employee.name}</option>
+                    ))
+                  }
+                </select>
+                {/* description ... */}
+                <label htmlFor="Due date for this task" className="font-semibold text-sm">Due date :</label>
+                <input type="datetime-local" name="dueDate" id="due-date" className="py-[4px] px-[15px] rounded-md w-full" onChange={(e) => {
+                  setnewTask({ ...newTask, dueDate: new Date(e.target.value) })
+                }} />
+              </form>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleCreateTask} className="bg-gray-900 cursor-pointer px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]">
+                  <Plus className="size-sm" />
+                  <span>Create</span>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </div>
+
+          <div className="flex flex-row flex-wrap gap-6">
+            {tasks.length <= 0 ? <p className="text-gray-400">No tasks found ...</p> : tasks.map((task: Task, idx) => (
+              <Card task={task} key={idx} />
+            ))}
+          </div>
+        </section>
+      </main>
+    </AlertDialog>
   );
 };
 

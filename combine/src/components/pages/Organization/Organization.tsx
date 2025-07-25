@@ -1,73 +1,99 @@
 "use client";
 import { useOrganizationDashboard } from "@/stores/organization";
 import { ManagementSidebar } from "@/components/layout"
-import { useEffect, useState } from "react";
-import axios from "axios";
+// import { useState } from "react";
+// import { useEffect } from "react";
+// import axios from "axios";
+// import toast from "react-hot-toast";
 
+// import { TrendingUp } from "lucide-react"
+// import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 
-import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardFooter,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card"
+// import {
+//   ChartConfig,
+//   ChartContainer,
+//   ChartTooltip,
+//   ChartTooltipContent,
+// } from "@/components/ui/chart"
 
 export const description = "An area chart with gradient fill"
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
+// const chartData = [
+//   { month: "January", desktop: 186, mobile: 80 },
+//   { month: "February", desktop: 305, mobile: 200 },
+//   { month: "March", desktop: 237, mobile: 120 },
+//   { month: "April", desktop: 73, mobile: 190 },
+//   { month: "May", desktop: 209, mobile: 130 },
+//   { month: "June", desktop: 214, mobile: 140 },
+// ]
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "var(--chart-1)",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "var(--chart-2)",
-  },
-} satisfies ChartConfig
+// const chartConfig = {
+//   desktop: {
+//     label: "Desktop",
+//     color: "var(--chart-1)",
+//   },
+//   mobile: {
+//     label: "Mobile",
+//     color: "var(--chart-2)",
+//   },
+// } satisfies ChartConfig
 
 
 const Management = () => {
   /* 1. ____ Global state storing data for implementation of one time fetch  ... */
-  const { departments, feedUsers, feedTasks, feedDepartments } = useOrganizationDashboard();
+  const { departments, tasks ,users} = useOrganizationDashboard();
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const tasksThisMonth = tasks.filter((task) => {
+        const assignedDate = new Date(task.assignedOn); // safely parse string/date
+        return (
+            assignedDate.getMonth() === currentMonth &&
+            assignedDate.getFullYear() === currentYear
+        );
+    });
+
+    const tasksCompletedThisMonth = tasksThisMonth.filter((task) => {
+      return (
+        task.completed && task.completedOn && new Date(task.completedOn) < new Date(task.dueDate)
+      )
+    });
+    const employees = users.filter((user) => !user.isManager);
 
   /* 2. _____ Fetch all data on first render to reduce server request rate ...  */
   // useEffect(() => {
+  //   const organizationId = window.localStorage.getItem("org-ID");
+
   //   const getData = async () => {
   //     const employeesFetched = await axios.get("/api/employees");
-  //     const tasksFetched = await axios.get("/api/tasks");
+  //     const tasksFetched = await axios.get(`/api/tasks?orgId=${organizationId}`);
   //     const departmentsFetched = await axios.get("/api/departments");
   //     feedUsers(employeesFetched.data.employees);
   //     feedTasks(tasksFetched.data.tasks);
   //     feedDepartments(departmentsFetched.data.departments);
-  //     // console.log("organization.tsx :::: Line 15   departments : ", departmentsFetched.data.departments);
-  //     // console.log("organization.tsx :::: Line 15   Employees : ",employeesFetched.data.employees);
-  //     // console.log("organization.tsx :::: Line 15   Tasks : ",tasksFetched.data.tasks);
+  //     console.log("organization.tsx :::: Line 15   departments : ", departmentsFetched.data.departments);
+  //     console.log("organization.tsx :::: Line 15   Employees : ", employeesFetched.data.employees);
+  //     console.log("organization.tsx :::: Line 15   Tasks : ", tasksFetched.data.tasks);
   //   };
-  //   getData();
-  // }, []);
+
+  //   if (organizationId) {
+  //     getData();
+  //   } else {
+  //     toast.error("organization id not found")
+  //   }
+  // }, [feedUsers, feedTasks, feedDepartments]);
 
   /* 3. _____ State storing selected department ... */
-  const [selectedDepartment, setselectedDepartment] = useState(departments[0]);
+  // const [selectedDepartment, setselectedDepartment] = useState(departments[0]);
 
   return (
     <main className="flex h-screen">
@@ -81,15 +107,15 @@ const Management = () => {
             {/* Total Orders Card */}
             <div className="bg-blue-600 rounded-2xl w-[160px] h-[80px] px-4 py-2 max-sm:w-[130px] max-sm:h-[65px]">
               <span className="text-sm text-gray-200">Employees</span>
-              <p className="text-3xl font-bold text-white max-sm:text-xl">3</p>
+              <p className="text-3xl font-bold text-white max-sm:text-xl">{employees.length}</p>
             </div>
             <div className="bg-green-500 rounded-2xl w-[160px] h-[80px] px-4 py-2 max-sm:w-[130px] max-sm:h-[65px]">
               <span className="text-sm text-gray-200">Tasks assigned</span>
-              <p className="text-3xl font-bold text-white max-sm:text-xl">3</p>
+              <p className="text-3xl font-bold text-white max-sm:text-xl">{tasksThisMonth.length}</p>
             </div>
             <div className="bg-pink-600 rounded-2xl w-[160px] h-[80px] px-4 py-2 max-sm:w-[130px] max-sm:h-[65px]">
               <span className="text-sm text-gray-200">Completed</span>
-              <p className="text-3xl font-bold text-white max-sm:text-xl">3</p>
+              <p className="text-3xl font-bold text-white max-sm:text-xl">{tasksCompletedThisMonth.length}</p>
             </div>
           </div>
         </div>
@@ -103,7 +129,7 @@ const Management = () => {
           }
         </div>
         <br /><br /><br />
-        <div className="max-sm:p-0 px-7">
+        {/* <div className="max-sm:p-0 px-7">
           <Card className="h-auto w-full">
             <CardHeader>
               <CardTitle>Activity chart</CardTitle>
@@ -188,7 +214,7 @@ const Management = () => {
               </div>
             </CardFooter>
           </Card>
-        </div>
+        </div> */}
 
 
       </section>

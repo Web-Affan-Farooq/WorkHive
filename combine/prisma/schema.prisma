@@ -76,5 +76,5 @@ model Task {
   assignedTo  Users    @relation(fields: [userId], references: [id])
   userId      String
   completed   Boolean
-  completedOn DateTime
+  completedOn DateTime?
 }

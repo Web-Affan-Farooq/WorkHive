@@ -1,32 +1,36 @@
 "use client"
-import {OrganizationLoginSchema} from "../../../validations";
+import { OrganizationLoginSchema } from "../../../validations";
 import * as z from "zod";
 import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 type LoginFormData = z.infer<typeof OrganizationLoginSchema>
 
 export default function Login() {
-  const router = useRouter()
+  const router = useRouter();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>(
     {
       resolver: zodResolver(OrganizationLoginSchema)
     }
   )
 
-  const formSubmission = async (data:LoginFormData) => {
-    const updatedData = {
-      email:data.organizationEmail,
-      password:data.orgPassword
-    }
+  const formSubmission = async (data: LoginFormData) => {
     try {
-      const response = await axios.post("/api/login-org",updatedData)
-      router.push(response.data.redirect)
-      window.localStorage.setItem("ID",response.data.id)
+      const response = await axios.post("/api/organization/login", data)
+      console.log(response.data);
+      if (!response.data.success) {
+        toast.error(response.data.message);
+      }
+      window.localStorage.setItem("org-ID", response.data.organizationId);
+      window.localStorage.setItem("user-ID", response.data.userId);
+      toast.success(response.data.message);
+      router.push(response.data.redirect);
     } catch (err) {
-      alert("An error occured")
+      alert("An error occured");
+      console.log(err);
     }
   }
 
@@ -37,16 +41,29 @@ export default function Login() {
           Login To Your Organization
         </h2>
         <form className="space-y-5" onSubmit={handleSubmit(formSubmission)}>
-          {/* Full Name */}
-
+          {/* User email */}
           <div>
             <label htmlFor="email" className="block text-slate-700 font-medium mb-1">
-              Email
+              Your email
             </label>
             <input
-              id="email"
+              id="user-email"
               type="email"
-              placeholder="employee@company.com"
+              placeholder="abc@company.com"
+              required
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {...register("managerEmail")}
+            />
+            {errors.managerEmail && <p className="text-red-400 font-semibold text-sm">{errors.managerEmail.message}</p>}
+          </div>
+          <div>
+            <label htmlFor="email" className="block text-slate-700 font-medium mb-1">
+              Organization email
+            </label>
+            <input
+              id="org-email"
+              type="email"
+              placeholder="abc@gmail.com"
               required
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register("organizationEmail")}

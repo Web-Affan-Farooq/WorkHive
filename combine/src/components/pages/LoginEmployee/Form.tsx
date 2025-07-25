@@ -3,29 +3,19 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { EmployeeSignupFormSchema } from "@/validations";
+import { EmployeeLoginSchema } from "@/validations";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
-type EmployeeSignupFormData = z.infer<typeof EmployeeSignupFormSchema>;
-interface Department {
-    id: string;
-    name: string;
-    organizationId: string;
-}
+type EmployeeLoginFormData = z.infer<typeof EmployeeLoginSchema>;
+
 const OrganizationForm = () => {
     /* ____ for controlling redirect ... */
     const router = useRouter();
 
     /* ____ for controlling two step form  ... */
     const [step, setStep] = useState(1);
-
-    /* ____ for storing fetched departments ... */
-    const [departments, setdepartments] = useState<Department[]>([]);
-
-    /* ____ for storing selected departments ... */
-    const [selectedDepartments, setselectedDepartments] = useState<Department[]>([]);
 
     /* ____ for storing response data  ... */
     const [responseData, setResponseData] = useState<{
@@ -46,8 +36,8 @@ const OrganizationForm = () => {
         handleSubmit,
         formState: { errors },
         getValues,
-    } = useForm<EmployeeSignupFormData>({
-        resolver: zodResolver(EmployeeSignupFormSchema),
+    } = useForm<EmployeeLoginFormData>({
+        resolver: zodResolver(EmployeeLoginSchema),
         mode: "onChange",
     });
 
@@ -60,21 +50,15 @@ const OrganizationForm = () => {
             id: values[0],
         });
         if (allCleared && verifyOrganization.data.success) {
-            setdepartments(verifyOrganization.data.departments);
             setStep(2);
         } else {
             alert("Please fill all the fields.");
         }
     };
 
-    const onSubmit = async (data: EmployeeSignupFormData) => {
-        /* ____ Take form data , attached selected departments and request for account creation ... */
-        const payload = {
-            ...data,
-            departments: selectedDepartments,
-        }
-        console.log("Data :", payload);
-        const response = await axios.post("/api/employees/create", payload);
+    const onSubmit = async (data: EmployeeLoginFormData) => {
+        /* ____ Take form data and make a login request ... */
+        const response = await axios.post("/api/employees/login", data);
 
         if (!response.data.success) {
             toast.error(response.data.message);
@@ -130,27 +114,16 @@ const OrganizationForm = () => {
 
                     {step === 2 && (
                         <>
-                            {/* employee name */}
-                            <div>
-                                <label className="block text-slate-700 font-medium mb-1">Name</label>
-                                <input
-                                    type="text"
-                                    {...register("name")}
-                                    placeholder="abc"
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                                {errors.name && <p className="text-red-400 text-sm">{errors.name.message}</p>}
-                            </div>
                             {/* employee email */}
                             <div>
                                 <label className="block text-slate-700 font-medium mb-1">Email</label>
                                 <input
                                     type="email"
-                                    {...register("email")}
+                                    {...register("userEmail")}
                                     placeholder="xyz@example.com"
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2  focus:ring-blue-500"
                                 />
-                                {errors.email && <p className="text-red-400 text-sm">{errors.email.message}</p>}
+                                {errors.userEmail && <p className="text-red-400 text-sm">{errors.userEmail.message}</p>}
                             </div>
 
                             {/* employee password */}
@@ -158,39 +131,18 @@ const OrganizationForm = () => {
                                 <label className="block text-slate-700 font-medium mb-1">Password</label>
                                 <input
                                     type="password"
-                                    {...register("password")}
+                                    {...register("userPassword")}
                                     placeholder="••••••••"
                                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                                {errors.password && <p className="text-red-400 text-sm">{errors.password.message}</p>}
-                            </div>
-
-                            {/* departments  */}
-                            <div>
-                                <label className="block text-slate-700 font-medium mb-1">Select departments you want to associated with</label>
-                                {departments.map((department, idx) => (
-                                    <div key={idx} className="flex flex-row items-center gap-[8px]">
-                                        <input type="checkbox" name={department.name} value={department.name} onChange={(e) => {
-                                            if(e.target.checked) {
-setselectedDepartments([...selectedDepartments, department])
-                                            }
-                                            else {
-                                                const filtered = selectedDepartments.filter((dept) => (dept.id !== department.id));
-                                                setselectedDepartments(filtered)
-                                            }
-                                            
-                                        }} />
-                                        <span className="text-sm text-green-600">{department.name}</span>
-                                    </div>
-                                ))}
-                                {selectedDepartments.length <= 0 && <p className="text-red-400 text-sm">Please select atleast one department</p>}
+                                {errors.userPassword && <p className="text-red-400 text-sm">{errors.userPassword.message}</p>}
                             </div>
 
                             <button
                                 type="submit"
                                 className={`bg-green-500 w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}
                             >
-                                Create account
+                                Login
                             </button>
                         </>
                     )}

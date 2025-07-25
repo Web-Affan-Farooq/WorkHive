@@ -2,7 +2,8 @@ import z from "zod";
 
 const OrganizationLoginSchema = z.object(
     {
-        organizationEmail:z.email("Invalid required"),
+        managerEmail:z.email("Invalid email"),
+        organizationEmail:z.email("Invalid email"),
         orgPassword:z
         .string({ message: "Please Enter password" })
         .min(8, "Password must be at least 8 characters long")

@@ -1,19 +1,33 @@
 "use client"
 import { ManagementSidebar } from '@/components/layout';
 import Link from "next/link";
-import { Modal, Box, Typography } from '@mui/material';
-import AddSharpIcon from '@mui/icons-material/AddSharp';
 import { useEffect, useState } from 'react';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { useOrganizationDashboard } from '@/stores/organization';
+import { Plus } from "lucide-react";
+import { CircleCheck } from "lucide-react";
+import {Users} from "@/@types/Users";
 
-const Card = ({ employeeData }: { employeeData: any }) => {
+import {
+    AlertDialog,
+    // AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    // AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import Image from 'next/image';
+
+
+const Card = ({ employeeData }: { employeeData :Users}) => {
     return (
         <div className="flex items-center gap-4 md:px-[30px] py-2 w-full">
             {/* Profile Image */}
             <div className="flex-shrink-0">
                 <div className="rounded-lg border-2 border-gray-500 w-[45px] h-[45px] overflow-hidden">
-                    <img
+                    <Image
                         src="https://cdn.dribbble.com/userupload/13475147/file/original-0b9c0607f2db3125f46f25014391394d.png?resize=1024x640&vertical=center"
                         alt={employeeData.name}
                         width={90}
@@ -43,45 +57,42 @@ const Card = ({ employeeData }: { employeeData: any }) => {
     );
 };
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '60%',
-    transform: 'translate(-50%, -50%)',
-    width: "auto",
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
-};
+// const style = {
+//     position: 'absolute',
+//     top: '50%',
+//     left: '60%',
+//     transform: 'translate(-50%, -50%)',
+//     width: "auto",
+//     bgcolor: 'background.paper',
+//     boxShadow: 24,
+//     p: 4,
+// };
 
 const Peoples = () => {
-    const [open, setOpen] = useState(false);
-    const handleClose = () => setOpen(false);
     const [id, setId] = useState<string | null>("");
-    const { users} = useOrganizationDashboard();
+    const { users } = useOrganizationDashboard();
 
     useEffect(() => {
-        const orgId = window.localStorage.getItem("org-id");
+        const orgId = window.localStorage.getItem("org-ID");
         setId(orgId)
     }, []);
 
     return (
-        <main className="flex h-screen bg-white">
-            <ManagementSidebar />
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                className="border-none w-[80vw]"
-            >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Invite people
-                    </Typography>
+        <AlertDialog>
+            <main className="flex h-screen bg-white">
+                <ManagementSidebar />
+
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Invite employee</AlertDialogTitle>
+                        <div className='mt-2 flex flex-row flex-wrap justify-center items-start gap-[10px]'>
+                            <CircleCheck className='text-green-500' />
+                            <span className='text-gray-500 text-sm'>Send this id to the employees, this will be required for login</span>
+                        </div>
+                    </AlertDialogHeader>
                     <div className='p-[5px]'>
                         <div className='flex flex-row gap-[10px] items-center'>
-                            <div className='bg-gray-800/90 text-gray-400 px-[15px] py-[5px] rounded-md truncate w-[200px]'>
+                            <div className='bg-gray-800/90 text-gray-400 px-[15px] py-[5px] rounded-md truncate w-full'>
                                 {id}
                             </div>
                             <button type="button" className='bg-gray-400 px-[10px] py-[1px] rounded-md' onClick={(e) => {
@@ -92,33 +103,33 @@ const Peoples = () => {
                             }}>copy</button>
                         </div>
                     </div>
-                    <div className='mt-2 flex flex-row flex-nowrap justify-center items-start gap-[10px]'>
-                        <CheckCircleOutlineIcon className='text-green-500' />
-                        <span className='text-gray-500 text-sm'>Send this id to the employees, this will be required for login</span>
+
+                    <AlertDialogFooter>
+                        <AlertDialogCancel className='w-full'>Cancel</AlertDialogCancel>
+                        {/* <AlertDialogAction>Continue</AlertDialogAction> */}
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+
+                <section className="flex-1 h-screen overflow-y-auto p-10 max-sm:px-5 max-sm:py-7">
+                    <div className="flex flex-row flex-nowrap justify-between items-center mb-6">
+                        <h1 className="text-2xl font-bold text-gray-800">People</h1>
+                        <AlertDialogTrigger type="button" className="bg-gray-900 cursor-pointer px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]">
+                            <Plus className="size-sm" />
+                            <span>Invite</span>
+                        </AlertDialogTrigger>
                     </div>
-
-                </Box>
-            </Modal>
-
-            <section className="flex-1 h-screen overflow-y-auto p-10 max-sm:px-5 max-sm:py-7">
-                <div className="flex flex-row flex-nowrap justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">People</h1>
-                    <button onClick={() => { setOpen(!open) }} type="button" className="bg-gray-900 cursor-pointer px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]">
-                        <AddSharpIcon className="size-sm" />
-                        <span>Invite</span>
-                    </button>
-                </div>
-                <div>
-                    {
-                        users.length <= 0 ? <p className='text-gray-400'>No People for this organization found ...</p> : users.map((employee, idx) => (
-                            <Link href={`/organization/people/${employee.id}`} key={idx}>
-                                <Card employeeData={employee} />
-                            </Link>
-                        ))
-                    }
-                </div>
-            </section>
-        </main>
+                    <div>
+                        {
+                            users.length <= 0 ? <p className='text-gray-400'>No People for this organization found ...</p> : users.map((employee, idx) => (
+                                <Link href={`/organization/people/${employee.id}`} key={idx}>
+                                    <Card employeeData={employee} />
+                                </Link>
+                            ))
+                        }
+                    </div>
+                </section>
+            </main>
+        </AlertDialog>
     );
 };
 

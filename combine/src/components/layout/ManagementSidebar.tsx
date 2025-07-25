@@ -1,21 +1,15 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import AssignmentSharpIcon from '@mui/icons-material/AssignmentSharp';
-import CircleNotificationsSharpIcon from '@mui/icons-material/CircleNotificationsSharp';
-import GridViewSharpIcon from '@mui/icons-material/GridViewSharp';
-import PeopleOutlineSharpIcon from '@mui/icons-material/PeopleOutlineSharp';
-import DomainIcon from '@mui/icons-material/Domain';
-
+import {LayoutGrid,ClipboardList ,Users,Building ,Bell} from "lucide-react";
 
 const ManagementSidebar = () => {
     const menuItems = [
-        { href: `/organization/`, label: "Dashboard", icon: <GridViewSharpIcon className="group-hover:text-white" /> },
-        { href: `/organization/tasks`, label: "Tasks", icon: <AssignmentSharpIcon className="group-hover:text-white" /> },
-        { href: `/organization/people`, label: "People", icon: <PeopleOutlineSharpIcon className="group-hover:text-white" /> },
-        { href: `/organization/departments`, label: "Departments", icon: <DomainIcon className="group-hover:text-white" /> },
-
-        { href: `/organization/notifications`, label: "Notifications", icon: <CircleNotificationsSharpIcon className="group-hover:text-white" /> },
+        { href: `/organization/`, label: "Dashboard", icon: <LayoutGrid className="group-hover:text-white size-5" /> },
+        { href: `/organization/tasks`, label: "Tasks", icon: <ClipboardList className="group-hover:text- size-5" /> },
+        { href: `/organization/people`, label: "People", icon: <Users className="group-hover:text-white size-5" /> },
+        { href: `/organization/departments`, label: "Departments", icon: <Building className="group-hover:text-white size-5" /> },
+        { href: `/organization/notifications`, label: "Notifications", icon: <Bell className="group-hover:text-white size-5" /> },
     ];
 
     //   /* _____ State for toogling sidebar... */

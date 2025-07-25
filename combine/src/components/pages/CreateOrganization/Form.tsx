@@ -5,8 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { OrganizationSchema } from "@/validations";
 import axios from "axios";
-import ClearIcon from '@mui/icons-material/Clear';
 import { useRouter } from "next/navigation";
+import {X} from 'lucide-react';
 
 type OrganizationFormData = z.infer<typeof OrganizationSchema>;
 
@@ -16,7 +16,7 @@ const OrganizationForm = () => {
 
     /* ____ For controlling form steps ... */
     const [step, setStep] = useState(1);
-    const [disabled, setdisabled] = useState(false);
+    // const [disabled, setdisabled] = useState(false);
 
     /* ____ For controlling departments input ... */
     const [department, setdepartment] = useState("");
@@ -42,10 +42,10 @@ const OrganizationForm = () => {
             ...data,
             departments: departments,
         }
-        const response = await axios.post("/api/create-org", payload);
+        const response = await axios.post("/api/organization/create", payload);
         router.push(response.data.redirect);
         window.localStorage.setItem("org-id", response.data.organization.id)
-        setdisabled(false)
+        // setdisabled(false)
     };
 
     const goNext1 = () => {
@@ -145,7 +145,7 @@ const OrganizationForm = () => {
                                 </div>
                                 <br />
                                 <div className="flex flex-row flex-wrap gap-[10px]">
-                                    {departments.map((department, idx) => (<span className="border border-green-400 rounded-2xl px-1 text-sm text-white bg-green-400" key={idx}>{department}<ClearIcon className="w-4 h-4" onClick={() => {
+                                    {departments.map((department, idx) => (<span className="border border-green-400 rounded-2xl px-1 text-sm text-white bg-green-400" key={idx}>{department}<X className="w-4 h-4" onClick={() => {
                                         deleteDepartment(department)
                                     }} /></span>))}
 
@@ -281,11 +281,7 @@ const OrganizationForm = () => {
 
                             <button
                                 type="submit"
-                                className={`bg-green-500 w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}
-                                onClick={() => {
-                                    setdisabled(true)
-                                }}
-                            >
+                                className={`bg-green-500 w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}                            >
                                 Create organization
                             </button>
                         </>

@@ -13,6 +13,7 @@ interface OrganizationState {
   feedDepartments:(departments:Department[]) => void;
    feedUsers: (users: Users[]) => void;
   clearUsers: () => void;
+  addTasks:(task:Task) => void;
 }
 
 export const useOrganizationDashboard = create<OrganizationState>()(
@@ -25,6 +26,12 @@ export const useOrganizationDashboard = create<OrganizationState>()(
       feedTasks:(tasks:Task[]) => set({tasks:tasks}),
       feedUsers: (users) => set({ users }),
       clearUsers: () => set({ users: [] }),
+      addTasks:(task:Task) => set((state) => (
+        {
+          tasks:[...state.tasks,task,]
+        }
+      )
+    )
     })
     ,
     {

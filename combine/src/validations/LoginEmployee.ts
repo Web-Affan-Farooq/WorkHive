@@ -1,11 +1,10 @@
 import z from "zod";
-// import { departments } from "../constants/constants";
 
-const LoginSchema = z.object(
+const EmployeeLoginSchema = z.object(
     {
-        employeeId: z.number("numeric id is required").min(1, "Invalid id").max(1000,"Invalid id"),
-        employeeEmail: z.email("Invalid required"),
-        employeePassword:z
+        organizationId:z.uuid(),
+        userEmail:z.email("Invalid email"),
+        userPassword:z
         .string({ message: "Please Enter password" })
         .min(8, "Password must be at least 8 characters long")
         .max(10, "Password must be shorter than 10 characters")
@@ -29,7 +28,6 @@ const LoginSchema = z.object(
         .refine((val) => /[@$!%*?&]/.test(val), {
             message: "Password must include special characters"
         }),
-        employeeDepartment:z.string().min(1,"Please select a department").max(15,"department name is too big")
     }
 ).strict()
-export default LoginSchema;
+export default EmployeeLoginSchema;

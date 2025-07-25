@@ -1,28 +1,33 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import AssignmentSharpIcon from '@mui/icons-material/AssignmentSharp';
-import CircleNotificationsSharpIcon from '@mui/icons-material/CircleNotificationsSharp';
-import GridViewSharpIcon from '@mui/icons-material/GridViewSharp';
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import {ClipboardList, LayoutGrid, Bell} from "lucide-react";
 
-const menuItems = [
-  { href: "/dashboard", label: "Dashboard" , icon:<GridViewSharpIcon className="group-hover:text-white"/> },
-  { href: "/dashboard/tasks", label: "Tasks" , icon:<AssignmentSharpIcon className="group-hover:text-white"/> },
-  { href: "/dashboard/notifications", label: "Notifications" , icon: <CircleNotificationsSharpIcon className="group-hover:text-white"/>},
-];
+    const menuItems = [
+        { href: `/dashboard/`, label: "Dashboard", icon: <LayoutGrid className="group-hover:text-white size-5" /> },
+        { href: `/dashboard/tasks`, label: "Tasks", icon: <ClipboardList className="group-hover:text-white size-5" /> },
+        { href: `/dashboard/notifications`, label: "Notifications", icon: <Bell className="group-hover:text-white size-5" /> },
+    ];
 
 const DashboardSidebar = () => {
 //   /* _____ router instance ... */
-//   const router = useRouter();
+  const router = useRouter();
 
 //   /* _____ State for toogling sidebar... */
   const [navOpen, setNavOpen] = useState(false);
 
 //   /* onclick Event : attemp GET request on logout api and redirect the user to landing page ... */
   const handleLogout = async () => {
-    console.log("logout");
+    const response = await axios.get("/api/employees/logout");
+    window.localStorage.removeItem("org-ID");
+    window.localStorage.removeItem("user-ID");
+    toast.success(response.data.message);
+    router.push("/");
   }
-
+  
   return (
     <div className="relative flex h-screen">
       {/* Sidebar */}
