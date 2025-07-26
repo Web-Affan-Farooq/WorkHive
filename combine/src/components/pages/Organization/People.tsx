@@ -26,9 +26,9 @@ const Card = ({ employeeData }: { employeeData :Users}) => {
         <div className="flex items-center gap-4 md:px-[30px] py-2 w-full">
             {/* Profile Image */}
             <div className="flex-shrink-0">
-                <div className="rounded-lg border-2 border-gray-500 w-[45px] h-[45px] overflow-hidden">
+                <div className="rounded-lg w-[45px] h-[45px] overflow-hidden">
                     <Image
-                        src="https://cdn.dribbble.com/userupload/13475147/file/original-0b9c0607f2db3125f46f25014391394d.png?resize=1024x640&vertical=center"
+                        src="/images/profile.jpg"
                         alt={employeeData.name}
                         width={90}
                         height={90}

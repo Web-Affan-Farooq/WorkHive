@@ -2,8 +2,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import {LayoutGrid,ClipboardList ,Users,Building ,Bell} from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const ManagementSidebar = () => {
+    const router = useRouter();
     const menuItems = [
         { href: `/organization/`, label: "Dashboard", icon: <LayoutGrid className="group-hover:text-white size-5" /> },
         { href: `/organization/tasks`, label: "Tasks", icon: <ClipboardList className="group-hover:text- size-5" /> },
@@ -14,11 +18,14 @@ const ManagementSidebar = () => {
 
     //   /* _____ State for toogling sidebar... */
     const [navOpen, setNavOpen] = useState(false);
-
     //   /* onclick Event : attemp GET request on logout api and redirect the user to landing page ... */
-    const handleLogout = async () => {
-        console.log("logout");
-    }
+  const handleLogout = async () => {
+    const response = await axios.get("/api/organization/logout");
+    window.localStorage.removeItem("org-ID");
+    window.localStorage.removeItem("user-ID");
+    toast.success(response.data.message);
+    router.push("/");
+  }
 
     return (
         <div className="relative flex h-screen">

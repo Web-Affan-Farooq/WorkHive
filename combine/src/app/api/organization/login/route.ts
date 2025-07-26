@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 
-
 interface Body {
     managerEmail: string;
     organizationEmail: string;
@@ -95,6 +94,7 @@ export const POST = async (req: NextRequest) => {
             {
                 message: "Organization login successfull",
                 redirect: `/organization`,
+                success:true,
                 organizationId: organization.id,
                 userId: manager.id,
             }

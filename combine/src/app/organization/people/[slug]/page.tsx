@@ -11,52 +11,11 @@ import { useOrganizationDashboard } from "@/stores/organization";
 /* utility ... */
 import convertToTitleCase from "@/lib/Convert";
 
-/* Types ... */
-import { Task } from "@/@types/Task";
-
 /* Icons ... */
-import { Building, ClipboardList } from "lucide-react";
+import { Building} from "lucide-react";
 
-/* Shadcn ui components ... */
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
-    ChartConfig,
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
-    ChartTooltip,
-    ChartTooltipContent,
-
-} from "@/components/ui/chart"
-
-
-/*  Rechart components ... */
-import { BarChart, Bar, CartesianGrid, XAxis } from "recharts"
 
 export const description = "An area chart with gradient fill"
-
-
-const chartConfig = {
-    month: {
-        label: "Month",
-        color: "var(--chart-1)",
-    },
-    tasks: {
-        label: "Tasks",
-        color: "var(--chart-2)",
-    },
-    completed: {
-        label: 'Completed',
-        color: "var(--chart-3)"
-    }
-} satisfies ChartConfig
-
 
 const ProfileDetails = () => {
     const { slug } = useParams();
@@ -77,34 +36,15 @@ const ProfileDetails = () => {
     });
 
     const completedTasks = tasksThisMonth.filter((task) => task.completed);
+    const lateTasks = tasksThisMonth.filter((task) => task.completed && task.completedOn && task.completedOn > task.dueDate);
+    const overDueTasks = tasksThisMonth.filter((task) => !task.completed && now > new Date(task.dueDate));
 
-    const tasksByMonth: { [key: string]: Task[] } = {};
-
-    tasks.forEach((task) => {
-        const date = new Date(task.assignedOn);
-        if (date.getFullYear() === currentYear) {
-            const month = date.toLocaleString('default', { month: 'long' }); // e.g., "January"
-            if (!tasksByMonth[month]) {
-                tasksByMonth[month] = [];
-            }
-            tasksByMonth[month].push(task);
-        }
-    });
-
-    const chartData: { month: string; tasks: number, completed: number }[] = []
-
-    for (const item in tasksByMonth) {
-        chartData.push(
-            {
-                month: item,
-                tasks: tasksByMonth[item].length,
-                completed: tasksByMonth[item].filter((task) => (task.completed)).length,
-            }
-        )
-    }
-
-    console.log(chartData);
-
+    // console.log("Line 64 : ______ Total tasks :");
+    // console.table(userTasks);
+    // console.log("Line 64 : ______ Completed tasks :");
+    // console.table(completedTasks)
+    // console.log("Line 64 : ______ Tasks this month :");
+    // console.table(tasksThisMonth);
 
     if (requiredUser) {
         return (
@@ -127,55 +67,12 @@ const ProfileDetails = () => {
                     <div className="flex flex-row items-center gap-[10px] p-[10px]">
                         <Building /> <span>Example departent</span>
                     </div>
-                    <div className="flex flex-row items-center gap-[10px] p-[10px]">
-                        <ClipboardList /><span>Completed {completedTasks.length} out of {tasksThisMonth.length} tasks this month</span>
-                    </div>
-
-                    <div className="max-sm:p-0 px-7">
-                        <Card className="b">
-                            <CardHeader>
-                                <CardTitle>Bar Chart - Stacked + Legend</CardTitle>
-                                <CardDescription>January - June 2024</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <ChartContainer config={chartConfig}>
-                                    <BarChart accessibilityLayer data={chartData}>
-                                        <CartesianGrid vertical={false} />
-                                        <XAxis
-                                            dataKey="month"
-                                            tickLine={false}
-                                            tickMargin={10}
-                                            axisLine={false}
-                                            tickFormatter={(value) => value.slice(0, 3)}
-                                        />
-                                        <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-                                        <ChartLegend content={<ChartLegendContent />} />
-                                        <Bar
-                                            dataKey="tasks"
-                                            stackId="a"
-                                            fill="var(--chart-2)"
-                                            radius={[0, 0, 4, 4]}
-                                        />
-                                        <Bar
-                                            dataKey="completed"
-                                            stackId="a"
-                                            fill="var(--color-mobile)"
-                                            radius={[4, 4, 0, 0]}
-                                        />
-                                    </BarChart>
-                                </ChartContainer>
-                            </CardContent>
-                            {/* <CardFooter className="flex-col items-start gap-2 text-sm">
-                                <div className="flex gap-2 leading-none font-medium">
-                                    Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-                                </div>
-                                <div className="text-muted-foreground leading-none">
-                                    Showing total visitors for the last 6 months
-                                </div>
-                            </CardFooter> */}
-                        </Card>
-
-                    </div>
+                    <h2 className="text-md font-bold text-gray-800 my-3 px-[10px]">Activity</h2>
+                    <ul>
+                        <li className="p-[10px]">Completed {completedTasks.length} out of {tasksThisMonth.length} tasks this month</li>
+                        <li className="p-[10px]">{lateTasks.length} Completed lately</li>
+                        <li className="p-[10px]">{overDueTasks.length} tasks overdue</li>
+                    </ul>
                 </section>
             </main>
         )
@@ -192,26 +89,3 @@ const ProfileDetails = () => {
 }
 
 export default ProfileDetails
-
-// "use client"
-
-// import { TrendingUp } from "lucide-react"
-// import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
-
-// import {
-//     Card,
-//     CardContent,
-//     CardDescription,
-//     CardFooter,
-//     CardHeader,
-//     CardTitle,
-// } from "@/components/ui/card"
-// import {
-//     ChartConfig,
-//     ChartContainer,
-//     ChartLegend,
-//     ChartLegendContent,
-//     ChartTooltip,
-//     ChartTooltipContent,
-// } from "@/components/ui/chart"
-

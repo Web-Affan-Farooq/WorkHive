@@ -8,6 +8,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { v4 } from "uuid";
 import convertToTitleCase from "@/lib/Convert";
+import Link from "next/link";
 
 import {
   AlertDialog,
@@ -22,9 +23,45 @@ import {
 } from "@/components/ui/alert-dialog";
 
 
+const Badge = ({ task }: { task: Task }) => {
+  const now = new Date();
+  const badgeStyle =
+    "absolute top-7 right-7 px-2 py-1 rounded-full text-white text-xs font-semibold";
+
+  // ✅ Completed on time
+  if (task.completed && task.completedOn && task.completedOn <= task.dueDate) {
+    return <span className={`${badgeStyle} bg-green-500`}>Completed</span>;
+  }
+
+  // ✅ Completed but late
+  if (task.completed && task.completedOn && task.completedOn > task.dueDate) {
+    return <span className={`${badgeStyle} bg-red-500`}>Completed Late</span>;
+  }
+
+  // ✅ Not completed and overdue
+  if (!task.completed && now > new Date(task.dueDate)) {
+    return <span className={`${badgeStyle} bg-red-500`}>Overdue</span>;
+  }
+
+  // ✅ Due today (approaching)
+  const dueDate = new Date(task.dueDate);
+  const isDueToday =
+    dueDate.getDate() === now.getDate() &&
+    dueDate.getMonth() === now.getMonth() &&
+    dueDate.getFullYear() === now.getFullYear();
+
+  if (!task.completed && isDueToday) {
+    return <span className={`${badgeStyle} bg-yellow-500`}>Approaching</span>;
+  }
+
+  // ✅ Default pending
+  return <span className={`${badgeStyle} bg-yellow-500`}>Pending</span>;
+};
+
+
 const Card = ({ task }: { task: Task }) => {
   const dueDate = new Date(task.dueDate);
-  const {users} = useOrganizationDashboard();
+  const { users } = useOrganizationDashboard();
   const requiredUser = users.find((user) => user.id === task.userId)!;
 
   return (
@@ -33,18 +70,14 @@ const Card = ({ task }: { task: Task }) => {
       <h2 className="text-xl font-semibold text-gray-800 mb-2">
         {convertToTitleCase(task.title)}
       </h2>
-      <span
-        className={`absolute top-7 right-7 px-2 py-1 rounded-full text-white text-xs font-semibold ${task.completed ? "bg-green-500" :  "bg-yellow-500" }`}
-      >
-        {task.completed ? "Completed":"Pending"}
-      </span>
+      <Badge task={task} />
       {/* <p className="text-gray-600 mb-2">{task.note}</p> */}
       <p className="text-sm text-gray-500 mb-4">{task.description}</p>
 
       <div className="mt-auto text-sm space-y-1">
         <p>
-          <span className="font-semibold text-gray-700">Assigned to:</span>{" "}
-          {convertToTitleCase(requiredUser.name)}
+          <span className="font-semibold text-gray-700">Assigned to:</span>
+          <Link href={`/organization/people/${requiredUser.id}`} className="text-blue-600 font-semibold"> {convertToTitleCase(requiredUser.name)}</Link>
         </p>
         <p>
           <span className="font-semibold text-gray-700">Due:</span>{" "}
@@ -77,7 +110,7 @@ const Tasks = () => {
     } catch (err) {
       toast.error("Error while fetching")
       console.log(err);
-      
+
     }
   }
 

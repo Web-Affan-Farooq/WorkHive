@@ -1,4 +1,3 @@
-import Paper from '@mui/material/Paper';
 import { ManagementSidebar } from '@/components/layout';
 
 const notifications = [
@@ -80,15 +79,15 @@ const NotificationCard = ({
     date: string;
 }) => {
     return (
-        <Paper elevation={5} className="bg-white p-4 rounded-2xl w-full max-w-2xl">
-                <div className="flex justify-between items-start">
-                    <h2 className="font-semibold text-lg text-gray-800">{notificationTitle}</h2>
-                    <span className="text-sm text-gray-400 whitespace-nowrap">
-                        {timeAgo(date)}
-                    </span>
-                </div>
-                <p className="mt-2 text-gray-600 text-sm">{notificationText}</p>
-        </Paper>
+        <div className="bg-white p-4 rounded-2xl w-full max-w-2xl">
+            <div className="flex justify-between items-start">
+                <h2 className="font-semibold text-lg text-gray-800">{notificationTitle}</h2>
+                <span className="text-sm text-gray-400 whitespace-nowrap">
+                    {timeAgo(date)}
+                </span>
+            </div>
+            <p className="mt-2 text-gray-600 text-sm">{notificationText}</p>
+        </div>
     );
 };
 

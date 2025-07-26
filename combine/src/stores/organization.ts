@@ -4,11 +4,14 @@ import { persist ,createJSONStorage} from "zustand/middleware";
 import { Users } from "@/@types/Users";
 import { Task } from "@/@types/Task";
 import { Department } from "@/@types/Departments";
+import { Notifications } from "@/@types/Notifications";
 
 interface OrganizationState {
   users: Users[];
   tasks:Task[];
   departments:Department[];
+  notifications:Notifications[];
+  feedNotifications:(list:Notifications[]) => void;
   feedTasks:(task:Task[]) => void;
   feedDepartments:(departments:Department[]) => void;
    feedUsers: (users: Users[]) => void;
@@ -22,6 +25,10 @@ export const useOrganizationDashboard = create<OrganizationState>()(
       users: [],
       tasks:[],
       departments:[],
+      notifications:[],
+      feedNotifications:(list) => set(() => ({
+        notifications:list,
+      })),
       feedDepartments:(departments:Department[]) => set({departments:departments}),
       feedTasks:(tasks:Task[]) => set({tasks:tasks}),
       feedUsers: (users) => set({ users }),

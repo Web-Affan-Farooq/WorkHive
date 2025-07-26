@@ -1,9 +1,8 @@
 "use client"
-import { useEffect, useState } from "react";
 import { DashboardSidebar } from "@/components/layout";
-import axios from "axios";
 import Card from "./Card";
 import { Suspense } from "react";
+import { useEmployeeDashboard } from "@/stores/dashboard";
 
 // _______ Fallback ui 
 const Loading = () => {
@@ -15,20 +14,7 @@ const Loading = () => {
 };
 
 const TasksList = () => {
-  const [tasks, setTasks] = useState([]);
-  useEffect(() => {
-    const userId = window.localStorage.getItem("user-ID");
-
-    const getTasks = async () => {
-      const response = await axios.get(`/api/tasks?userId=${userId}`,);
-      console.log("Tasks", response.data.tasks);
-      setTasks(response.data.tasks)
-    }
-
-    if (userId) {
-      getTasks();
-    }
-  }, []);
+  const {tasks} = useEmployeeDashboard();
 
   return (
     <div className="flex flex-row flex-wrap gap-6">
