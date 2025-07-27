@@ -1,6 +1,9 @@
 "use client";
 import { ManagementSidebar } from '@/components/layout';
 import { useOrganizationDashboard } from '@/stores/organization';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const timeAgo = (dateStr: string): string => {
     const now = new Date();
@@ -47,6 +50,21 @@ const NotificationCard = ({
 
 const Notifications = () => {
     const {notifications} = useOrganizationDashboard();
+
+    const allSeened = notifications.every((notification) => notification.read);
+
+    // useEffect(() => {
+    //     const seenNotifications = async () => {
+    //         try {
+    //             const response = await axios.get()
+    //         } catch (err) {
+                
+    //         }
+    //     }
+    //     if(!allSeened){
+
+    //     }
+    // },[]);
     return (
         <main className="flex min-h-screen bg-gray-100">
             <ManagementSidebar />

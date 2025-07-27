@@ -22,6 +22,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 
 const Badge = ({ task }: { task: Task }) => {
   const now = new Date();
@@ -89,7 +95,7 @@ const Card = ({ task }: { task: Task }) => {
 }
 
 const Tasks = () => {
-  const { users, tasks, addTasks } = useOrganizationDashboard();
+  const { users, tasks, addTasks, deleteTask } = useOrganizationDashboard();
 
   const [newTask, setnewTask] = useState({
     id: v4(),
@@ -111,6 +117,24 @@ const Tasks = () => {
       toast.error("Error while fetching")
       console.log(err);
 
+    }
+  }
+
+  const handleDeleteTask = async (id: string) => {
+    try {
+      const response = await axios.delete("/api/tasks/delete", {
+        data: {
+          id: id,
+        }
+      });
+      if (!response.data.success) {
+        toast.error("An error occured");
+      }
+      deleteTask(id);
+      toast.success("Task deleted successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error("An error occured");
     }
   }
 
@@ -173,7 +197,16 @@ const Tasks = () => {
 
           <div className="flex flex-row flex-wrap gap-6">
             {tasks.length <= 0 ? <p className="text-gray-400">No tasks found ...</p> : tasks.map((task: Task, idx) => (
-              <Card task={task} key={idx} />
+              <ContextMenu key={idx}>
+                <ContextMenuTrigger>
+                  <Card task={task} />
+                </ContextMenuTrigger>
+                <ContextMenuContent>
+                  <ContextMenuItem>Edit</ContextMenuItem>
+                  <ContextMenuItem onClick={() => handleDeleteTask(task.id)}>Delete</ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+
             ))}
           </div>
         </section>

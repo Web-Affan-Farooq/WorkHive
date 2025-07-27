@@ -16,7 +16,7 @@ import toast from "react-hot-toast";
 import { useEmployeeDashboard } from "@/stores/dashboard";
 
 const Card = ({ task }: { task: Task }) => {
-  const { markAsDone } = useEmployeeDashboard();
+  const { markAsDone, user} = useEmployeeDashboard();
 
   const [data, setData] = useState<{
     id: string;
@@ -24,13 +24,15 @@ const Card = ({ task }: { task: Task }) => {
     completedOn: Date,
     userName:"",
     status :"",
+    organizationId:string;
   }>(
     {
       id: task.id,
       note: "",
       completedOn: new Date(),
       userName:"",
-      status:""
+      status:"",
+      organizationId:"",
     }
   );
 
@@ -39,16 +41,21 @@ const Card = ({ task }: { task: Task }) => {
   }
   const handleMarkAsDone = async () => {
     const userId = window.localStorage.getItem("user-ID");
+    const orgId = window.localStorage.getItem("org-ID");
+    
     try {
-      if (data.note !== "" && userId) {
-        const response = await axios.post(`/api/tasks/mark-done`, {
+      if (data.note !== "" && userId && orgId) {
+         const payload = {
           id:data.id,
           note:data.note,
           completedOn:data.completedOn,
           userId:userId,
-          userName:
+          userName:user.name,
+          orgId:orgId,
+          status:task.completedOn && task.dueDate > task.completedOn?"ON-TIME" : "LATE",
+         }
 
-        });
+        const response = await axios.post(`/api/tasks/mark-done`, payload);
         if (!response.data.success) {
           toast.error(response.data.message)
         }
