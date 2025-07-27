@@ -1,52 +1,6 @@
+"use client";
 import { ManagementSidebar } from '@/components/layout';
-
-const notifications = [
-    {
-        notificationText: "Your assignment has been graded successfully.",
-        notificationTitle: "Grading Complete",
-        date: "2025-07-17T14:20:00.000Z",
-    },
-    {
-        notificationText: "You have a new message from your mentor.",
-        notificationTitle: "New Message",
-        date: "2025-07-16T09:45:00.000Z",
-    },
-    {
-        notificationText: "Your session starts in 30 minutes.",
-        notificationTitle: "Session Reminder",
-        date: "2025-07-17T10:30:00.000Z",
-    },
-    {
-        notificationText: "Your assignment has been graded successfully.",
-        notificationTitle: "Grading Complete",
-        date: "2025-07-17T14:20:00.000Z",
-    },
-    {
-        notificationText: "You have a new message from your mentor.",
-        notificationTitle: "New Message",
-        date: "2025-07-16T09:45:00.000Z",
-    },
-    {
-        notificationText: "Your session starts in 30 minutes.",
-        notificationTitle: "Session Reminder",
-        date: "2025-07-17T10:30:00.000Z",
-    },
-    {
-        notificationText: "Your assignment has been graded successfully.",
-        notificationTitle: "Grading Complete",
-        date: "2025-07-17T14:20:00.000Z",
-    },
-    {
-        notificationText: "You have a new message from your mentor.",
-        notificationTitle: "New Message",
-        date: "2025-07-16T09:45:00.000Z",
-    },
-    {
-        notificationText: "Your session starts in 30 minutes.",
-        notificationTitle: "Session Reminder",
-        date: "2025-07-17T10:30:00.000Z",
-    },
-];
+import { useOrganizationDashboard } from '@/stores/organization';
 
 const timeAgo = (dateStr: string): string => {
     const now = new Date();
@@ -92,18 +46,19 @@ const NotificationCard = ({
 };
 
 const Notifications = () => {
+    const {notifications} = useOrganizationDashboard();
     return (
         <main className="flex min-h-screen bg-gray-100">
             <ManagementSidebar />
             <section className="flex-1 h-screen overflow-y-auto p-10 max-sm:px-5 max-sm:py-7">
                 <h1 className="text-[24px] font-bold text-gray-800">Notifications</h1>
                 <div className="mt-4 flex flex-col gap-4 max-h-[80vh] pr-2">
-                    {notifications.map((notification, idx) => (
+                    {notifications.length <=0 ? <p className='text-sm text-gray-400'>No notifications found ...</p> : notifications.map((notification, idx) => (
                         <NotificationCard
                             key={idx}
-                            notificationText={notification.notificationText}
-                            notificationTitle={notification.notificationTitle}
-                            date={notification.date}
+                            notificationText={notification.message}
+                            notificationTitle={notification.title}
+                            date={notification.createdAt.toString()}
                         />
                     ))}
                 </div>

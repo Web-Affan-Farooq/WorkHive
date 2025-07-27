@@ -6,6 +6,9 @@ interface Body {
     id: string;
     note: string;
     completedOn: Date;
+    userId: string;
+    userName: string;
+    status: "LATE" | "On-TIME"
 }
 
 export const POST = async (req: NextRequest) => {
@@ -23,11 +26,37 @@ export const POST = async (req: NextRequest) => {
                 }
             }
         );
+        if (body.status === "LATE") {
+             await prisma.notification.create(
+                {
+                    data: {
+                        title: `New task completion`,
+                        message: `Late taks submission from ${body.userName}`,
+                        type: "SUCCESS",
+                        read: false,
+                        userId: body.userId,
+                    }
+                }
+            )
+        }
+        else if (body.status === "On-TIME") {
+            await prisma.notification.create(
+                {
+                    data: {
+                        title: `New task completion`,
+                        message: `Task assigned to ${body.userName} hasbeen completed successfully`,
+                        type: "SUCCESS",
+                        read: false,
+                        userId: body.userId,
+                    }
+                }
+            )
+        }
 
         return NextResponse.json({
             message: "Marked as done",
             success: true,
-            task:updatedTask,
+            task: updatedTask,
         });
 
     } catch (err) {

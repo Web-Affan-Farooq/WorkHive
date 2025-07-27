@@ -11,10 +11,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useEmployeeDashboard } from "@/stores/dashboard";
-
 
 const Card = ({ task }: { task: Task }) => {
   const { markAsDone } = useEmployeeDashboard();
@@ -23,11 +22,15 @@ const Card = ({ task }: { task: Task }) => {
     id: string;
     note: string;
     completedOn: Date,
+    userName:"",
+    status :"",
   }>(
     {
       id: task.id,
       note: "",
-      completedOn: new Date()
+      completedOn: new Date(),
+      userName:"",
+      status:""
     }
   );
 
@@ -35,9 +38,17 @@ const Card = ({ task }: { task: Task }) => {
     dueDate: new Date(task.dueDate),
   }
   const handleMarkAsDone = async () => {
+    const userId = window.localStorage.getItem("user-ID");
     try {
-      if (data.note !== "") {
-        const response = await axios.post(`/api/tasks/mark-done`, data);
+      if (data.note !== "" && userId) {
+        const response = await axios.post(`/api/tasks/mark-done`, {
+          id:data.id,
+          note:data.note,
+          completedOn:data.completedOn,
+          userId:userId,
+          userName:
+
+        });
         if (!response.data.success) {
           toast.error(response.data.message)
         }
