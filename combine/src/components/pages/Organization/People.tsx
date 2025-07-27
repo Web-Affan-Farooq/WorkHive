@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useOrganizationDashboard } from '@/stores/organization';
 import { Plus } from "lucide-react";
 import { CircleCheck } from "lucide-react";
-import {Users} from "@/@types/Users";
+import { Users } from "@/@types/Users";
 
 import {
     AlertDialog,
@@ -18,10 +18,19 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu"
+
 import Image from 'next/image';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
-
-const Card = ({ employeeData }: { employeeData :Users}) => {
+const Card = ({ employeeData }: { employeeData: Users }) => {
     return (
         <div className="flex items-center gap-4 md:px-[30px] py-2 w-full">
             {/* Profile Image */}
@@ -57,25 +66,32 @@ const Card = ({ employeeData }: { employeeData :Users}) => {
     );
 };
 
-// const style = {
-//     position: 'absolute',
-//     top: '50%',
-//     left: '60%',
-//     transform: 'translate(-50%, -50%)',
-//     width: "auto",
-//     bgcolor: 'background.paper',
-//     boxShadow: 24,
-//     p: 4,
-// };
-
 const Peoples = () => {
     const [id, setId] = useState<string | null>("");
-    const { users } = useOrganizationDashboard();
+    const { users, deleteProfile } = useOrganizationDashboard();
 
     useEffect(() => {
         const orgId = window.localStorage.getItem("org-ID");
         setId(orgId)
     }, []);
+
+    const handleDeleteProfile = async (id: string) => {
+        try {
+            const response = await axios.delete("/api/employees/delete", {
+                data: {
+                    id: id
+                }
+            });
+            if (!response.data.success) {
+                toast.error(response.data.message);
+            }
+            deleteProfile(id)
+            toast.success(response.data.message)
+        } catch (err) {
+            console.log(err);
+            toast.error("An error occured")
+        }
+    }
 
     return (
         <AlertDialog>
@@ -121,9 +137,16 @@ const Peoples = () => {
                     <div>
                         {
                             users.length <= 0 ? <p className='text-gray-400'>No People for this organization found ...</p> : users.map((employee, idx) => (
-                                <Link href={`/organization/people/${employee.id}`} key={idx}>
-                                    <Card employeeData={employee} />
-                                </Link>
+                                <ContextMenu key={idx}>
+                                    <ContextMenuTrigger>
+                                        <Link href={`/organization/people/${employee.id}`}>
+                                            <Card employeeData={employee} />
+                                        </Link>
+                                    </ContextMenuTrigger>
+                                    <ContextMenuContent>
+                                        <ContextMenuItem onClick={() => handleDeleteProfile(employee.id)}>Remove</ContextMenuItem>
+                                    </ContextMenuContent>
+                                </ContextMenu>
                             ))
                         }
                     </div>

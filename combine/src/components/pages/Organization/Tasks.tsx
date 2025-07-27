@@ -32,7 +32,7 @@ import {
 const Badge = ({ task }: { task: Task }) => {
   const now = new Date();
   const badgeStyle =
-    "absolute top-7 right-7 px-2 py-1 rounded-full text-white text-xs font-semibold";
+    "px-2 py-1 rounded-full text-white text-xs font-semibold";
 
   // ✅ Completed on time
   if (task.completed && task.completedOn && task.completedOn <= task.dueDate) {
@@ -67,16 +67,19 @@ const Badge = ({ task }: { task: Task }) => {
 
 const Card = ({ task }: { task: Task }) => {
   const dueDate = new Date(task.dueDate);
+  let completedOn = task.completedOn ? new Date(task.completedOn) : null;
   const { users } = useOrganizationDashboard();
   const requiredUser = users.find((user) => user.id === task.userId)!;
 
   return (
     <div
       className="bg-white cursor-pointer w-md max-sm:w-full relative shadow-lg p-6 rounded-xl flex flex-col border-l-4 border-blue-500 hover:border-indigo-600 transition-all duration-300">
-      <h2 className="text-xl font-semibold text-gray-800 mb-2">
+      <div >
+      </div>
+      <h2 className="text-xl font-semibold text-gray-800 mb-2 flex flex-row items-center flex-wrap gap-[10px]">
         {convertToTitleCase(task.title)}
+        <Badge task={task} />
       </h2>
-      <Badge task={task} />
       {/* <p className="text-gray-600 mb-2">{task.note}</p> */}
       <p className="text-sm text-gray-500 mb-4">{task.description}</p>
 
@@ -85,8 +88,12 @@ const Card = ({ task }: { task: Task }) => {
           <span className="font-semibold text-gray-700">Assigned to:</span>
           <Link href={`/organization/people/${requiredUser.id}`} className="text-blue-600 font-semibold"> {convertToTitleCase(requiredUser.name)}</Link>
         </p>
+        {completedOn ? <p>
+          <span className="font-semibold text-gray-700">Completed on:</span>
+          {completedOn.toDateString()} at {completedOn.toLocaleTimeString()}
+        </p> : <></>}
         <p>
-          <span className="font-semibold text-gray-700">Due:</span>{" "}
+          <span className="font-semibold text-gray-700">Due:</span>
           {dueDate.toDateString()} at {dueDate.toLocaleTimeString()}
         </p>
       </div>
@@ -131,7 +138,7 @@ const Tasks = () => {
         toast.error("An error occured");
       }
       deleteTask(id);
-      toast.success("Task deleted successfully");
+      toast.success(response.data.message);
     } catch (err) {
       console.log(err);
       toast.error("An error occured");
