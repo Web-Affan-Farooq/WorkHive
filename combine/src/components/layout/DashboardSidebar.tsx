@@ -4,12 +4,13 @@ import Link from "next/link";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import {ClipboardList, LayoutGrid, Bell} from "lucide-react";
+import {ClipboardList, LayoutGrid, Bell, Settings} from "lucide-react";
 
     const menuItems = [
         { href: `/dashboard/`, label: "Dashboard", icon: <LayoutGrid className="group-hover:text-white size-5" /> },
         { href: `/dashboard/tasks`, label: "Tasks", icon: <ClipboardList className="group-hover:text-white size-5" /> },
         { href: `/dashboard/notifications`, label: "Notifications", icon: <Bell className="group-hover:text-white size-5" /> },
+        { href: `/dashboard/settings`, label: "Settings", icon: <Settings className="group-hover:text-white size-5" /> },
     ];
 
 const DashboardSidebar = () => {

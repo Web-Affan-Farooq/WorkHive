@@ -7,6 +7,7 @@ import { Notifications } from "@/@types/Notifications";
 interface User {
   name: string;
   email: string;
+  createdAt:Date,
 }
 interface EmployeeDashboardState {
   tasks: Task[];
@@ -14,7 +15,7 @@ interface EmployeeDashboardState {
   notifications: Notifications[];
   feedUser:(user:User) => void;
   feedNotifications: (list: Notifications[]) => void;
-  deleteNotifications: (id: string) => void;
+  deleteNotification: (id: string) => void;
   markAsDone: (task: Task) => void;
   feedTasks: (task: Task[]) => void;
 }
@@ -26,6 +27,7 @@ export const useEmployeeDashboard = create<EmployeeDashboardState>()(
       user: {
         name: "",
         email: "",
+        createdAt:new Date(),
       },
       feedUser:(user:User) => set({
         user:{...user}
@@ -34,7 +36,7 @@ export const useEmployeeDashboard = create<EmployeeDashboardState>()(
       feedNotifications: (list: Notifications[]) => set(() => ({
         notifications: list,
       })),
-      deleteNotifications: (id: string) => set((state) => ({
+      deleteNotification: (id: string) => set((state) => ({
         notifications: state.notifications.filter((not) => (not.id !== id))
       })),
       markAsDone: (task) => set((state) => ({

@@ -1,52 +1,15 @@
-import {DashboardSidebar} from "../../layout";
+"use client"
+import { useEmployeeDashboard } from "@/stores/dashboard";
+import { DashboardSidebar } from "../../layout";
+import axios from "axios";
+import toast from "react-hot-toast";
 
-const notifications = [
-    {
-        notificationText: "Your assignment has been graded successfully.",
-        notificationTitle: "Grading Complete",
-        date: "2025-07-17T14:20:00.000Z",
-    },
-    {
-        notificationText: "You have a new message from your mentor.",
-        notificationTitle: "New Message",
-        date: "2025-07-16T09:45:00.000Z",
-    },
-    {
-        notificationText: "Your session starts in 30 minutes.",
-        notificationTitle: "Session Reminder",
-        date: "2025-07-17T10:30:00.000Z",
-    },
-    {
-        notificationText: "Your assignment has been graded successfully.",
-        notificationTitle: "Grading Complete",
-        date: "2025-07-17T14:20:00.000Z",
-    },
-    {
-        notificationText: "You have a new message from your mentor.",
-        notificationTitle: "New Message",
-        date: "2025-07-16T09:45:00.000Z",
-    },
-    {
-        notificationText: "Your session starts in 30 minutes.",
-        notificationTitle: "Session Reminder",
-        date: "2025-07-17T10:30:00.000Z",
-    },
-    {
-        notificationText: "Your assignment has been graded successfully.",
-        notificationTitle: "Grading Complete",
-        date: "2025-07-17T14:20:00.000Z",
-    },
-    {
-        notificationText: "You have a new message from your mentor.",
-        notificationTitle: "New Message",
-        date: "2025-07-16T09:45:00.000Z",
-    },
-    {
-        notificationText: "Your session starts in 30 minutes.",
-        notificationTitle: "Session Reminder",
-        date: "2025-07-17T10:30:00.000Z",
-    },
-];
+import {
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 
 const timeAgo = (dateStr: string): string => {
     const now = new Date();
@@ -69,42 +32,72 @@ const timeAgo = (dateStr: string): string => {
     return "Just now";
 };
 
+interface NotificationCardProps {
+    notificationTitle: string;
+    notificationText: string;
+    date: string;
+    read: boolean;
+}
 const NotificationCard = ({
     notificationTitle,
     notificationText,
     date,
-}: {
-    notificationText: string;
-    notificationTitle: string;
-    date: string;
-}) => {
+    read,
+}: NotificationCardProps) => {
     return (
-        <div className="bg-white shadow-md p-4 rounded-xl border border-gray-200 w-full max-w-2xl">
+        <div className="bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow w-full max-w-2xl border border-gray-100">
             <div className="flex justify-between items-start">
-                <h2 className="font-semibold text-lg text-gray-800">{notificationTitle}</h2>
-                <span className="text-sm text-gray-400 whitespace-nowrap">
+                <div className="flex items-center gap-2">
+                    {!read && <span className="w-2 h-2 bg-green-500 rounded-full" title="Unread"></span>}
+                    <h2 className="font-semibold text-lg text-gray-800">
+                        {notificationTitle}
+                    </h2>
+                </div>
+                <span className="text-xs text-gray-400 whitespace-nowrap">
                     {timeAgo(date)}
                 </span>
             </div>
-            <p className="mt-2 text-gray-600 text-sm">{notificationText}</p>
+            <p className="mt-2 text-gray-600 text-sm leading-relaxed">
+                {notificationText}
+            </p>
         </div>
     );
 };
-
 const Notifications = () => {
+    const { notifications, deleteNotification } = useEmployeeDashboard();
+    const handleDelete = async (id: string) => {
+        const response = await axios.delete("/api/notifications/delete", {
+            data: {
+                id: id
+            }
+        });
+        if (!response.data.success) {
+            toast.error("An error occured");
+        }
+        toast.success(response.data.message);
+        deleteNotification(id)
+    }
     return (
         <main className="flex min-h-screen bg-gray-100">
             <DashboardSidebar />
             <section className="flex-1 h-screen overflow-y-auto p-10 max-sm:px-5 max-sm:py-7">
                 <h1 className="text-[24px] font-bold text-gray-800">Notifications</h1>
                 <div className="mt-4 flex flex-col gap-4 max-h-[80vh] pr-2">
-                    {notifications.map((notification, idx) => (
-                        <NotificationCard
-                            key={idx}
-                            notificationText={notification.notificationText}
-                            notificationTitle={notification.notificationTitle}
-                            date={notification.date}
-                        />
+                    {notifications.length <= 0 ? <p className='text-sm text-gray-400'>No notifications found ...</p> : notifications.map((notification, idx) => (
+                        <ContextMenu key={idx}>
+                            <ContextMenuTrigger>
+                                <NotificationCard
+                                    key={idx}
+                                    notificationText={notification.message}
+                                    notificationTitle={notification.title}
+                                    read={notification.read}
+                                    date={notification.createdAt.toString()}
+                                />
+                            </ContextMenuTrigger>
+                            <ContextMenuContent>
+                                <ContextMenuItem onClick={() => handleDelete(notification.id)}>Delete</ContextMenuItem>
+                            </ContextMenuContent>
+                        </ContextMenu>
                     ))}
                 </div>
             </section>
