@@ -11,7 +11,7 @@ interface Body {
     orgPassword: string;
 }
 
-const verifyExistence = async (orgEmail:string, managerEmail:string)=> {
+const verifyExistence = async (orgEmail: string, managerEmail: string) => {
     const requiredOrganization = await prisma.organization.findUnique(
         {
             where: {
@@ -26,20 +26,20 @@ const verifyExistence = async (orgEmail:string, managerEmail:string)=> {
         }
     });
 
-    if(requiredManager && requiredOrganization){
+    if (requiredManager && requiredOrganization) {
         return {
-            manager:requiredManager,
-            organization:requiredOrganization
+            manager: requiredManager,
+            organization: requiredOrganization
         }
     }
 
     else {
         return {
-            manager:null,
-            organization:null
+            manager: null,
+            organization: null
         }
     }
-    
+
 }
 
 export const POST = async (req: NextRequest) => {
@@ -48,22 +48,22 @@ export const POST = async (req: NextRequest) => {
     const { managerEmail, organizationEmail, orgPassword }: Body = await req.json();
     const clientCookies = await cookies();
 
-    const {manager, organization} = await verifyExistence(organizationEmail, managerEmail);
+    const { manager, organization } = await verifyExistence(organizationEmail, managerEmail);
 
     if (!manager) {
-    console.log("Manager not found   :::: Line 55 /api/organization/login");
-    
+        console.log("Manager not found   :::: Line 55 /api/organization/login");
+
         return NextResponse.json({
             message: "User not found",
             success: false,
-        });
+        }, { status: 404 });
     }
     if (!organization) {
-    console.log("organization not found   :::: Line 63 /api/organization/login");
+        console.log("organization not found   :::: Line 63 /api/organization/login");
 
         return NextResponse.json({
             message: "Organization not found",
-        })
+        }, { status: 404 })
     }
 
     /* if organization and  it's manager exists ... */
@@ -81,7 +81,7 @@ export const POST = async (req: NextRequest) => {
             },
             process.env.JWT_SECRET_KEY!
         );
-            console.log("Token created successfully  :::: Line 85 /api/organization/login", token);
+        console.log("Token created successfully  :::: Line 85 /api/organization/login", token);
 
         clientCookies.set("organization-manager-token", token, {
             httpOnly: true,
@@ -94,7 +94,7 @@ export const POST = async (req: NextRequest) => {
             {
                 message: "Organization login successfull",
                 redirect: `/organization`,
-                success:true,
+                success: true,
                 organizationId: organization.id,
                 userId: manager.id,
             }
@@ -105,7 +105,7 @@ export const POST = async (req: NextRequest) => {
             {
                 message: "Invalid password",
                 success: false,
-            }
+            }, { status: 403 }
         )
     }
 }

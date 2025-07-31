@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { EmployeeLoginSchema } from "@/validations";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 type EmployeeLoginFormData = z.infer<typeof EmployeeLoginSchema>;
 
@@ -16,7 +16,7 @@ const OrganizationForm = () => {
 
     /* ____ for controlling two step form  ... */
     const [step, setStep] = useState(1);
-    const [disabled , setDisabled] = useState(false);
+    const [disabled, setDisabled] = useState(false);
 
     /* ____ for storing response data  ... */
     const [responseData, setResponseData] = useState<{
@@ -121,7 +121,7 @@ const OrganizationForm = () => {
                             <button
                                 type="button"
                                 onClick={goNext}
-                                className={`w-full hover:bg-blue-700 ${disabled? "bg-blue-800 cursor-not-allowed" : "bg-blue-600 cursor-pointer"} text-white font-semibold py-2 rounded-lg transition`}
+                                className={`w-full hover:bg-blue-700 ${disabled ? "bg-blue-800 cursor-not-allowed" : "bg-blue-600 cursor-pointer"} text-white font-semibold py-2 rounded-lg transition`}
                             >
                                 Verify
                             </button>
@@ -153,10 +153,10 @@ const OrganizationForm = () => {
                                 />
                                 {errors.userPassword && <p className="text-red-400 text-sm">{errors.userPassword.message}</p>}
                             </div>
-                            
+
                             <button
                                 type="submit"
-                                className={`w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition ${disabled? "bg-green-700 cursor-not-allowed" : "bg-green-500 cursor-pointer"}`}
+                                className={`w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition ${disabled ? "bg-green-700 cursor-not-allowed" : "bg-green-500 cursor-pointer"}`}
                             >
                                 Login
                             </button>

@@ -7,7 +7,7 @@ const EmployeeLoginSchema = z.object(
         userPassword:z
         .string({ message: "Please Enter password" })
         .min(8, "Password must be at least 8 characters long")
-        .max(10, "Password must be shorter than 10 characters")
+        .max(12, "Password must be shorter than 12 characters")
 
         // _____ Validate lowercase characters 
         .refine((val) => /[a-z]/.test(val), {

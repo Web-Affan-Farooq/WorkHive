@@ -1,15 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import bcrypt from "bcrypt"; // Make sure to install bcryptjs
+import bcrypt from "bcrypt"; 
 
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
+    console.log(body);
     const { email, password } = body;
 
     if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
+      return NextResponse.json({ message: "Email and password are required." }, { status: 400 });
     }
 
     const user = await prisma.users.findUnique({
@@ -17,19 +18,20 @@ export async function PUT(req: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found." }, { status: 404 });
+      return NextResponse.json({ message: "User not found." }, { status: 404 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await prisma.users.update({
+    const updatedAccount = await prisma.users.update({
       where: { email },
       data: { password: hashedPassword },
     });
+    console.log("Line 30 /api/employees/change-password   PUT   ::: updated user account successfully :  ",updatedAccount);    
 
-    return NextResponse.json({ message: "Password updated successfully.", success:true, }, { status: 200 });
+    return NextResponse.json({ message: "Password updated successfully.", success: true, }, { status: 200 });
   } catch (error) {
     console.error("Error changing password:", error);
-    return NextResponse.json({ error: "Something went wrong.", success:false }, { status: 500 });
+    return NextResponse.json({ message: "Something went wrong.", success: false }, { status: 500 });
   }
 }
