@@ -18,6 +18,7 @@ export const DELETE = async (req: NextRequest) => {
             }
         )
     } catch (err) {
+        console.log(err);
         return NextResponse.json(
             {
                 message: "An error occured",

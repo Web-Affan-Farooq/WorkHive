@@ -35,7 +35,7 @@ const Section_1 = () => {
                     <div className='flex flex-row flex-wrap gap-[10px] sm:w-1/2'>
                         {links.map((link, idx) => (
                             <Link href={link.link} key={idx}>
-                                <button type="button" className='bg-black text-white px-[10px] py-[5px] rounded-lg font-semibold'>{link.name}</button>
+                                <button type="button" className='bg-black cursor-pointer text-white px-[10px] py-[5px] rounded-lg font-semibold'>{link.name}</button>
                             </Link>
                         ))}
                     </div>

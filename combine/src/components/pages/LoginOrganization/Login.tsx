@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 type LoginFormData = z.infer<typeof OrganizationLoginSchema>
 
@@ -15,22 +16,27 @@ export default function Login() {
     {
       resolver: zodResolver(OrganizationLoginSchema)
     }
-  )
+  );
+  const [disabled, setdisabled] = useState(false);
 
   const formSubmission = async (data: LoginFormData) => {
+    setdisabled(true);
     try {
       const response = await axios.post("/api/organization/login", data)
       console.log(response.data);
       if (!response.data.success) {
         toast.error(response.data.message);
+        setdisabled(false)
       }
       window.localStorage.setItem("org-ID", response.data.organizationId);
       window.localStorage.setItem("user-ID", response.data.userId);
       toast.success(response.data.message);
       router.push(response.data.redirect);
+      setdisabled(false);
     } catch (err) {
-      alert("An error occured");
+       toast.error("An error occured");
       console.log(err);
+      setdisabled(false);
     }
   }
 
@@ -88,8 +94,7 @@ export default function Login() {
 
           <button
             type="submit"
-            className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
-          >
+            className={`w-full ${disabled ? "bg-blue-700 cursor-not-allowed" : "bg-blue-600 cursor-pointer"} hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition`}>
             Login
           </button>
         </form>

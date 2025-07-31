@@ -1,7 +1,7 @@
 "use client";
 import { ManagementSidebar } from '@/components/layout';
 import { useOrganizationDashboard } from '@/stores/organization';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -90,7 +90,7 @@ const Notifications = () => {
         if (!allSeened && userId) {
             seenNotifications(userId)
         }
-    }, []);
+    }, [allSeened , unseenedNotifications]);
 
     const handleDelete = async (id: string) => {
         const response = await axios.delete("/api/notifications/delete", {

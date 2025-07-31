@@ -6,7 +6,8 @@ import { useState } from "react";
 import { OrganizationSchema } from "@/validations";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import {X} from 'lucide-react';
+import { X } from 'lucide-react';
+import toast from "react-hot-toast";
 
 type OrganizationFormData = z.infer<typeof OrganizationSchema>;
 
@@ -20,6 +21,9 @@ const OrganizationForm = () => {
 
     /* ____ For controlling departments input ... */
     const [department, setdepartment] = useState("");
+
+    /* ____ For disabling button ... */
+    const [disabled, setDisabled] = useState(false);
 
     /* ____ For storing selected departments ... */
     const [departments, setdepartments] = useState<string[]>([]);
@@ -49,26 +53,32 @@ const OrganizationForm = () => {
     };
 
     const goNext1 = () => {
+        setDisabled(true);
         /* ___ Checks all fields in form step 1 and proceed furthur ... */
         const values = getValues(["orgName", "industryType", "orgAddress"]);
-        console.log("Values : ", values);
+        // console.log("Values : ", values);
         const allCleared = values.every((val) => val && val !== "")
         if (allCleared) {
             setStep(2);
+            setDisabled(false);
         } else {
+            setDisabled(false);
             alert("Please fill all organization info fields.");
         }
     };
 
-
     const goNext2 = () => {
+        setDisabled(true);
         /* ___ Checks all fields in form step 2 and proceed furthur ... */
         const values = getValues(["orgEmail", "orgPassword", "orgPhone", "staffSize"]);
-        console.log("Values : ", values);
+        // console.log("Values : ", values);
         const allCleared = values.every((val) => val && val !== "")
+
         if (allCleared) {
+            setDisabled(false);
             setStep(3);
         } else {
+            setDisabled(false);
             alert("Please fill all organization info fields.");
         }
     };
@@ -169,8 +179,7 @@ const OrganizationForm = () => {
                             <button
                                 type="button"
                                 onClick={goNext1}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
-                            >
+                                className={`w-full ${disabled ? "bg-blue-700 cursor-not-allowed" : "bg-blue-600 cursor-pointer"} hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition`}>
                                 Continue
                             </button>
                         </>
@@ -229,10 +238,8 @@ const OrganizationForm = () => {
 
                             <button
                                 type="submit"
-                                className={`bg-green-500 w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}
-                                onClick={() => {
-                                    goNext2()
-                                }}
+                                className={`${disabled ? "bg-green-700 cursor-not-allowed" : "bg-green-500 cursor-pointer"} w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}
+                                onClick={goNext2}
                             >
                                 Go next
                             </button>
@@ -281,7 +288,7 @@ const OrganizationForm = () => {
 
                             <button
                                 type="submit"
-                                className={`bg-green-500 w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}                            >
+                                className={`${disabled ? "bg-green-700 cursor-not-allowed" : "bg-green-500 cursor-pointer"} w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}                   >
                                 Create organization
                             </button>
                         </>

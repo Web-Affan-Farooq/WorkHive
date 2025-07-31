@@ -4,9 +4,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { EmployeeLoginSchema } from "@/validations";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import axios, { AxiosError } from "axios";
 
 type EmployeeLoginFormData = z.infer<typeof EmployeeLoginSchema>;
 
@@ -16,6 +16,7 @@ const OrganizationForm = () => {
 
     /* ____ for controlling two step form  ... */
     const [step, setStep] = useState(1);
+    const [disabled , setDisabled] = useState(false);
 
     /* ____ for storing response data  ... */
     const [responseData, setResponseData] = useState<{
@@ -42,33 +43,46 @@ const OrganizationForm = () => {
     });
 
     const goNext = async () => {
-        /* ____ For proceeding one step furthur ... */
-        const values = getValues(["organizationId"]);
-        console.log("Values : ", values);
-        const allCleared = values.every((val) => val && val !== "")
-        const verifyOrganization = await axios.post("/api/organization/verify", {
-            id: values[0],
-        });
-        if (allCleared && verifyOrganization.data.success) {
-            setStep(2);
-        } else {
-            alert("Please fill all the fields.");
+        setDisabled(true)
+        try {
+            /* ____ For proceeding one step furthur ... */
+            const values = getValues(["organizationId"]);
+            // console.log("Values : ", values);
+            const allCleared = values.every((val) => val && val !== "")
+            const verifyOrganization = await axios.post("/api/organization/verify", {
+                id: values[0],
+            });
+            if (allCleared && verifyOrganization.data.success) {
+                setStep(2);
+                setDisabled(false);
+            } else {
+                alert("Please fill all the fields.");
+            }
+        } catch (err) {
+            setDisabled(false);
+            console.log(err);
+            toast.error("An error occured");
         }
     };
 
     const onSubmit = async (data: EmployeeLoginFormData) => {
-        /* ____ Take form data and make a login request ... */
-        const response = await axios.post("/api/employees/login", data);
-
-        if (!response.data.success) {
-            toast.error(response.data.message);
+        setDisabled(true)
+        try {
+            /* ____ Take form data and make a login request ... */
+            const response = await axios.post("/api/employees/login", data);
+            if (!response.data.success) {
+                toast.error(response.data.message);
+            }
+            setResponseData({
+                status: true,
+                message: response.data.message,
+                userId: response.data.userId,
+                organizationId: response.data.organizationId,
+            });
+        } catch (err) {
+            console.log(err);
+            toast.error("An error occured");
         }
-        setResponseData({
-            status: true,
-            message: response.data.message,
-            userId: response.data.userId,
-            organizationId: response.data.organizationId,
-        });
     };
 
     /* ____ useEffect : For runnning immportant logics upon successful account creation  ... */
@@ -78,8 +92,9 @@ const OrganizationForm = () => {
             window.localStorage.setItem("user-ID", responseData.userId)
             window.localStorage.setItem("org-ID", responseData.organizationId)
             toast.success(responseData.message);
+            setDisabled(false)
         }
-    }, [responseData,router])
+    }, [responseData, router])
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
@@ -96,8 +111,9 @@ const OrganizationForm = () => {
                                 <input
                                     type="text"
                                     {...register("organizationId")}
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className={`w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
                                     placeholder="..."
+                                    disabled={disabled}
                                 />
                                 {errors.organizationId && <p className="text-red-400 text-sm">{errors.organizationId.message}</p>}
                             </div>
@@ -105,7 +121,7 @@ const OrganizationForm = () => {
                             <button
                                 type="button"
                                 onClick={goNext}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
+                                className={`w-full hover:bg-blue-700 ${disabled? "bg-blue-800 cursor-not-allowed" : "bg-blue-600 cursor-pointer"} text-white font-semibold py-2 rounded-lg transition`}
                             >
                                 Verify
                             </button>
@@ -137,10 +153,10 @@ const OrganizationForm = () => {
                                 />
                                 {errors.userPassword && <p className="text-red-400 text-sm">{errors.userPassword.message}</p>}
                             </div>
-
+                            
                             <button
                                 type="submit"
-                                className={`bg-green-500 w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}
+                                className={`w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition ${disabled? "bg-green-700 cursor-not-allowed" : "bg-green-500 cursor-pointer"}`}
                             >
                                 Login
                             </button>

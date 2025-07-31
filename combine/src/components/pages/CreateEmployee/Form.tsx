@@ -24,6 +24,9 @@ const OrganizationForm = () => {
     /* ____ for storing fetched departments ... */
     const [departments, setdepartments] = useState<Department[]>([]);
 
+    /* ____ For disabling button ... */
+    const [disabled, setDisabled] = useState(false);
+
     /* ____ for storing selected departments ... */
     const [selectedDepartments, setselectedDepartments] = useState<Department[]>([]);
 
@@ -52,39 +55,58 @@ const OrganizationForm = () => {
     });
 
     const goNext = async () => {
-        /* ____ For proceeding one step furthur ... */
-        const values = getValues(["organizationId"]);
-        console.log("Values : ", values);
-        const allCleared = values.every((val) => val && val !== "")
-        const verifyOrganization = await axios.post("/api/organization/verify", {
-            id: values[0],
-        });
-        if (allCleared && verifyOrganization.data.success) {
-            setdepartments(verifyOrganization.data.departments);
-            setStep(2);
-        } else {
-            alert("Please fill all the fields.");
+        setDisabled(true)
+        try {
+            /* ____ For proceeding one step furthur ... */
+            const values = getValues(["organizationId"]);
+            // console.log("Values : ", values);
+            const allCleared = values.every((val) => val && val !== "")
+            if (allCleared) {
+                const verifyOrganization = await axios.post("/api/organization/verify", {
+                    id: values[0],
+                });
+                setdepartments(verifyOrganization.data.departments);
+                setStep(2);
+                setDisabled(false)
+            } else {
+                alert("Please fill all the fields.");
+                setDisabled(false);
+            }
+        } catch (err) {
+            console.log(err);
+            toast.error("An error occured");
+            setDisabled(false);
         }
     };
 
     const onSubmit = async (data: EmployeeSignupFormData) => {
-        /* ____ Take form data , attached selected departments and request for account creation ... */
-        const payload = {
-            ...data,
-            departments: selectedDepartments,
-        }
-        console.log("Data :", payload);
-        const response = await axios.post("/api/employees/create", payload);
+        setDisabled(true);
+        try {
+            /* ____ Take form data , attached selected departments and request for account creation ... */
+            const payload = {
+                ...data,
+                departments: selectedDepartments,
+            }
+            // console.log("Data :", payload);
+            const response = await axios.post("/api/employees/create", payload);
 
-        if (!response.data.success) {
-            toast.error(response.data.message);
+            if (!response.data.success) {
+                toast.error(response.data.message);
+                setDisabled(false);
+            }
+            
+            setResponseData({
+                status: true,
+                message: response.data.message,
+                userId: response.data.userId,
+                organizationId: response.data.organizationId,
+            });
+            setDisabled(false)
+        } catch (err) {
+            console.log(err);
+            toast.error("An error occured");
+            setDisabled(false)
         }
-        setResponseData({
-            status: true,
-            message: response.data.message,
-            userId: response.data.userId,
-            organizationId: response.data.organizationId,
-        });
     };
 
     /* ____ useEffect : For runnning immportant logics upon successful account creation  ... */
@@ -95,7 +117,7 @@ const OrganizationForm = () => {
             window.localStorage.setItem("org-ID", responseData.organizationId)
             toast.success(responseData.message);
         }
-    }, [responseData,router])
+    }, [responseData, router])
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
@@ -121,8 +143,7 @@ const OrganizationForm = () => {
                             <button
                                 type="button"
                                 onClick={goNext}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
-                            >
+                                className={`w-full ${disabled ? "bg-blue-700 cursor-not-allowed" : "bg-blue-600 cursor-pointer"} hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition`}>
                                 Verify
                             </button>
                         </>
@@ -171,14 +192,14 @@ const OrganizationForm = () => {
                                 {departments.map((department, idx) => (
                                     <div key={idx} className="flex flex-row items-center gap-[8px]">
                                         <input type="checkbox" name={department.name} value={department.name} onChange={(e) => {
-                                            if(e.target.checked) {
-setselectedDepartments([...selectedDepartments, department])
+                                            if (e.target.checked) {
+                                                setselectedDepartments([...selectedDepartments, department])
                                             }
                                             else {
                                                 const filtered = selectedDepartments.filter((dept) => (dept.id !== department.id));
                                                 setselectedDepartments(filtered)
                                             }
-                                            
+
                                         }} />
                                         <span className="text-sm text-green-600">{department.name}</span>
                                     </div>
@@ -188,7 +209,7 @@ setselectedDepartments([...selectedDepartments, department])
 
                             <button
                                 type="submit"
-                                className={`bg-green-500 w-full hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}
+                                className={`w-full ${disabled ? "bg-green-700 cursor-not-allowed" : "bg-green-500 cursor-pointer"} hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition`}
                             >
                                 Create account
                             </button>
