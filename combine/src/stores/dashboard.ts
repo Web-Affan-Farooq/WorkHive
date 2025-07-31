@@ -18,6 +18,7 @@ interface EmployeeDashboardState {
   deleteNotification: (id: string) => void;
   markAsDone: (task: Task) => void;
   feedTasks: (task: Task[]) => void;
+  clearCache:() => void;
 }
 
 export const useEmployeeDashboard = create<EmployeeDashboardState>()(
@@ -49,6 +50,18 @@ export const useEmployeeDashboard = create<EmployeeDashboardState>()(
         })
       })),
       feedTasks: (tasks: Task[]) => set({ tasks: tasks }),
+      clearCache : () => set(() => (
+        {
+          tasks:[],
+          user:{
+            name:"",
+            email:"",
+            createdAt:new Date(),
+          },
+          notifications:[],
+        }
+      )),
+      
     }),
     {
       name: 'dashboard-data-employee',

@@ -20,6 +20,7 @@ interface OrganizationState {
   addTasks: (task: Task) => void;
   deleteTask: (id: string) => void;
   deleteNotification: (id: string) => void;
+  clearCache: () => void;
 }
 
 export const useOrganizationDashboard = create<OrganizationState>()(
@@ -56,7 +57,14 @@ export const useOrganizationDashboard = create<OrganizationState>()(
           tasks: [...state.tasks, task,]
         }
       )
-      )
+      ),
+      clearCache: () => set(() => ({
+        users: [],
+        tasks: [],
+        departments: [],
+        notifications: [],
+      })),
+
     })
     ,
     {

@@ -5,6 +5,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import {ClipboardList, LayoutGrid, Bell, Settings} from "lucide-react";
+import { useEmployeeDashboard } from "@/stores/dashboard";
 
     const menuItems = [
         { href: `/dashboard/`, label: "Dashboard", icon: <LayoutGrid className="group-hover:text-white size-5" /> },
@@ -16,6 +17,7 @@ import {ClipboardList, LayoutGrid, Bell, Settings} from "lucide-react";
 const DashboardSidebar = () => {
 //   /* _____ router instance ... */
   const router = useRouter();
+  const {clearCache} = useEmployeeDashboard();
 
 //   /* _____ State for toogling sidebar... */
   const [navOpen, setNavOpen] = useState(false);
@@ -27,6 +29,7 @@ const DashboardSidebar = () => {
     window.localStorage.removeItem("user-ID");
     toast.success(response.data.message);
     router.push("/");
+    clearCache();
   }
   
   return (

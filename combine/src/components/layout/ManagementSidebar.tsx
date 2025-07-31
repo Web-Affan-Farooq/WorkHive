@@ -5,6 +5,7 @@ import {LayoutGrid,ClipboardList ,Users,Building ,Bell} from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useOrganizationDashboard } from "@/stores/organization";
 
 const ManagementSidebar = () => {
     const router = useRouter();
@@ -18,6 +19,7 @@ const ManagementSidebar = () => {
 
     //   /* _____ State for toogling sidebar... */
     const [navOpen, setNavOpen] = useState(false);
+    const {clearCache} = useOrganizationDashboard();
     //   /* onclick Event : attemp GET request on logout api and redirect the user to landing page ... */
   const handleLogout = async () => {
     const response = await axios.get("/api/organization/logout");
@@ -25,6 +27,7 @@ const ManagementSidebar = () => {
     window.localStorage.removeItem("user-ID");
     toast.success(response.data.message);
     router.push("/");
+    clearCache();
   }
 
     return (
