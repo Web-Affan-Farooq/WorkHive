@@ -1,10 +1,8 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import GetTokenPayload from "@/utils/GetTokenPayload";
 import Logger from "@/lib/logger";
-import { Token } from "@/@types/AuthToken";
 
 const logger = new Logger('/api/accounts');
 
@@ -13,7 +11,7 @@ export const GET = async (req: NextRequest) => {
 
     // Dynamically build select object based on query params
     const select: Record<string, boolean> = {};
-    const validFields = ['name', 'organizations', 'plan',"email"];
+    const validFields = ['name', 'organizations', 'plan', "email"];
 
     validFields.forEach((field) => {
         const value = searchParams.get(field);
@@ -29,19 +27,19 @@ export const GET = async (req: NextRequest) => {
             { status: 400 }
         );
     }
+    const payload = await GetTokenPayload();
 
-    const clientCookies = await cookies();
-    const token = clientCookies.get("oms-auth-token")?.value;
-    if (!token) {
-        return NextResponse.redirect("/login");
+    if (!payload) {
+        return NextResponse.json(
+            {
+                message: "Unauthorized"
+            }, {
+            status: 401
+        }
+        )
     }
-
+    const accountId = payload.accountId;
     try {
-        const payload = jwt.verify(token, process.env.JWT_SECRET_KEY!);
-        logger.log(25, "Get payload", payload);
-
-        const accountId = (payload as Token).accountId;
-
         const requiredAccount = await prisma.accounts.findUnique({
             where: {
                 id: accountId,

@@ -1,6 +1,7 @@
 "use client";
 // import { useDashboard } from "@/stores/dashboard";
 import { OrganizationSidebar } from "@/components/layout"
+import { useOrganizationData } from "@/hooks";
 // import { useState } from "react";
 // import { useEffect } from "react";
 // import axios from "axios";
@@ -48,6 +49,7 @@ export const description = "An area chart with gradient fill"
 
 
 const OrganizationPage= () => {
+  const {allUsers} = useOrganizationData();
   /* 1. ____ Global state storing data for implementation of one time fetch  ... */
   // const { departments, tasks ,users} = useDashboard();
   //   const now = new Date();
@@ -107,7 +109,7 @@ const OrganizationPage= () => {
             {/* Total Orders Card */}
             <div className="bg-blue-600 rounded-2xl w-[160px] h-[80px] px-4 py-2 max-sm:w-[130px] max-sm:h-[65px]">
               <span className="text-sm text-gray-200">Employees</span>
-              <p className="text-3xl font-bold text-white max-sm:text-xl">{0}</p>
+              <p className="text-3xl font-bold text-white max-sm:text-xl">{allUsers.length}</p>
             </div>
             <div className="bg-green-500 rounded-2xl w-[160px] h-[80px] px-4 py-2 max-sm:w-[130px] max-sm:h-[65px]">
               <span className="text-sm text-gray-200">Tasks assigned</span>

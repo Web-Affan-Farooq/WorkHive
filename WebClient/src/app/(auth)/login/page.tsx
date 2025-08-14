@@ -8,10 +8,11 @@ import { AccountLoginSchema } from "@/validations";
 import { useEffect, useState } from "react";
 import { Footer, Header } from "@/components/layout";
 import { useRouter } from "next/navigation";
+import { PasswordInput } from "@/components/common";
 
 type AccountLoginFormData = z.infer<typeof AccountLoginSchema>
 
-const Signup = () => {
+const Login = () => {
     const router = useRouter();
     /* ___ react hook form ... */
     const {
@@ -97,14 +98,7 @@ const Signup = () => {
                                 <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
                                     Password
                                 </label>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    autoComplete="new-password"
-                                    {...register("password")}
-                                    placeholder="••••••••"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
+                                <PasswordInput id="password" autoComplete="new-password" {...register("password")} placeholder="••••••••" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                 {errors.password && (
                                     <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
                                 )}
@@ -125,9 +119,8 @@ const Signup = () => {
                     </section>
                 </article>
             </main>
-
             <Footer />
         </>
     )
 }
-export default Signup;
+export default Login;

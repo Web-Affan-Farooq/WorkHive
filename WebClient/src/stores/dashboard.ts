@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { OrganizationsData } from '@/@types/modeltypes';
+import { OrganizationsData, Profile } from '@/@types/modeltypes';
 // import { Profile } from "@/@types/modeltypes";
 
 interface Info {

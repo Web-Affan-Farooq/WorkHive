@@ -12,7 +12,7 @@ const DepartmentDetailsPage = () => {
     const staff = (selectedOrganization as OrganizationsData).users;
 
     const users = staff[requiredDepartment.id]
-
+    
     if (requiredDepartment) {
         return (
             <main className="relative flex h-screen bg-white">
@@ -24,7 +24,7 @@ const DepartmentDetailsPage = () => {
                     <br />
                     <div className="flex flex-col gap-[10px]">
                         {users.length <= 0 ? <p className="text-gray-400 text-sm">No user in this department found ...</p> : users.map((employee,idx) => (
-                            <div className="border border-black" key={idx}>
+                            <div className="border border-black p-2 rounded-md" key={idx}>
                                 <h2 className="text-sm font-bold">{employee.name}</h2>
                                 <p className="text-gray-400 text-sm">{employee.email}</p>
                             </div>

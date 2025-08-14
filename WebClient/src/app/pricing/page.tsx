@@ -5,7 +5,7 @@ import React from "react";
 import { CircleCheck } from "lucide-react";
 import { Header, Footer } from "@/components/layout";
 import Link from "next/link";
-import { useSignupFormData } from "@/stores/plan";
+import { usePlan } from "@/stores/plan";
 
 /* ____ Interface for plan object ... */
 interface Plan {
@@ -18,7 +18,7 @@ interface Plan {
 }
 
 const PricingSection = () => {
-    const { plans, subscriptionPlan, setPlan } = useSignupFormData();
+    const { plans, subscriptionPlan, setPlan } = usePlan();
     return (
         <main>
             <article>

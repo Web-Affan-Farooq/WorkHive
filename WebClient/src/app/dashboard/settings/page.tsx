@@ -1,12 +1,8 @@
 import React from 'react';
-import { SettingsEmployee } from '@/components/pages';
+import { SettingsDashboard } from '@/components/pages';
 
 const SettingsPage = () => {
-  return (
-    <>
-    <SettingsEmployee/>
-    </>
-  )
+  return <SettingsDashboard/>
 }
 
 export default SettingsPage

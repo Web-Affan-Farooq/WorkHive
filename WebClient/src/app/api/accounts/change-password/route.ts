@@ -2,12 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-import { Token } from "@/@types/AuthToken";
-
 import Logger from "@/lib/logger";
-
+import GetTokenPayload from "@/utils/GetTokenPayload";
 
 const logger = new Logger("/api/accounts/change-password");
 
@@ -16,22 +12,23 @@ export async function PUT(req: NextRequest) {
     const { newPassword } = await req.json();
     logger.log(15, "Get password : ", newPassword)
 
-    const clientCookies = await cookies();
-    const token = clientCookies.get("oms-auth-token")?.value;
-
     if (!newPassword) {
       return NextResponse.json({ message: "new Password is required" }, { status: 400 });
     }
-    if (!token) {
-      return NextResponse.redirect("/login")
-    }
+    const payload = await GetTokenPayload();
 
-    const payload = jwt.verify(token, process.env.JWT_SECRET_KEY!);
-    logger.log(28, "Get payload", payload);
+    if (!payload) {
+        return NextResponse.json(
+            {
+                message: "Unauthorized"
+            }, {
+            status: 401
+        }
+        )
+    }
+        const accountId = payload.accountId;
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    const accountId = (payload as Token).accountId;
 
 
     await prisma.accounts.update({

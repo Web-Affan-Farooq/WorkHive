@@ -1,27 +1,24 @@
 // import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
-import { Token } from "@/@types/AuthToken";
 import { Profile } from "@/@types/modeltypes";
 import { Department } from "@/generated/prisma";
+import GetTokenPayload from "@/utils/GetTokenPayload";
 
 export const GET = async () => {
-    const clientCookies = await cookies();
-    const token = clientCookies.get("oms-auth-token")?.value;
+    const payload = await GetTokenPayload();
 
-    if (!token) {
+    if (!payload) {
         return NextResponse.json(
             {
-                message:"Unauthorized"
-            },{
-                status:401
-            }
+                message: "Unauthorized"
+            }, {
+            status: 401
+        }
         )
     }
-    const payload = jwt.verify(token, process.env.JWT_SECRET_KEY!);
-    const accountId = (payload as Token).accountId;
+
+    const accountId = payload.accountId;
 
     const requiredAccount = await prisma.accounts.findUnique(
         {

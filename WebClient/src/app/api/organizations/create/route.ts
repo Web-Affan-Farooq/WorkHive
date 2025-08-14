@@ -2,12 +2,10 @@ import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import * as z from 'zod';
 import { OrganizationFormSchema } from "@/validations";
 import Logger from "@/lib/logger";
-import { Token } from "@/@types/AuthToken";
+import GetTokenPayload from "@/utils/GetTokenPayload";
 
 const logger = new Logger("/api/organizations/create");
 
@@ -19,7 +17,6 @@ export const POST = async (req: NextRequest) => {
     /* ____ Get body and cookies ... */
     const body: Body = await req.json();
     logger.log(43, "Get body : ", body)
-    const clientCookies = await cookies();
 
     /* ____ Check if org email already exists ... */
     const existingOrg = await prisma.organization.findUnique({
@@ -33,9 +30,9 @@ export const POST = async (req: NextRequest) => {
     }
 
     /* ____ Get auth token --> extract account id from it  ... */
-    const token = clientCookies.get("oms-auth-token")?.value;
-    logger.log(36, "Get token : ", token)
-    if (!token) {
+    const payload = await GetTokenPayload();
+
+    if (!payload) {
       return NextResponse.json(
         {
           message: "Unauthorized"
@@ -44,8 +41,8 @@ export const POST = async (req: NextRequest) => {
       }
       )
     }
-    const tokenPayload = jwt.verify(token, process.env.JWT_SECRET_KEY!);
-    const accountId = (tokenPayload as Token).accountId;
+    const accountId = payload.accountId;
+
     logger.log(41, "Get account id from token : ", accountId)
 
     /* ____ Hash organization password ... */

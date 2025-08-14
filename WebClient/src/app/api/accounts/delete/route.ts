@@ -1,23 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-import Logger from "@/lib/logger";
-import { Token } from "@/@types/AuthToken";
-
-const logger = new Logger("/api/accounts/delete");
+import GetTokenPayload from "@/utils/GetTokenPayload";
 
 export const DELETE = async () => {
-    const clientCookies = await cookies();
-    const token = clientCookies.get("oms-auth-token")?.value;
-    if (!token) {
-        return NextResponse.redirect("/login");
+    const payload = await GetTokenPayload();
+
+    if (!payload) {
+        return NextResponse.json(
+            {
+                message: "Unauthorized"
+            }, {
+            status: 401
+        }
+        )
     }
-
-    const payload = jwt.verify(token, process.env.JWT_SECRET_KEY!);
-    logger.log(18, "Get payload", payload);
-
-    const accountId = (payload as Token).accountId;
+    const accountId = payload.accountId;
 
     try {
         await prisma.accounts.delete({

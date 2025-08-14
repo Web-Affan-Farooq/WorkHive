@@ -1,11 +1,9 @@
 "use client"
 import { OrganizationSidebar } from '@/components/layout';
 import Link from "next/link";
-import { useEffect, useState } from 'react';
-import { useDashboard } from '@/stores/dashboard';
 import { Plus } from "lucide-react";
 import { CircleCheck } from "lucide-react";
-import { OrganizationsData, Profile } from '@/@types/modeltypes';
+import { Profile } from '@/@types/modeltypes';
 
 import {
     AlertDialog,
@@ -27,6 +25,7 @@ import {
 } from "@/components/ui/context-menu"
 
 import Image from 'next/image';
+import { useOrganizationData } from '@/hooks';
 // import toast from 'react-hot-toast';
 // import axios from 'axios';
 
@@ -67,22 +66,8 @@ const Card = ({ employeeData }: { employeeData: Profile }) => {
 };
 
 const Peoples = () => {
-    const [id, setId] = useState<string | null>("");
-    const { selectedOrganization,} = useDashboard();
-    const organization = selectedOrganization as OrganizationsData;
-    const employeesList: Profile[] = [];
-    Object.keys(organization.users).forEach((deptId) => {
-        organization.users[deptId].forEach((user) => {
-            employeesList.push(user);
-        })
-    });
+    const {allUsers, currentOrg} = useOrganizationData();
 
-    useEffect(() => {
-        const orgId = window.localStorage.getItem("org-ID");
-        setId(orgId)
-    }, []);
-
-    // const handleDeleteProfile = async () => {}
     return (
         <AlertDialog>
             <main className="flex h-screen bg-white">
@@ -99,13 +84,11 @@ const Peoples = () => {
                     <div className='p-[5px]'>
                         <div className='flex flex-row gap-[10px] items-center'>
                             <div className='bg-gray-800/90 text-gray-400 px-[15px] py-[5px] rounded-md truncate w-full'>
-                                {id}
+                                {currentOrg.id}
                             </div>
                             <button type="button" className='bg-gray-400 px-[10px] py-[1px] rounded-md' onClick={(e) => {
-                                if (id) {
-                                    window.navigator.clipboard.writeText(id)
+                                    window.navigator.clipboard.writeText(currentOrg.id)
                                     e.currentTarget.innerText = "Copied"
-                                }
                             }}>copy</button>
                         </div>
                     </div>
@@ -126,7 +109,7 @@ const Peoples = () => {
                     </div>
                     <div>
                         {
-                            employeesList.length <= 0 ? <p className='text-gray-400'>No People for this organization found ...</p> : employeesList.map((employee, idx) => (
+                            allUsers.length <= 0 ? <p className='text-gray-400'>No People for this organization found ...</p> : allUsers.map((employee, idx) => (
                                 <ContextMenu key={idx}>
                                     <ContextMenuTrigger>
                                         <Link href={`/organization/people/${employee.id}`}>
