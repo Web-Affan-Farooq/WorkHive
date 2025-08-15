@@ -1,55 +1,50 @@
-"use client"
-import React from 'react'
-import { DashboardSidebar } from "@/components/layout"
-import Image from 'next/image';
-import Link from 'next/link';
-
-import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuTrigger,
-} from "@/components/ui/context-menu"
-import { useDashboard } from '@/stores/dashboard';
-import axios from 'axios';
-import toast from 'react-hot-toast';
+"use client";
+import React from "react";
+import { DashboardSidebar } from "@/components/layout";
+import JoinedOrganizationsList from "./JoinedOrganizationsList";
+import OwnedOrganizationList from "./OwnedOrganizationsList";
 
 const Organizations = () => {
-    const { organizations, feedOrganizations, selectOrganization } = useDashboard();
-    const countEmployees = (id: string) => {
-        const requiredOrg = organizations.find((org) => org.id === id)!;
-        let count = 0;
-        Object.values(requiredOrg.users).forEach((array) => { count += array.length })
-        return count
-    }
+  return (
+    <main className="flex h-screen">
+      <DashboardSidebar />
 
-    const handleOrganizationDelete = async (id: string) => {
-        try {
-            const response = await axios.delete("/api/organizations/delete", {
-                data: {
-                    id: id
-                }
-            });
-            toast.success(response.data.message);
-            feedOrganizations(
-                organizations.filter((org) => (org.id !== id))
-            )
+      <section className="flex-1 bg-white min-h-screen p-10 max-sm:px-5 max-sm:py-7">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+          <h1 className="text-[23px] font-bold text-gray-800">
+            Your Organizations
+          </h1>
+        </div>
 
-        } catch (err) {
-            console.log("Error : ", err);
-            toast.error("An error occured while deleting organization")
-        }
-    }
+        {/* Owned by you */}
+        <div className="mt-8">
+          <h2 className="font-bold px-2 text-lg mb-3">Owned by you</h2>
+          <OwnedOrganizationList />
+        </div>
 
-    return (
+        {/* Joined by you */}
+        <div className="mt-10">
+          <h2 className="font-bold px-2 text-lg">Joined by you</h2>
+          <JoinedOrganizationsList />
+        </div>
+      </section>
+    </main>
+  );
+};
+
+export default Organizations;
+
+/*
         <main className="flex h-screen">
             <DashboardSidebar />
             <section className="flex-1 bg-white min-h-screen p-10 max-sm:px-5 max-sm:py-7">
                 <div className='flex flex-row flex-nowrap justify-between items-center'>
                     <h1 className="text-[23px] font-bold text-gray-800">Your organizations</h1>
                 </div>
+                
                 <br />
-                {/* Organizations grid */}
+                <h2 className='font-bold px-2'>Owned by you</h2>
                 <div className='flex flex-col flex-nowrap gap-[10px]'>
                     {organizations.length <= 0 ? <p className='text-gray-500 py-20 text-[18px] font-bold text-center'>No organizations found ...</p> : organizations.map((org, idx) => (
                         <div key={idx} onClick={() => selectOrganization(org.id)}>
@@ -75,9 +70,8 @@ const Organizations = () => {
                         </div>
                     ))}
                 </div>
+                <br />
+                <h2 className='font-bold px-2'>Joined by you</h2>
             </section>
         </main>
-    )
-}
-
-export default Organizations
+*/

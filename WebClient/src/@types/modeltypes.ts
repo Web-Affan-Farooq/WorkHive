@@ -1,15 +1,15 @@
 /*   these types are under testing cases */
 /* ____ types for dashboard data  ... */
 interface Accounts {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    name: string;
-    email: string;
-    password: string;
-    plan: "FREE" | "PRO" | "TEAMS";
-    stripeCustomerId: string;
-    stripeSubId: string;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  name: string;
+  email: string;
+  password: string;
+  plan: "FREE" | "PRO" | "TEAMS";
+  stripeCustomerId: string;
+  stripeSubId: string;
 }
 type Profile = Pick<Accounts, "id" | "name" | "email">;
 
@@ -24,22 +24,28 @@ type Profile = Pick<Accounts, "id" | "name" | "email">;
 // }
 
 interface Departments {
-    id: string;
-    name: string;
-    organizationId: string;
+  id: string;
+  name: string;
+  organizationId: string;
 }
 
-interface OrganizationsData {
-    id: string;
-    name: string;
-    email: string;
-    departments: Departments[];
-    users:Record<string,Profile[]>
+interface OwnedOrganizationData {
+  id: string;
+  name: string;
+  email: string;
+  departments: Departments[];
+  users: Record<string, Profile[]>;
+}
+interface JoinedOrganizationData {
+  id: string;
+  name: string;
+  email: string;
 }
 
 export type {
-    Profile,
-    Accounts,
-    Departments,
-    OrganizationsData,
-}
+  Profile,
+  Accounts,
+  Departments,
+  OwnedOrganizationData,
+  JoinedOrganizationData,
+};

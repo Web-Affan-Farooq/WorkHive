@@ -1,7 +1,7 @@
 "use client";
 
 /* Custom components ... */
-import { DashboardSidebar, OrganizationSidebar } from "@/components/layout";
+import { OwnedOrganizationSidebar } from "@/components/layout";
 import Image from "next/image";
 
 /* Hooks ... */
@@ -14,24 +14,20 @@ import convertToTitleCase from "@/lib/Convert";
 import { Building } from "lucide-react";
 
 /* Store & types ... */
-import { useDashboard } from "@/stores/dashboard";
-import { OrganizationsData, Profile } from "@/@types/modeltypes";
-
-import { useState, useEffect } from "react";
-import { useOrganizationData } from "@/hooks";
+import { useOwnedOrganization } from "@/hooks";
 
 export const description = "An area chart with gradient fill";
 
 const ProfileDetails = () => {
   const { slug } = useParams();
-  const {allUsers} = useOrganizationData();
+  const { allUsers } = useOwnedOrganization();
 
   const requiredUser = allUsers.find((user) => user.id === slug);
 
   if (requiredUser) {
     return (
       <main className="flex h-screen bg-white">
-        <OrganizationSidebar/>
+        <OwnedOrganizationSidebar />
         <section className="flex-1 h-screen overflow-y-auto p-10 max-sm:px-5 max-sm:py-7">
           <div className="rounded-full mx-auto w-[100px] h-[100px] overflow-hidden">
             <Image
@@ -59,9 +55,7 @@ const ProfileDetails = () => {
             Activity
           </h2>
           <ul>
-            <li className="p-[10px]">
-              Completed 3 out of 4 tasks this month
-            </li>
+            <li className="p-[10px]">Completed 3 out of 4 tasks this month</li>
             <li className="p-[10px]">3 Completed lately</li>
             <li className="p-[10px]">1 tasks overdue</li>
           </ul>
@@ -71,11 +65,9 @@ const ProfileDetails = () => {
   } else {
     return (
       <main className="flex h-screen bg-white">
-        <OrganizationSidebar />
+        <OwnedOrganizationSidebar />
         <section className="flex-1 h-screen overflow-y-auto p-10 max-sm:px-5 max-sm:py-7">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
-            Loading   ...
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">Loading ...</h1>
         </section>
       </main>
     );
@@ -102,7 +94,6 @@ export default ProfileDetails;
 // import { OrganizationsData, Profile } from "@/@types/modeltypes";
 // import { useEffect, useState } from "react";
 
-
 // export const description = "An area chart with gradient fill"
 
 // const ProfileDetails = () => {
@@ -110,16 +101,15 @@ export default ProfileDetails;
 //     const {selectedOrganization} = useDashboard();
 //     const currentOrg = selectedOrganization as OrganizationsData;
 //     console.log(currentOrg);
-    
-//     const [allUsers, setallUsers] = useState<Profile[]>([]);
 
+//     const [allUsers, setallUsers] = useState<Profile[]>([]);
 
 //     useEffect(() => {
 //     Object.keys(currentOrg.users).forEach((key) => {
 //         setallUsers([...allUsers, ...currentOrg.users[key]])
 //     });
 //     console.log(allUsers);
-    
+
 //     },[currentOrg.users]);
 //     // const requiredUser = allUsers.find((user) => user.id === slug);
 

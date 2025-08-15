@@ -10,7 +10,6 @@
 // import convertToTitleCase from "@/lib/Convert";
 // import Link from "next/link";
 
-
 // import {
 //   AlertDialog,
 //   AlertDialogAction,
@@ -64,7 +63,6 @@
 //   // ✅ Default pending
 //   return <span className={`${badgeStyle} bg-yellow-500`}>Pending</span>;
 // };
-
 
 // const Card = ({ task }: { task: Task }) => {
 //   const dueDate = new Date(task.dueDate);
@@ -225,7 +223,7 @@
 
 // export default Tasks;
 
-import { OrganizationSidebar } from "@/components/layout"
+import { JoinedOrganizationSidebar } from "@/components/layout";
 import { Plus } from "lucide-react";
 
 import {
@@ -251,7 +249,7 @@ const Tasks = () => {
   return (
     <AlertDialog>
       <main className="relative flex h-screen bg-white">
-        <OrganizationSidebar />
+        <JoinedOrganizationSidebar />
         <section className="flex-1 h-screen overflow-y-auto p-10 max-sm:px-5 max-sm:py-7">
           <div className="flex flex-row flex-nowrap justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-800">Tasks Assigned</h1>
@@ -268,21 +266,48 @@ const Tasks = () => {
 
               <form className="flex flex-col gap-[10px]">
                 {/* title ... */}
-                <label htmlFor="title" className="font-semibold text-sm">Title :</label>
-                <input type="text" name="title" id="title" placeholder="Title" className="placeholder:text-sm py-[4px] px-[15px] rounded-md w-full" onChange={() => {
-                  // setnewTask({ ...newTask, title: e.target.value })
-                }} />
+                <label htmlFor="title" className="font-semibold text-sm">
+                  Title :
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  id="title"
+                  placeholder="Title"
+                  className="placeholder:text-sm py-[4px] px-[15px] rounded-md w-full"
+                  onChange={() => {
+                    // setnewTask({ ...newTask, title: e.target.value })
+                  }}
+                />
                 {/* description ... */}
-                <label htmlFor="description" className="font-semibold text-sm">Description :</label>
-                <textarea name="description" id="description" className="placeholder:text-sm py-[4px] px-[15px] h-[100px] rounded-md w-full" placeholder="Description" onChange={() => {
-                  // setnewTask({ ...newTask, description: e.target.value })
-                }}></textarea>
+                <label htmlFor="description" className="font-semibold text-sm">
+                  Description :
+                </label>
+                <textarea
+                  name="description"
+                  id="description"
+                  className="placeholder:text-sm py-[4px] px-[15px] h-[100px] rounded-md w-full"
+                  placeholder="Description"
+                  onChange={() => {
+                    // setnewTask({ ...newTask, description: e.target.value })
+                  }}
+                ></textarea>
 
                 {/*  assigned to  ... */}
-                <label htmlFor="Assigned this task to" className="font-semibold text-sm">Assigned to :</label>
-                <select className="placeholder:text-sm py-[4px] px-[15px] rounded-md w-full" name="employees" id="employees" onChange={() => {
-                  // setnewTask({ ...newTask, userId: e.target.value })
-                }}>
+                <label
+                  htmlFor="Assigned this task to"
+                  className="font-semibold text-sm"
+                >
+                  Assigned to :
+                </label>
+                <select
+                  className="placeholder:text-sm py-[4px] px-[15px] rounded-md w-full"
+                  name="employees"
+                  id="employees"
+                  onChange={() => {
+                    // setnewTask({ ...newTask, userId: e.target.value })
+                  }}
+                >
                   {/* {
                     users.map((employee, idx) => (
                       <option value={employee.id} key={idx}>{employee.name}</option>
@@ -290,10 +315,21 @@ const Tasks = () => {
                   } */}
                 </select>
                 {/* description ... */}
-                <label htmlFor="Due date for this task" className="font-semibold text-sm">Due date :</label>
-                <input type="datetime-local" name="dueDate" id="due-date" className="py-[4px] px-[15px] rounded-md w-full" onChange={() => {
-                  // setnewTask({ ...newTask, dueDate: new Date(e.target.value) })
-                }} />
+                <label
+                  htmlFor="Due date for this task"
+                  className="font-semibold text-sm"
+                >
+                  Due date :
+                </label>
+                <input
+                  type="datetime-local"
+                  name="dueDate"
+                  id="due-date"
+                  className="py-[4px] px-[15px] rounded-md w-full"
+                  onChange={() => {
+                    // setnewTask({ ...newTask, dueDate: new Date(e.target.value) })
+                  }}
+                />
               </form>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -304,7 +340,7 @@ const Tasks = () => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </div>
-{/* 
+          {/* 
           <div className="flex flex-row flex-wrap gap-6">
             {tasks.length <= 0 ? <p className="text-gray-400">No tasks found ...</p> : tasks.map((task: Task, idx) => (
               <ContextMenu key={idx}>
@@ -316,13 +352,12 @@ const Tasks = () => {
                   <ContextMenuItem onClick={() => handleDeleteTask(task.id)}>Delete</ContextMenuItem>
                 </ContextMenuContent>
               </ContextMenu>
-
             ))}
           </div> */}
         </section>
       </main>
     </AlertDialog>
-  )
-}
+  );
+};
 
 export default Tasks;

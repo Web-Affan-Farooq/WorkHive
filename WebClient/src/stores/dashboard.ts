@@ -1,21 +1,31 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { OrganizationsData, Profile } from '@/@types/modeltypes';
+import { OwnedOrganizationData, Profile } from "@/@types/modeltypes";
 // import { Profile } from "@/@types/modeltypes";
+import { JoinedOrganizationData } from "@/@types/modeltypes";
 
 interface Info {
   name: string;
   email: string;
-  plan: "FREE" | "TEAMS" | "PRO" | ""
+  plan: "FREE" | "TEAMS" | "PRO" | "";
 }
+
 interface DashboardState {
   info: Info;
   setInfo: (info: Info) => void;
-  organizations: OrganizationsData[];
+
+  joinedOrganizations: JoinedOrganizationData[];
+  feedJoinedOrganizations: (list: JoinedOrganizationData[]) => void;
+
+  ownedOrganizations: OwnedOrganizationData[];
   /* eslint-disable-next-line   @typescript-eslint/no-empty-object-type */
-  selectedOrganization: OrganizationsData | {};
-  selectOrganization: (org: string) => void;
-  feedOrganizations: (list: OrganizationsData[]) => void;
+  currentOrganization: OwnedOrganizationData | JoinedOrganizationData | null;
+
+  setJoinedOrganization: (org: string) => void;
+  setOwnedOrganization: (org: string) => void;
+
+  feedOwnedOrganizations: (list: OwnedOrganizationData[]) => void;
+
   removeUser: (deptId: string, userId: string) => void;
   clearCache: () => void;
 }
@@ -24,61 +34,78 @@ export const useDashboard = create<DashboardState>()(
   persist(
     (set) => ({
       info: {
-        name: '',
+        name: "",
         email: "",
         plan: "",
       },
-      setInfo: (info: Info) => set(() => ({
-        info: {
-          name: info.name,
-          email: info.email,
-          plan: info.plan
-        }
-      })),
+      setInfo: (info: Info) =>
+        set(() => ({
+          info: {
+            name: info.name,
+            email: info.email,
+            plan: info.plan,
+          },
+        })),
 
-      organizations: [],
-      selectedOrganization: {},
-      selectOrganization: (id) => set((state) => (
-        {
-          selectedOrganization: state.organizations.find((org) => org.id === id)!,
-        }
-      )),
+      joinedOrganizations: [],
 
-      feedOrganizations: (list) => set(() => (
-        {
-          organizations: list
-        }
-      )),
+      feedJoinedOrganizations: (list) =>
+        set(() => ({
+          joinedOrganizations: list,
+        })),
 
-      removeUser: (deptId, userId) => set((state) => {
-        const organization = state.selectedOrganization as OrganizationsData;
+      ownedOrganizations: [],
+      currentOrganization: null,
 
-        return {
-          selectedOrganization: {
-            ...organization,
-            users: {
-              ...organization.users,
-              deptId: organization.users[deptId].filter((user) => user.id !== userId)
-            }
-          }
-        }
-      }),
+      setJoinedOrganization: (id) =>
+        set((state) => ({
+          currentOrganization: state.joinedOrganizations.find(
+            (org) => org.id === id
+          )!,
+        })),
 
-      clearCache: () => set(() => (
-        {
+      setOwnedOrganization: (id) =>
+        set((state) => ({
+          currentOrganization: state.ownedOrganizations.find(
+            (org) => org.id === id
+          )!,
+        })),
+
+      feedOwnedOrganizations: (list) =>
+        set(() => ({
+          ownedOrganizations: list,
+        })),
+
+      removeUser: (deptId, userId) =>
+        set((state) => {
+          const organization =
+            state.currentOrganization as OwnedOrganizationData;
+
+          return {
+            currentOrganization: {
+              ...organization,
+              users: {
+                ...organization.users,
+                deptId: organization.users[deptId].filter(
+                  (user) => user.id !== userId
+                ),
+              },
+            },
+          };
+        }),
+
+      clearCache: () =>
+        set(() => ({
           info: {
             name: "",
             email: "",
-            plan: '',
+            plan: "",
           },
           organizations: [],
-        }
-      ))
-
-    })
-    ,
+        })),
+    }),
     {
-      name: 'dashboard-data',
+      name: "dashboard-data",
       storage: createJSONStorage(() => sessionStorage),
     }
   )

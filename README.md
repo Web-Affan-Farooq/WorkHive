@@ -1,6 +1,9 @@
 ### notes :
-- Completed the payment logic , just complete organization creation logic on the submission of create-org-password ,  create backend route 
-- Create webhook for account creation
+- Checkout payment webhook . Suspected a major level bug in the webhook route handling account creation .
+- join organization logic (completed 14-8-2028  at 8:50)
+- Create manager creation logic 
+- The routes of joined and owned organizations are separated from now
+- the useJoinedOrganmization is for returning important data when organization is selected not a global state , access it on /joined/...paths . do the same with useOwnedOrganizationhook
 
 test organizations:
 abcbpo@gmail.com  jhDJ74@#
