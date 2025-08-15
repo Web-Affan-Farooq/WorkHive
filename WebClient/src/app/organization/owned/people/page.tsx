@@ -128,7 +128,7 @@ const Peoples = () => {
               allUsers.map((employee, idx) => (
                 <ContextMenu key={idx}>
                   <ContextMenuTrigger>
-                    <Link href={`/organization/people/${employee.id}`}>
+                    <Link href={`/organization/owned/people/${employee.id}`}>
                       <Card employeeData={employee} />
                     </Link>
                   </ContextMenuTrigger>

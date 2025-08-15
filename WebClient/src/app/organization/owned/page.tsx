@@ -1,7 +1,7 @@
 "use client";
 // import { useDashboard } from "@/stores/dashboard";
-import { OrganizationSidebar } from "@/components/layout"
-import { useOrganizationData } from "@/hooks";
+import { OwnedOrganizationSidebar } from "@/components/layout";
+import { useOwnedOrganization } from "@/hooks";
 // import { useState } from "react";
 // import { useEffect } from "react";
 // import axios from "axios";
@@ -25,7 +25,7 @@ import { useOrganizationData } from "@/hooks";
 //   ChartTooltipContent,
 // } from "@/components/ui/chart"
 
-export const description = "An area chart with gradient fill"
+export const description = "An area chart with gradient fill";
 
 // const chartData = [
 //   { month: "January", desktop: 186, mobile: 80 },
@@ -47,9 +47,8 @@ export const description = "An area chart with gradient fill"
 //   },
 // } satisfies ChartConfig
 
-
-const OrganizationPage= () => {
-  const {allUsers} = useOrganizationData();
+const OrganizationPage = () => {
+  const { allUsers } = useOwnedOrganization();
   /* 1. ____ Global state storing data for implementation of one time fetch  ... */
   // const { departments, tasks ,users} = useDashboard();
   //   const now = new Date();
@@ -99,25 +98,33 @@ const OrganizationPage= () => {
 
   return (
     <main className="flex h-screen">
-      <OrganizationSidebar/>
+      <OwnedOrganizationSidebar />
       <section className="flex-1 bg-white h-screen overflow-y-auto">
         {/* main heading */}
-        <h1 className="text-[23px] font-bold text-gray-800 pt-10 pb-5 px-7 max-sm:px-5 max-sm:py-7">Management</h1>
+        <h1 className="text-[23px] font-bold text-gray-800 pt-10 pb-5 px-7 max-sm:px-5 max-sm:py-7">
+          Management
+        </h1>
         {/*  Flash cards  */}
         <div className="flex flex-row flex-nowrap gap-[10px]">
           <div className="flex flex-row flex-wrap gap-5 px-7 pb-5">
             {/* Total Orders Card */}
             <div className="bg-blue-600 rounded-2xl w-[160px] h-[80px] px-4 py-2 max-sm:w-[130px] max-sm:h-[65px]">
               <span className="text-sm text-gray-200">Employees</span>
-              <p className="text-3xl font-bold text-white max-sm:text-xl">{allUsers.length}</p>
+              <p className="text-3xl font-bold text-white max-sm:text-xl">
+                {allUsers.length}
+              </p>
             </div>
             <div className="bg-green-500 rounded-2xl w-[160px] h-[80px] px-4 py-2 max-sm:w-[130px] max-sm:h-[65px]">
               <span className="text-sm text-gray-200">Tasks assigned</span>
-              <p className="text-3xl font-bold text-white max-sm:text-xl">{0}</p>
+              <p className="text-3xl font-bold text-white max-sm:text-xl">
+                {0}
+              </p>
             </div>
             <div className="bg-pink-600 rounded-2xl w-[160px] h-[80px] px-4 py-2 max-sm:w-[130px] max-sm:h-[65px]">
               <span className="text-sm text-gray-200">Completed</span>
-              <p className="text-3xl font-bold text-white max-sm:text-xl">{0}</p>
+              <p className="text-3xl font-bold text-white max-sm:text-xl">
+                {0}
+              </p>
             </div>
           </div>
         </div>
@@ -130,7 +137,9 @@ const OrganizationPage= () => {
             ))
           }
         </div> */}
-        <br /><br /><br />
+        <br />
+        <br />
+        <br />
         {/* <div className="max-sm:p-0 px-7">
           <Card className="h-auto w-full">
             <CardHeader>
@@ -217,11 +226,9 @@ const OrganizationPage= () => {
             </CardFooter>
           </Card>
         </div> */}
-
-
       </section>
     </main>
-  )
-}
+  );
+};
 
-export default OrganizationPage
+export default OrganizationPage;

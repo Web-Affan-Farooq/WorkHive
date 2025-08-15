@@ -27,32 +27,32 @@ import {
 const ManagementSidebar = () => {
   const menuItems = [
     {
-      href: `/organization/`,
+      href: `/organization/owned`,
       label: "Dashboard",
       icon: <LayoutGrid className="group-hover:text-white size-5" />,
     },
     {
-      href: `/organization/tasks`,
+      href: `/organization/owned/tasks`,
       label: "Tasks",
       icon: <ClipboardList className="group-hover:text- size-5" />,
     },
     {
-      href: `/organization/people`,
+      href: `/organization/owned/people`,
       label: "People",
       icon: <Users className="group-hover:text-white size-5" />,
     },
     {
-      href: `/organization/departments`,
+      href: `/organization/owned/departments`,
       label: "Departments",
       icon: <Building className="group-hover:text-white size-5" />,
     },
     {
-      href: `/organization/notifications`,
+      href: `/organization/owned/notifications`,
       label: "Notifications",
       icon: <Bell className="group-hover:text-white size-5" />,
     },
     {
-      href: `/organization/settings`,
+      href: `/organization/owned/settings`,
       label: "Settings",
       icon: <Settings className="group-hover:text-white size-5" />,
     },

@@ -62,7 +62,7 @@ const OwnedOrganizationList = () => {
           <div key={idx} onClick={() => setOwnedOrganization(org.id)}>
             <ContextMenu>
               <ContextMenuTrigger>
-                <Link href={"/organization/joined"}>
+                <Link href={"/organization/owned"}>
                   <div className="flex flex-row flex-nowrap justify-start items-center gap-[10px] p-5 max-sm:p-2 cursor-pointer">
                     <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
                       <Image

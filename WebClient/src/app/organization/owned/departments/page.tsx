@@ -135,7 +135,7 @@ const DepartmentsPage = () => {
                 <div key={idx} className="w-full cursor-pointer">
                   <ContextMenu>
                     <ContextMenuTrigger>
-                      <Link href={`/organization/departments/${dept.id}`}>
+                      <Link href={`/organization/owned/departments/${dept.id}`}>
                         <div className="p-3 rounded-md">
                           <h1 className="text-[16px] font-bold">{dept.name}</h1>
                           <span className="text-sm text-gray-500">
