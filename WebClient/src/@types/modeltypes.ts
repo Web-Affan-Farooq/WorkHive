@@ -1,4 +1,7 @@
 /*   these types are under testing cases */
+
+import { Task } from "./Task";
+
 /* ____ types for dashboard data  ... */
 interface Accounts {
   id: string;
@@ -35,11 +38,15 @@ interface OwnedOrganizationData {
   email: string;
   departments: Departments[];
   users: Record<string, Profile[]>;
+  tasks: Task[];
 }
+
 interface JoinedOrganizationData {
   id: string;
   name: string;
   email: string;
+  tasks: Task[];
+  users: Profile[];
 }
 
 export type {

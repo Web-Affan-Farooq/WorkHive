@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { CircleCheck } from "lucide-react";
 import { Profile } from "@/@types/modeltypes";
+import { useOwnedOrganization } from "@/stores/ownedOrg";
 
 import {
   AlertDialog,
@@ -25,7 +26,8 @@ import {
 } from "@/components/ui/context-menu";
 
 import Image from "next/image";
-import { useOwnedOrganization } from "@/hooks";
+import { useMemo } from "react";
+import Logger from "@/lib/logger";
 // import toast from 'react-hot-toast';
 // import axios from 'axios';
 
@@ -66,8 +68,20 @@ const Card = ({ employeeData }: { employeeData: Profile }) => {
   );
 };
 
+const logger = new Logger("/organization/owned/people/page.tsx");
 const Peoples = () => {
-  const { allUsers, currentOrg } = useOwnedOrganization();
+  const { id, users } = useOwnedOrganization();
+
+  const allUsers = useMemo(() => {
+    if (users) {
+      const usersArray: Profile[] = Object.keys(users).flatMap(
+        (key) => users[key] || []
+      );
+      logger.log(17, " users array after flat :  ", usersArray);
+      return usersArray;
+    }
+    return [];
+  }, [users]);
 
   return (
     <AlertDialog>
@@ -87,13 +101,13 @@ const Peoples = () => {
           <div className="p-[5px]">
             <div className="flex flex-row gap-[10px] items-center">
               <div className="bg-gray-800/90 text-gray-400 px-[15px] py-[5px] rounded-md truncate w-full">
-                {currentOrg.id}
+                {id}
               </div>
               <button
                 type="button"
                 className="bg-gray-400 px-[10px] py-[1px] rounded-md"
                 onClick={(e) => {
-                  window.navigator.clipboard.writeText(currentOrg.id);
+                  window.navigator.clipboard.writeText(id);
                   e.currentTarget.innerText = "Copied";
                 }}
               >

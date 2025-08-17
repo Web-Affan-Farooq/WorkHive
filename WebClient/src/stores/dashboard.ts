@@ -1,7 +1,6 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { OwnedOrganizationData, Profile } from "@/@types/modeltypes";
-// import { Profile } from "@/@types/modeltypes";
+import { persist, createJSONStorage, devtools } from "zustand/middleware";
+import { OwnedOrganizationData } from "@/@types/modeltypes";
 import { JoinedOrganizationData } from "@/@types/modeltypes";
 
 interface Info {
@@ -18,95 +17,60 @@ interface DashboardState {
   feedJoinedOrganizations: (list: JoinedOrganizationData[]) => void;
 
   ownedOrganizations: OwnedOrganizationData[];
-  /* eslint-disable-next-line   @typescript-eslint/no-empty-object-type */
-  currentOrganization: OwnedOrganizationData | JoinedOrganizationData | null;
-
-  setJoinedOrganization: (org: string) => void;
-  setOwnedOrganization: (org: string) => void;
-
   feedOwnedOrganizations: (list: OwnedOrganizationData[]) => void;
 
-  removeUser: (deptId: string, userId: string) => void;
+  // removeUser: (deptId: string, userId: string) => void;
   clearCache: () => void;
 }
 
 export const useDashboard = create<DashboardState>()(
-  persist(
-    (set) => ({
-      info: {
-        name: "",
-        email: "",
-        plan: "",
-      },
-      setInfo: (info: Info) =>
-        set(() => ({
-          info: {
-            name: info.name,
-            email: info.email,
-            plan: info.plan,
-          },
-        })),
+  devtools(
+    // 👈 wrap your store
+    persist(
+      (set) => ({
+        info: { name: "", email: "", plan: "" },
 
-      joinedOrganizations: [],
+        setInfo: (info: Info) =>
+          set(
+            () => ({
+              info: { name: info.name, email: info.email, plan: info.plan },
+            }),
+            false,
+            "dashboard/setInfo" // 👈 optional action name for DevTools
+          ),
 
-      feedJoinedOrganizations: (list) =>
-        set(() => ({
-          joinedOrganizations: list,
-        })),
+        joinedOrganizations: [],
+        feedJoinedOrganizations: (list) =>
+          set(
+            () => ({ joinedOrganizations: list }),
+            false,
+            "dashboard/feedJoinedOrgs"
+          ),
 
-      ownedOrganizations: [],
-      currentOrganization: null,
+        ownedOrganizations: [],
+        feedOwnedOrganizations: (list) =>
+          set(
+            () => ({ ownedOrganizations: list }),
+            false,
+            "dashboard/feedOwnedOrgs"
+          ),
 
-      setJoinedOrganization: (id) =>
-        set((state) => ({
-          currentOrganization: state.joinedOrganizations.find(
-            (org) => org.id === id
-          )!,
-        })),
-
-      setOwnedOrganization: (id) =>
-        set((state) => ({
-          currentOrganization: state.ownedOrganizations.find(
-            (org) => org.id === id
-          )!,
-        })),
-
-      feedOwnedOrganizations: (list) =>
-        set(() => ({
-          ownedOrganizations: list,
-        })),
-
-      removeUser: (deptId, userId) =>
-        set((state) => {
-          const organization =
-            state.currentOrganization as OwnedOrganizationData;
-
-          return {
-            currentOrganization: {
-              ...organization,
-              users: {
-                ...organization.users,
-                deptId: organization.users[deptId].filter(
-                  (user) => user.id !== userId
-                ),
-              },
-            },
-          };
-        }),
-
-      clearCache: () =>
-        set(() => ({
-          info: {
-            name: "",
-            email: "",
-            plan: "",
-          },
-          organizations: [],
-        })),
-    }),
-    {
-      name: "dashboard-data",
-      storage: createJSONStorage(() => sessionStorage),
-    }
+        clearCache: () =>
+          set(
+            () => ({
+              info: { name: "", email: "", plan: "" },
+              joinedOrganizations: [], // 👈 fixed (was "organizations" typo)
+              ownedOrganizations: [],
+            }),
+            false,
+            "dashboard/clearCache"
+          ),
+      }),
+      {
+        name: "dashboard-data",
+        storage: createJSONStorage(() => sessionStorage),
+      }
+    ),
+    { name: "DashboardStore" } // 👈 store name in Redux DevTools extension
   )
 );

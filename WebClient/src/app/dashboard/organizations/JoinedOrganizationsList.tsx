@@ -1,3 +1,4 @@
+// state attached
 "use client";
 
 // ____ Libraries ...
@@ -14,6 +15,7 @@ import {
 // ____ Hooks ...
 import { useEffect, useState } from "react";
 import { useDashboard } from "@/stores/dashboard";
+import { useJoinedOrganization } from "@/stores/joinedOrg";
 
 // ____ Components ...
 import {
@@ -65,12 +67,10 @@ const useJoinedOrganizationUsers = (
 };
 
 const JoinedOrganizationsList = () => {
-  const {
-    joinedOrganizations,
-    setJoinedOrganization,
-    feedJoinedOrganizations,
-  } = useDashboard();
+  const { joinedOrganizations, feedJoinedOrganizations } = useDashboard();
   const { users } = useJoinedOrganizationUsers(joinedOrganizations);
+
+  const { setJoinedOrganization } = useJoinedOrganization();
 
   const leaveOrganization = async (id: string) => {
     try {
@@ -97,7 +97,7 @@ const JoinedOrganizationsList = () => {
         </p>
       ) : (
         joinedOrganizations.map((org, idx) => (
-          <div key={idx} onClick={() => setJoinedOrganization(org.id)}>
+          <div key={idx} onClick={() => setJoinedOrganization(org)}>
             <ContextMenu>
               <ContextMenuTrigger>
                 <Link href={"/organization/joined"}>

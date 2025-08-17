@@ -3,13 +3,10 @@
 import React from "react";
 import { OwnedOrganizationSidebar } from "@/components/layout";
 import DeleteOrganization from "./DeleteOrg";
-import { useDashboard } from "@/stores/dashboard";
-import { OwnedOrganizationData } from "@/@types/modeltypes";
+import { useOwnedOrganization } from "@/stores/ownedOrg";
 
 const OrganizationSettings = () => {
-  const { currentOrganization } = useDashboard();
-  const organization = currentOrganization as OwnedOrganizationData;
-
+  const { name, email } = useOwnedOrganization();
   return (
     <main className="relative flex h-screen bg-white">
       <OwnedOrganizationSidebar />
@@ -26,12 +23,10 @@ const OrganizationSettings = () => {
           </h2>
           <div className="space-y-2 text-gray-700">
             <div>
-              <span className="font-medium">Organization Name:</span>{" "}
-              {organization.name}
+              <span className="font-medium">Organization Name:</span> {name}
             </div>
             <div>
-              <span className="font-medium">Organization Email:</span>{" "}
-              {organization.email}
+              <span className="font-medium">Organization Email:</span> {email}
             </div>
           </div>
         </section>

@@ -32,7 +32,7 @@ const FetchData = ({ children }: { children: ReactNode }) => {
           name: string;
           email: string;
           plan: "FREE" | "PRO" | "TEAMS";
-          organizations: OwnedOrganizationData[];
+          ownedOrganizations: OwnedOrganizationData[];
           joinedOrganizations: JoinedOrganizationData[];
         } = response.data.data;
         /* ____ Feed the fetched data into state for maintaining cache ... */
@@ -41,8 +41,10 @@ const FetchData = ({ children }: { children: ReactNode }) => {
           email: data.email,
           plan: data.plan,
         });
-        feedOwnedOrganizations(data.organizations);
+        feedOwnedOrganizations(data.ownedOrganizations);
         feedJoinedOrganizations(data.joinedOrganizations);
+        console.log("owned organizations : ", data.ownedOrganizations);
+        console.log("joined organizations : ", data.joinedOrganizations);
       } catch (err) {
         if (axios.isAxiosError(err) && err.response?.status === 401) {
           router.push("/login");

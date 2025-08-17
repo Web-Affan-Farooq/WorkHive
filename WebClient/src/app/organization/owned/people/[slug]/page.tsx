@@ -14,13 +14,25 @@ import convertToTitleCase from "@/lib/Convert";
 import { Building } from "lucide-react";
 
 /* Store & types ... */
-import { useOwnedOrganization } from "@/hooks";
+import { useOwnedOrganization } from "@/stores/ownedOrg";
+import { useMemo } from "react";
 
 export const description = "An area chart with gradient fill";
+import { Profile } from "@/@types/modeltypes";
 
 const ProfileDetails = () => {
   const { slug } = useParams();
-  const { allUsers } = useOwnedOrganization();
+  const { users } = useOwnedOrganization();
+
+  const allUsers = useMemo(() => {
+    if (users) {
+      const usersArray: Profile[] = Object.keys(users).flatMap(
+        (key) => users[key] || []
+      );
+      return usersArray;
+    }
+    return [];
+  }, [users]);
 
   const requiredUser = allUsers.find((user) => user.id === slug);
 

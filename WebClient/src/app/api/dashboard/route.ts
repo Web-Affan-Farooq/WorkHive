@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { Profile } from "@/@types/modeltypes";
 import { Department } from "@/generated/prisma";
 import GetTokenPayload from "@/utils/GetTokenPayload";
+import { TaskPayload } from "@/@types/Task";
 
 export const GET = async () => {
   const payload = await GetTokenPayload();
@@ -63,12 +64,20 @@ export const GET = async () => {
           },
         },
       });
+
+      const tasks = await prisma.task.findMany({
+        where: {
+          organizationId: org.id,
+        },
+      });
+
       const data: {
         id: string;
         name: string;
         email: string;
         departments: Department[];
         users: Record<string, Profile[]>;
+        tasks: TaskPayload[];
       } = {
         id: org.id,
         name: org.name,
@@ -79,7 +88,9 @@ export const GET = async () => {
           organizationId: dept.organizationId,
         })),
         users: {},
+        tasks: tasks,
       };
+
       departments.forEach((dept) => {
         data.users[dept.id] = dept.users;
       });
@@ -117,7 +128,7 @@ export const GET = async () => {
     name: requiredAccount.name,
     email: requiredAccount.email,
     plan: requiredAccount.plan,
-    organizations: organizations,
+    ownedOrganizations: organizations,
     joinedOrganizations: extractedOrganizations,
   };
 

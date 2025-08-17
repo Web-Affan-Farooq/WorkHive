@@ -1,3 +1,4 @@
+// state attached
 "use client";
 
 // ____ Libraries ...
@@ -20,9 +21,14 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
+import { useOwnedOrganization } from "@/stores/ownedOrg";
+
 const OwnedOrganizationList = () => {
-  const { ownedOrganizations, setOwnedOrganization, feedOwnedOrganizations } =
-    useDashboard();
+  // for getting and deleting owned organizations
+  const { ownedOrganizations, feedOwnedOrganizations } = useDashboard();
+
+  // setter function for persisting organization data accross routes
+  const { setOwnedOrganization } = useOwnedOrganization();
 
   // ______ for counting users in each organization  ...
   const organizationUsersCount = (org: OwnedOrganizationData) => {
@@ -59,7 +65,19 @@ const OwnedOrganizationList = () => {
         </p>
       ) : (
         ownedOrganizations.map((org, idx) => (
-          <div key={idx} onClick={() => setOwnedOrganization(org.id)}>
+          <div
+            key={idx}
+            onClick={() =>
+              setOwnedOrganization({
+                name: org.name,
+                email: org.email,
+                id: org.id,
+                tasks: org.tasks,
+                departments: org.departments,
+                users: org.users,
+              })
+            }
+          >
             <ContextMenu>
               <ContextMenuTrigger>
                 <Link href={"/organization/owned"}>

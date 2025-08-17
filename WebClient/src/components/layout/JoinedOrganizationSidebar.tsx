@@ -1,8 +1,10 @@
+// state attached
 "use client";
 import { useState } from "react";
 import { LayoutGrid, Settings, ClipboardList, Users, Bell } from "lucide-react";
 import Link from "next/link";
-import { useJoinedOrganization } from "@/hooks";
+// import { useJoinedOrganization } from "@/hooks";
+import { useJoinedOrganization } from "@/stores/joinedOrg";
 
 const JoinedOrganizationSidebar = () => {
   const menuItems = [
@@ -21,11 +23,6 @@ const JoinedOrganizationSidebar = () => {
       label: "People",
       icon: <Users className="group-hover:text-white size-5" />,
     },
-    // {
-    //   href: `/organization/departments`,
-    //   label: "Departments",
-    //   icon: <Building className="group-hover:text-white size-5" />,
-    // },
     {
       href: `/organization/joined/notifications`,
       label: "Notifications",
@@ -40,7 +37,7 @@ const JoinedOrganizationSidebar = () => {
 
   //   /* _____ State for toogling sidebar... */
   const [navOpen, setNavOpen] = useState(false);
-  const { currentOrganization } = useJoinedOrganization();
+  const { name } = useJoinedOrganization();
 
   return (
     <div className="relative flex h-screen">
@@ -50,9 +47,7 @@ const JoinedOrganizationSidebar = () => {
       >
         <nav className="flex flex-col justify-between h-full">
           <div>
-            <h2 className="text-xl font-bold mb-8">
-              {currentOrganization.name}
-            </h2>
+            <h2 className="text-xl font-bold mb-8">{name}</h2>
             <div className="flex flex-col gap-4">
               {menuItems.map((item, idx) => (
                 <Link

@@ -11,9 +11,7 @@ import {
 } from "@/components/ui/context-menu";
 
 import Image from "next/image";
-import { useJoinedOrganization } from "@/hooks";
-// import toast from 'react-hot-toast';
-// import axios from 'axios';
+import { useJoinedOrganization } from "@/stores/joinedOrg";
 
 const Card = ({ employeeData }: { employeeData: Profile }) => {
   return (
@@ -33,10 +31,6 @@ const Card = ({ employeeData }: { employeeData: Profile }) => {
 
       {/* Profile Info */}
       <div className="flex flex-col justify-center items-start min-w-0">
-        {/* <div className="relative flex flex-row flex-nowrap justify-center items-center gap-[10px]">
-                <h4 className="text-white text-md font-bold leading-tight truncate">Mdfu ifuiods ff dsfidsopfi ad Affan</h4>
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                </div> */}
         <div className="relative flex flex-row flex-nowrap justify-center items-center gap-[10px] min-w-0 w-full">
           <h4 className="text-[15px] font-bold leading-tight flex-grow">
             {employeeData.name}

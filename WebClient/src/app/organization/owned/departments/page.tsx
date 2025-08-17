@@ -1,9 +1,9 @@
 "use client";
 
 // ___ Hooks ...
-import { useDashboard } from "@/stores/dashboard";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useOwnedOrganization } from "@/stores/ownedOrg";
 
 // ___ Libraries ...
 import * as z from "zod";
@@ -12,7 +12,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 // ___ Schemas and types ...
-import { Departments, OwnedOrganizationData } from "@/@types/modeltypes";
+import { Departments } from "@/@types/modeltypes";
 import { DepartmentSchema } from "@/validations";
 
 // ___ Components ...
@@ -41,12 +41,17 @@ import { OwnedOrganizationSidebar } from "@/components/layout";
 type DepartmentFormData = z.infer<typeof DepartmentSchema>;
 
 const DepartmentsPage = () => {
-  const { currentOrganization } = useDashboard();
-  const organization = currentOrganization as OwnedOrganizationData;
+  const { id, departments, users, addDepartment, deleteDepartment } =
+    useOwnedOrganization();
+  // const { createDepartment } = useDashboard();
 
-  const countEmployees = (deptId: string) => {
-    return organization.users[deptId].length;
-  };
+  const countEmployees = useCallback(
+    (deptId: string) => {
+      if (users[deptId]) return users[deptId].length;
+      return 0;
+    },
+    [users]
+  );
 
   const [disabled, setdisabled] = useState(false);
 
@@ -58,15 +63,35 @@ const DepartmentsPage = () => {
     resolver: zodResolver(DepartmentSchema),
     mode: "onChange",
     defaultValues: {
-      organizationId: organization.id,
+      organizationId: id,
     },
   });
-  const createDepartment = async (data: DepartmentFormData) => {
+  const handleDepartmentCreation = async (data: DepartmentFormData) => {
     setdisabled(true);
     try {
       const response = await axios.post("/api/departments/create", data);
+
+      const newDepartment: Departments = response.data.department;
+      addDepartment(newDepartment);
+
       toast.success(response.data.message);
       console.log(response.data);
+    } catch (err) {
+      console.log("Error : ", err);
+      toast.error("An error occured");
+    }
+    setdisabled(false);
+  };
+
+  const handleDepartmentDelete = async (id: string) => {
+    try {
+      const response = await axios.delete("/api/departments/delete", {
+        data: {
+          id: id,
+        },
+      });
+      deleteDepartment(id);
+      toast.success(response.data.message);
     } catch (err) {
       console.log("Error : ", err);
       toast.error("An error occured");
@@ -93,7 +118,7 @@ const DepartmentsPage = () => {
 
               <form
                 className="flex flex-col gap-[10px]"
-                onSubmit={handleSubmit(createDepartment)}
+                onSubmit={handleSubmit(handleDepartmentCreation)}
               >
                 {/* title ... */}
                 <label htmlFor="title" className="font-semibold text-sm">
@@ -128,10 +153,10 @@ const DepartmentsPage = () => {
           </div>
 
           <div>
-            {organization.departments.length <= 0 ? (
+            {departments.length <= 0 ? (
               <p className="text-gray-400">No departments found ...</p>
             ) : (
-              organization.departments.map((dept: Departments, idx: number) => (
+              departments.map((dept: Departments, idx: number) => (
                 <div key={idx} className="w-full cursor-pointer">
                   <ContextMenu>
                     <ContextMenuTrigger>
@@ -146,7 +171,11 @@ const DepartmentsPage = () => {
                     </ContextMenuTrigger>
                     <ContextMenuContent>
                       <ContextMenuItem>Edit</ContextMenuItem>
-                      <ContextMenuItem>Delete</ContextMenuItem>
+                      <ContextMenuItem
+                        onClick={() => handleDepartmentDelete(dept.id)}
+                      >
+                        Delete
+                      </ContextMenuItem>
                     </ContextMenuContent>
                   </ContextMenu>
                 </div>

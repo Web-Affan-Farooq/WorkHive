@@ -1,3 +1,4 @@
+// state attached
 "use client";
 import { useState } from "react";
 import {
@@ -11,7 +12,8 @@ import {
   CircleCheck,
 } from "lucide-react";
 import Link from "next/link";
-import { useOwnedOrganization } from "@/hooks";
+// import { useOwnedOrganization } from "@/hooks";
+import { useOwnedOrganization } from "@/stores/ownedOrg";
 
 // ___ Components ...
 import {
@@ -60,7 +62,7 @@ const ManagementSidebar = () => {
 
   //   /* _____ State for toogling sidebar... */
   const [navOpen, setNavOpen] = useState(false);
-  const { currentOrg } = useOwnedOrganization();
+  const { id, name } = useOwnedOrganization();
 
   return (
     <div className="relative flex h-screen">
@@ -71,7 +73,7 @@ const ManagementSidebar = () => {
         >
           <nav className="flex flex-col justify-between h-full">
             <div>
-              <h2 className="text-xl font-bold mb-8">{currentOrg.name}</h2>
+              <h2 className="text-xl font-bold mb-8">{name}</h2>
               <div className="flex flex-col gap-4">
                 {menuItems.map((item, idx) => (
                   <Link
@@ -114,13 +116,13 @@ const ManagementSidebar = () => {
           <div className="p-[5px]">
             <div className="flex flex-row gap-[10px] items-center">
               <div className="bg-gray-800/90 text-gray-400 px-[15px] py-[5px] rounded-md truncate w-full">
-                {currentOrg.id}
+                {id}
               </div>
               <button
                 type="button"
                 className="bg-gray-400 px-[10px] py-[1px] rounded-md"
                 onClick={(e) => {
-                  window.navigator.clipboard.writeText(currentOrg.id);
+                  window.navigator.clipboard.writeText(id);
                   e.currentTarget.innerText = "Copied";
                 }}
               >
