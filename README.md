@@ -56,11 +56,10 @@ aliabbasi@gmail.com (djDF56@#)
 | Employee dashboard with task view       | ✅     | | ⬜    || ⬜     |
 | Task status update (done / in progress) | ⬜     | | ⬜    || ⬜     |
 | Analytics dashboard                     | ⬜     | | ⬜    || ⬜     |
-| Notifications system                    | ⬜     | | ⬜    || ⬜     |
+| Notifications system                    | ✅     | | ⬜    || ⬜     |
 | Comments / collaboration                | ⬜     | | ⬜    || ⬜     |
 | Mobile responsive / PWA                 | ✅     | | ⬜    || ⬜     |
 | Role-based access control               | ⬜     | | ⬜    || ⬜     |
 | Live demo hosted                        | ⬜     | | ⬜    || ⬜     |
 | GitHub README with screenshots          | ⬜     | | ⬜    || ⬜     |
 | Blog/case study write-up                | ⬜     | | ⬜    || ⬜     |
-

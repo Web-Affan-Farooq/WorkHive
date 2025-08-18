@@ -60,7 +60,7 @@ const OwnedOrganizationList = () => {
   return (
     <div className="flex flex-col gap-[10px]">
       {ownedOrganizations.length <= 0 ? (
-        <p className="text-gray-500 py-20 text-[18px] font-bold text-center">
+        <p className="text-gray-500 py-8 text-sm text-center">
           No organizations found ...
         </p>
       ) : (

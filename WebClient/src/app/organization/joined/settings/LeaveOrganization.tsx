@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useJoinedOrganization } from "@/stores/joinedOrg";
 
 import {
   AlertDialog,
@@ -10,9 +11,35 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import axios from "axios";
+import ShowClientError from "@/utils/Error";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { useDashboard } from "@/stores/dashboard";
 
 const LeaveOrganization = () => {
+  const router = useRouter();
   const [disabled] = useState(false);
+  const { info } = useDashboard();
+  const { department } = useJoinedOrganization();
+  if (!department) {
+    return (
+      <div className="p-5">
+        <p className="text-sm text-gray-400">Loading ...</p>
+      </div>
+    );
+  }
+  const handleOrganizationLeave = async () => {
+    try {
+      const response = await axios.get("/api/departments/unjoin", {
+        params: { deptId: department.id, name: info.name },
+      });
+      toast.success(response.data.message);
+      router.push(response.data.redirect);
+    } catch (err) {
+      ShowClientError(err, "Leave department : ");
+    }
+  };
 
   return (
     <div className="p-5">
@@ -29,7 +56,10 @@ const LeaveOrganization = () => {
           </AlertDialogDescription>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogCancel className="transition hover:bg-red-500 hover:text-white cursor-pointer ">
+            <AlertDialogCancel
+              onClick={handleOrganizationLeave}
+              className="transition hover:bg-red-500 hover:text-white cursor-pointer "
+            >
               Leave
             </AlertDialogCancel>
           </AlertDialogFooter>

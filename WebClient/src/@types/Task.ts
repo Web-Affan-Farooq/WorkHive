@@ -1,17 +1,17 @@
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  assignedOn: string;
-  dueDate: string;
-  organizationId: string;
-  assignedTo: string;
-  completed: boolean;
-  completedOn: string | null;
-  note: string;
-}
+// interface Task {
+//   id: string;
+//   title: string;
+//   description: string;
+//   assignedOn: string;
+//   dueDate: string;
+//   organizationId: string;
+//   assignedTo: string;
+//   completed: boolean;
+//   completedOn: string | null;
+//   note: string;
+// }
 
-interface TaskPayload {
+interface Task {
   id: string;
   title: string;
   description: string;
@@ -24,4 +24,4 @@ interface TaskPayload {
   note: string;
 }
 
-export type { Task, TaskPayload };
+export type { Task };

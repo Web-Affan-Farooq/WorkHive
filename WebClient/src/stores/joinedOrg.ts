@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
-import { Profile } from "@/@types/modeltypes";
+import { Departments, Profile } from "@/@types/modeltypes";
 import { Task } from "@/@types/Task";
 
 interface OrganizationInfo {
@@ -8,16 +8,18 @@ interface OrganizationInfo {
   name: string;
   email: string;
   tasks: Task[];
-  users: Profile[];
+  users: Omit<Profile, "id">[];
+  department: Departments;
 }
 interface JoinedOrg {
   id: string;
   name: string;
   email: string;
   tasks: Task[];
-  users: Profile[];
+  users: Omit<Profile, "id">[];
+  department: Departments | null;
   feedTasks: (list: Task[]) => void;
-  feedUsers: (list: Profile[]) => void;
+  feedUsers: (list: Omit<Profile, "id">[]) => void;
   setJoinedOrganization: (OrganizationInfo: OrganizationInfo) => void;
 }
 
@@ -30,23 +32,31 @@ export const useJoinedOrganization = create<JoinedOrg>()(
         email: "",
         tasks: [],
         users: [],
-
+        department: null,
         feedTasks: (list: Task[]) =>
           set(() => ({
             tasks: list,
           })),
-        feedUsers: (list: Profile[]) =>
+        feedUsers: (list: Omit<Profile, "id">[]) =>
           set(() => ({
             users: list,
           })),
 
-        setJoinedOrganization: ({ id, name, email, tasks, users }) =>
+        setJoinedOrganization: ({
+          id,
+          name,
+          email,
+          tasks,
+          users,
+          department,
+        }) =>
           set(() => ({
             id: id,
             name: name,
             email: email,
             tasks: tasks,
             users: users,
+            department: department,
           })),
       }),
       {

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage, devtools } from "zustand/middleware";
 import { OwnedOrganizationData } from "@/@types/modeltypes";
 import { JoinedOrganizationData } from "@/@types/modeltypes";
+import { Notification } from "@/@types/Notification";
 
 interface Info {
   name: string;
@@ -21,6 +22,9 @@ interface DashboardState {
 
   // removeUser: (deptId: string, userId: string) => void;
   clearCache: () => void;
+  notifications: Notification[];
+  setNotifications: (list: Notification[]) => void;
+  seenNotification: (notificationId: string) => void;
 }
 
 export const useDashboard = create<DashboardState>()(
@@ -65,6 +69,18 @@ export const useDashboard = create<DashboardState>()(
             false,
             "dashboard/clearCache"
           ),
+        notifications: [],
+        setNotifications: (list) =>
+          set(() => ({
+            notifications: list,
+          })),
+        seenNotification: (notificationId) =>
+          set((state) => ({
+            notifications: state.notifications.map((not) => {
+              if (not.id === notificationId) return { ...not, read: true };
+              else return not;
+            }),
+          })),
       }),
       {
         name: "dashboard-data",

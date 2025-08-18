@@ -1,7 +1,9 @@
 "use client";
 // import { useDashboard } from "@/stores/dashboard";
 import { OwnedOrganizationSidebar } from "@/components/layout";
-import { useOwnedOrganization } from "@/hooks";
+import { useOwnedOrganization } from "@/stores/ownedOrg";
+import { useMemo } from "react";
+import { Profile } from "@/@types/modeltypes";
 // import { useState } from "react";
 // import { useEffect } from "react";
 // import axios from "axios";
@@ -48,7 +50,16 @@ export const description = "An area chart with gradient fill";
 // } satisfies ChartConfig
 
 const OrganizationPage = () => {
-  const { allUsers } = useOwnedOrganization();
+  const { users } = useOwnedOrganization();
+  const allUsers = useMemo(() => {
+    if (users) {
+      const usersArray: Profile[] = Object.keys(users).flatMap(
+        (key) => users[key] || []
+      );
+      return usersArray;
+    }
+    return [];
+  }, [users]);
   /* 1. ____ Global state storing data for implementation of one time fetch  ... */
   // const { departments, tasks ,users} = useDashboard();
   //   const now = new Date();

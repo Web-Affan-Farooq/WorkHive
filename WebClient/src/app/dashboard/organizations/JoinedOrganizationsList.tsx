@@ -4,16 +4,6 @@
 // ____ Libraries ...
 import axios from "axios";
 import toast from "react-hot-toast";
-
-// ____ Types ...
-import {
-  Departments,
-  Profile,
-  JoinedOrganizationData,
-} from "@/@types/modeltypes";
-
-// ____ Hooks ...
-import { useEffect, useState } from "react";
 import { useDashboard } from "@/stores/dashboard";
 import { useJoinedOrganization } from "@/stores/joinedOrg";
 
@@ -26,51 +16,11 @@ import {
 } from "@/components/ui/context-menu";
 import Image from "next/image";
 import Link from "next/link";
-import Logger from "@/lib/logger";
-
-// ____ extended type ...
-interface DepartmentsArray extends Departments {
-  users: Profile[];
-}
-const logger = new Logger("JoinedOrganizationList");
-
-// ______ Custom hook laye that returns data in structured form ...
-const useJoinedOrganizationUsers = (
-  joinedOrganizations: JoinedOrganizationData[]
-) => {
-  const [users, setUsers] = useState<Record<string, Profile[]>>({});
-
-  useEffect(() => {
-    if (joinedOrganizations.length === 0) return;
-
-    const getOrganizationUsers = async (orgId: string) => {
-      try {
-        const response = await axios.post("/api/departments", { orgId });
-        const departments: DepartmentsArray[] = response.data.departments;
-
-        logger.log(49, "Fetched departments:", departments);
-
-        // Aggregate users for this organization
-        setUsers((prev) => ({
-          ...prev,
-          [orgId]: departments.flatMap((dept) => dept.users),
-        }));
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    Promise.all(joinedOrganizations.map((org) => getOrganizationUsers(org.id)));
-  }, [joinedOrganizations]);
-
-  return { users };
-};
 
 const JoinedOrganizationsList = () => {
   const { joinedOrganizations, feedJoinedOrganizations } = useDashboard();
-  const { users } = useJoinedOrganizationUsers(joinedOrganizations);
 
-  const { setJoinedOrganization } = useJoinedOrganization();
+  const { setJoinedOrganization, users } = useJoinedOrganization();
 
   const leaveOrganization = async (id: string) => {
     try {
@@ -92,7 +42,7 @@ const JoinedOrganizationsList = () => {
   return (
     <div className="flex flex-col gap-[10px]">
       {joinedOrganizations.length <= 0 ? (
-        <p className="text-gray-500 py-20 text-[18px] font-bold text-center">
+        <p className="text-gray-500 py-8 text-sm text-center">
           No organizations found ...
         </p>
       ) : (
@@ -116,20 +66,18 @@ const JoinedOrganizationsList = () => {
                         {org.name}
                       </h2>
                       <span className="text-sm text-gray-500">
-                        {users[org.id].length ? users[org.id].length : 0}
-                        employees
+                        {users.length}&nbsp; employees
                       </span>
                     </div>
                   </div>
                 </Link>
               </ContextMenuTrigger>
               <ContextMenuContent>
-                <ContextMenuItem>Edit</ContextMenuItem>
                 <ContextMenuItem
-                  className="text-red-500"
+                  className="text-red-500 cursor-pointer"
                   onClick={() => leaveOrganization(org.id)}
                 >
-                  Delete
+                  Leave
                 </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>

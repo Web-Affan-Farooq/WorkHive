@@ -6,151 +6,71 @@ import GetTokenPayload from "@/utils/GetTokenPayload";
 export const GET = async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.nextUrl);
-    const orgId = searchParams.get("orgId")!;
+    const deptId = searchParams.get("deptId");
+    const name = searchParams.get("name");
     const payload = await GetTokenPayload();
 
-    // Auth check
+    // ---- Auth check ----
     if (!payload) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 402 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // OrgId check
-    if (!orgId) {
+    // ---- Dept check ----
+    if (!deptId) {
       return NextResponse.json(
-        { message: "Organization ID not found" },
+        { message: "Department ID not provided" },
         { status: 400 }
       );
     }
 
-    // Get the organization with departments and users
-    const requiredOrganization = await prisma.organization.findUnique({
-      where: { id: orgId },
-      select: {
-        departments: {
-          select: {
-            id: true,
-            users: {
-              select: { id: true },
-            },
-          },
-        },
-      },
-    });
-
-    if (!requiredOrganization) {
-      return NextResponse.json(
-        { message: "Organization not found" },
-        { status: 404 }
-      );
-    }
-
-    // Find the department containing the user
-    const department = requiredOrganization.departments.find((dept) =>
-      dept.users.some((user) => user.id === payload.accountId)
-    );
-
-    if (!department) {
-      return NextResponse.json(
-        { message: "User not found in any department of this organization" },
-        { status: 404 }
-      );
-    }
-
-    // Disconnect the user from the department
-    await prisma.department.update({
-      where: { id: department.id },
+    // ---- Disconnect user from department ----
+    const leavedDepartment = await prisma.department.update({
+      where: { id: deptId },
       data: {
         users: {
           disconnect: { id: payload.accountId },
         },
       },
+      select: {
+        name: true,
+        organization: {
+          select: {
+            name: true,
+            userId: true,
+          },
+        },
+      },
     });
 
+    // ---- Create notification (non-blocking if it fails) ----
+    try {
+      await prisma.notification.create({
+        data: {
+          title: `User left organization`,
+          type: "SUCCESS",
+          message: `${name ?? "A user"} has left the ${leavedDepartment.name} department in ${leavedDepartment.organization.name}`,
+          read: false,
+          userId: leavedDepartment.organization.userId,
+        },
+      });
+    } catch (notifyErr) {
+      console.error("Notification creation failed:", notifyErr);
+      // Don’t block user from leaving if notification fails
+    }
+
+    // ---- Success response ----
     return NextResponse.json(
-      { message: "Successfully left the organization" },
+      {
+        message: "Successfully left the department",
+        redirect: "/dashboard/organizations",
+      },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error leaving organization:", error);
+    console.error("Error leaving department:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }
     );
   }
 };
-
-// import type { NextRequest } from "next/server";
-// import { NextResponse } from "next/server";
-// import { prisma } from "@/lib/prisma";
-// import GetTokenPayload from "@/utils/GetTokenPayload";
-
-// export const GET = async (req: NextRequest) => {
-//   const { searchParams } = new URL(req.nextUrl);
-//   const orgId = searchParams.get("orgId")!;
-//   const payload = await GetTokenPayload();
-
-//   if (!payload) {
-//     return NextResponse.json(
-//       {
-//         message: "Unauthorized",
-//       },
-//       {
-//         status: 402,
-//       }
-//     );
-//   }
-
-//   if (!orgId) {
-//     return NextResponse.json(
-//       {
-//         message: "department id not found",
-//       },
-//       {
-//         status: 400,
-//       }
-//     );
-//   }
-
-//   const requiredOrganization = await prisma.organization.findUnique(
-//     {
-//         where: {
-//             id:orgId
-//         },
-//         select: {
-//             departments:{
-//                 select: {
-//                     id: true,
-//                     users:{
-//                         select: {
-//                             id:true,
-//                         }
-//                     },
-//                 }
-//             }
-//         }
-//     }
-//   )!;
-
-//   requiredOrganization?.departments.find((dept) => dept.users.
-//   await prisma.department.update({
-//     where: {
-//       id: departmentId,
-//     },
-//     data: {
-//       users: {
-//         disconnect: {
-//           id: payload.accountId,
-//         },
-//       },
-//     },
-//   });
-
-//   return NextResponse.json(
-//     {
-//       message: "Organization leaved",
-//     },
-//     {
-//       status: 200,
-//     }
-//   );
-// };

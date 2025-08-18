@@ -2,10 +2,10 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import GetTokenPayload from "@/utils/GetTokenPayload";
-import { TaskPayload } from "@/@types/Task";
+import { Task } from "@/@types/Task";
 
 export const POST = async (req: NextRequest) => {
-  const body: TaskPayload = await req.json();
+  const body: Task = await req.json();
 
   const payload = await GetTokenPayload();
   if (!payload) {

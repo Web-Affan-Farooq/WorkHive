@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import * as z from 'zod';
+import * as z from "zod";
 import { OrganizationFormSchema } from "@/validations";
 import Logger from "@/lib/logger";
 import GetTokenPayload from "@/utils/GetTokenPayload";
@@ -16,7 +16,7 @@ export const POST = async (req: NextRequest) => {
   try {
     /* ____ Get body and cookies ... */
     const body: Body = await req.json();
-    logger.log(43, "Get body : ", body)
+    logger.log(43, "Get body : ", body);
 
     /* ____ Check if org email already exists ... */
     const existingOrg = await prisma.organization.findUnique({
@@ -35,19 +35,20 @@ export const POST = async (req: NextRequest) => {
     if (!payload) {
       return NextResponse.json(
         {
-          message: "Unauthorized"
-        }, {
-        status: 401
-      }
-      )
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
     }
     const accountId = payload.accountId;
 
-    logger.log(41, "Get account id from token : ", accountId)
+    logger.log(41, "Get account id from token : ", accountId);
 
     /* ____ Hash organization password ... */
     const orgPasswordHash = await bcrypt.hash(body.organizationPassword, 10);
-    logger.log(47, "Hashed password of org : ", orgPasswordHash)
+    logger.log(47, "Hashed password of org : ", orgPasswordHash);
 
     /* ____ Create organization ... */
     const newOrg = await prisma.organization.create({
@@ -55,7 +56,7 @@ export const POST = async (req: NextRequest) => {
         name: body.organizationName,
         organizationEmail: body.organizationEmail,
         organizationPassword: body.organizationPassword,
-        userId: accountId, // ____ Ignore this error 
+        userId: accountId, // ____ Ignore this error
       },
     });
 
@@ -65,7 +66,7 @@ export const POST = async (req: NextRequest) => {
       {
         message: "Organization created successfully",
         organization: newOrg,
-        redirect: "/dashboard/organization"
+        redirect: "/dashboard/organizations",
       },
       { status: 201 }
     );

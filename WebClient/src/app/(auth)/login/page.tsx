@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Footer, Header } from "@/components/layout";
 import { useRouter } from "next/navigation";
 import { PasswordInput } from "@/components/common";
+import ShowClientError from "@/utils/Error";
 
 type AccountLoginFormData = z.infer<typeof AccountLoginSchema>;
 
@@ -37,8 +38,7 @@ const Login = () => {
         router.push(response.data.redirect);
       }
     } catch (err) {
-      toast.error("An error occured");
-      console.log(err);
+      ShowClientError(err, "Login error");
     }
     setDisabled(false);
   };

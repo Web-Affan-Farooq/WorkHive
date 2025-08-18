@@ -42,6 +42,7 @@ model Organization {
   tasks                Task[]
 }
 
+// attach notify on update
 model Department {
   id             String       @id @default(uuid())
   name           String
@@ -50,6 +51,7 @@ model Department {
   users          Accounts[]   @relation("DepartmentMembers")
 }
 
+// attach notify on insert , update
 model Task {
   id             String       @id @default(uuid())
   organization   Organization @relation(fields: [organizationId], references: [id])
@@ -68,6 +70,7 @@ model Task {
   note        String    @default("No note found ...")
 }
 
+// attach notify on insert
 model Notification {
   id        String           @id @default(uuid())
   title     String
