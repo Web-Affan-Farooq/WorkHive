@@ -1,0 +1,1 @@
+- On dashboard sections , this app contains two main states , one centralized state for caching data and two other child states for manipulating to their respective owned organizations and joined orgnaizations route

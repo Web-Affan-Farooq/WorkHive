@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import axios from "axios";
 import ShowClientError from "@/utils/Error";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useDashboard } from "@/stores/dashboard";
+import Notify from "@/utils/Notifications";
 
 const LeaveOrganization = () => {
   const router = useRouter();
@@ -34,7 +34,7 @@ const LeaveOrganization = () => {
       const response = await axios.get("/api/departments/unjoin", {
         params: { deptId: department.id, name: info.name },
       });
-      toast.success(response.data.message);
+      Notify.success(response.data.message);
       router.push(response.data.redirect);
     } catch (err) {
       ShowClientError(err, "Leave department : ");

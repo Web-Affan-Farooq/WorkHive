@@ -8,7 +8,6 @@ import {
   ClipboardList,
   Users,
   Building,
-  Bell,
   CircleCheck,
 } from "lucide-react";
 import Link from "next/link";
@@ -47,11 +46,6 @@ const ManagementSidebar = () => {
       href: `/organization/owned/departments`,
       label: "Departments",
       icon: <Building className="group-hover:text-white size-5" />,
-    },
-    {
-      href: `/organization/owned/notifications`,
-      label: "Notifications",
-      icon: <Bell className="group-hover:text-white size-5" />,
     },
     {
       href: `/organization/owned/settings`,

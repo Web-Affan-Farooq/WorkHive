@@ -7,7 +7,7 @@ import { useOwnedOrganization } from "@/stores/ownedOrg";
 
 // ____ Types and schemas ...
 import { TaskCreationSchema } from "@/validations";
-import { Task, TaskPayload } from "@/@types/Task";
+import { Task } from "@/@types/Task";
 
 // ____ Components ...
 import {
@@ -33,9 +33,12 @@ import Card from "./Card";
 
 // ____ Libraries ...
 import axios from "axios";
-import toast from "react-hot-toast";
 import { v4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
+import ShowClientError from "@/utils/Error";
+
+// _____ Utils ...
+import Notify from "@/utils/Notifications";
 
 const Tasks = () => {
   const { departments, id, users, addTask, tasks, deleteTask } =
@@ -52,6 +55,7 @@ const Tasks = () => {
   const {
     register,
     getValues,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(TaskCreationSchema),
@@ -67,7 +71,7 @@ const Tasks = () => {
   });
 
   const handleCreateTask = async () => {
-    const data: TaskPayload = {
+    const data: Task = {
       id: getValues().id,
       title: getValues().title,
       description: getValues().description,
@@ -83,11 +87,10 @@ const Tasks = () => {
       const response = await axios.post("/api/tasks/create", data);
       const returnedTask: Task = response.data.task;
       addTask(returnedTask);
-      toast.success(response.data.message);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error("An error occured");
-      console.log(err);
+      Notify.success(response.data.message);
+      reset();
+    } catch (err) {
+      ShowClientError(err, "Task creation error");
     }
   };
 
@@ -98,14 +101,10 @@ const Tasks = () => {
           id: id,
         },
       });
-      if (!response.data.success) {
-        toast.error("An error occured");
-      }
       deleteTask(id);
-      toast.success(response.data.message);
+      Notify.success(response.data.message);
     } catch (err) {
-      console.log(err);
-      toast.error("An error occured");
+      ShowClientError(err, "Task creation error");
     }
   };
 
@@ -233,7 +232,9 @@ const Tasks = () => {
                   </p>
                 )}
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel onClick={() => reset()}>
+                    Cancel
+                  </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleCreateTask}
                     className="bg-gray-900 cursor-pointer px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]"

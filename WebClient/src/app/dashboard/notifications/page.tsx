@@ -1,16 +1,21 @@
 "use client";
+// ______ Hooks ...
 import { useDashboard } from "@/stores/dashboard";
-import { DashboardSidebar } from "@/components/layout";
-import axios from "axios";
-import toast from "react-hot-toast";
-
+// ______ Components ...
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { DashboardSidebar } from "@/components/layout";
+// ______ Libraries ...
+import axios from "axios";
+// ______ Utils ...
+import Notify from "@/utils/Notifications";
+import ShowClientError from "@/utils/Error";
 
+// ______ Function for calculating timestamp when notification is created...
 const timeAgo = (dateStr: string): string => {
   const now = new Date();
   const then = new Date(dateStr);
@@ -71,18 +76,25 @@ const NotificationCard = ({
 };
 
 const Notifications = () => {
-  const { notifications } = useDashboard();
+  // ______ Getting list of notifications from global state...
+  const { notifications, setNotifications } = useDashboard();
+  // ______ Function for handling notification delete...
   const handleDelete = async (id: string) => {
-    const response = await axios.delete("/api/notifications/delete", {
-      data: {
-        id: id,
-      },
-    });
-    if (!response.data.success) {
-      toast.error("An error occured");
+    // ______ Create a DELETE request to /api/notifications/delete + show error / success fallback and then update the ui ...
+    try {
+      const response = await axios.delete("/api/notifications/delete", {
+        data: {
+          id: id,
+        },
+      });
+      Notify.success(response.data.message);
+      const remainingNotifications = notifications.filter(
+        (not) => not.id !== id
+      );
+      setNotifications(remainingNotifications);
+    } catch (err) {
+      ShowClientError(err, "notification delete error");
     }
-    toast.success(response.data.message);
-    // deleteNotification(id);
   };
   return (
     <main className="flex min-h-screen bg-gray-100">

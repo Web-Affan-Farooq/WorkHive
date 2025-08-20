@@ -47,7 +47,7 @@ interface JoinedOrganizationData {
   email: string;
   department: Departments;
   tasks: Task[];
-  users: Omit<Profile, "id">[];
+  users: Profile[];
 }
 
 export type {

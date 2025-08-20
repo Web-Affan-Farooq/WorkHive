@@ -1,11 +1,12 @@
-// state attached
 "use client";
-
-// ____ Libraries ...
-import axios from "axios";
-import toast from "react-hot-toast";
+// ____ Hooks ...
 import { useDashboard } from "@/stores/dashboard";
 import { useJoinedOrganization } from "@/stores/joinedOrg";
+// ____ Libraries ...
+import axios from "axios";
+
+// ____ Utils ...
+import Notify from "@/utils/Notifications";
 
 // ____ Components ...
 import {
@@ -16,12 +17,16 @@ import {
 } from "@/components/ui/context-menu";
 import Image from "next/image";
 import Link from "next/link";
+import ShowClientError from "@/utils/Error";
 
 const JoinedOrganizationsList = () => {
+  // ______ joind organinization from main state ...
   const { joinedOrganizations, feedJoinedOrganizations } = useDashboard();
 
+  // ______ setter for selecting orgnaization + users array
   const { setJoinedOrganization, users } = useJoinedOrganization();
 
+  // ______ For leaving organization ...
   const leaveOrganization = async (id: string) => {
     try {
       const response = await axios.get("/api/departments/unjoin", {
@@ -29,13 +34,12 @@ const JoinedOrganizationsList = () => {
           orgId: id,
         },
       });
-      toast.success(response.data.message);
+      Notify.success(response.data.message);
       feedJoinedOrganizations(
         joinedOrganizations.filter((org) => org.id !== id)
       );
     } catch (err) {
-      console.log("Error : ", err);
-      toast.error("An error occured while deleting organization");
+      ShowClientError(err, "Leave organization error");
     }
   };
 

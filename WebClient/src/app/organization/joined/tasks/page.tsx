@@ -11,7 +11,6 @@ import { Task } from "@/@types/Task";
 
 // ___ Libraries ...
 import axios from "axios";
-import toast from "react-hot-toast";
 
 import {
   ContextMenu,
@@ -20,6 +19,8 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useJoinedOrganization } from "@/stores/joinedOrg";
+import Notify from "@/utils/Notifications";
+import ShowClientError from "@/utils/Error";
 
 const Tasks = () => {
   const { tasks, feedTasks } = useJoinedOrganization();
@@ -32,10 +33,9 @@ const Tasks = () => {
         },
       });
       feedTasks(tasks.filter((tsk) => tsk.id !== id));
-      toast.success(response.data.message);
+      Notify.success(response.data.message);
     } catch (err) {
-      console.log(err);
-      toast.error("An error occured");
+      ShowClientError(err, "Task deletion error");
     }
   };
 
@@ -44,10 +44,10 @@ const Tasks = () => {
       <JoinedOrganizationSidebar />
       <section className="flex-1 h-screen overflow-y-auto p-10 max-sm:px-5 max-sm:py-7">
         <h1 className="text-2xl font-bold text-gray-800">Tasks Assigned</h1>
-
+        <br />
         <div className="flex flex-row flex-wrap gap-6">
           {tasks.length <= 0 ? (
-            <p className="text-gray-400">No tasks found ...</p>
+            <p className="text-gray-400 text-sm">No tasks found ...</p>
           ) : (
             tasks.map((task: Task, idx) => (
               <ContextMenu key={idx}>

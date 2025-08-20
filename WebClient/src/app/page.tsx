@@ -1,6 +1,6 @@
-import React from 'react';
-import { Header, Footer } from '@/components/layout';
-import { BannerSection, FeaturesSection } from '@/components/pages';
+import React from "react";
+import { Header, Footer } from "@/components/layout";
+import { BannerSection, FeaturesSection } from "@/components/pages";
 
 const Home = () => {
   return (
@@ -12,7 +12,7 @@ const Home = () => {
         <Footer />
       </article>
     </main>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

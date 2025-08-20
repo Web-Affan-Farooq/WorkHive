@@ -20,7 +20,6 @@
 - Signup page `/signup`
 - organization joining form `/join-org`
 
-
 ### notes :
 - Checkout payment webhook . Suspected a major level bug in the webhook route handling account creation .
 - Create manager creation logic 

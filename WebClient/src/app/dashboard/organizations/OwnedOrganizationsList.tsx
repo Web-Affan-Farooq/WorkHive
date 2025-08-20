@@ -1,16 +1,12 @@
-// state attached
 "use client";
-
 // ____ Libraries ...
 import axios from "axios";
 import toast from "react-hot-toast";
-
 // ____ Types ...
 import { Profile, OwnedOrganizationData } from "@/@types/modeltypes";
-
 // ____ Hooks ...
 import { useDashboard } from "@/stores/dashboard";
-
+import { useOwnedOrganization } from "@/stores/ownedOrg";
 // ____ Components ...
 import {
   ContextMenu,
@@ -20,8 +16,6 @@ import {
 } from "@/components/ui/context-menu";
 import Image from "next/image";
 import Link from "next/link";
-
-import { useOwnedOrganization } from "@/stores/ownedOrg";
 
 const OwnedOrganizationList = () => {
   // for getting and deleting owned organizations

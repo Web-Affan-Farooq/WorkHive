@@ -3,13 +3,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
-import toast from "react-hot-toast";
 import { AccountLoginSchema } from "@/validations";
 import { useState } from "react";
 import { Footer, Header } from "@/components/layout";
 import { useRouter } from "next/navigation";
 import { PasswordInput } from "@/components/common";
 import ShowClientError from "@/utils/Error";
+import Notify from "@/utils/Notifications";
 
 type AccountLoginFormData = z.infer<typeof AccountLoginSchema>;
 
@@ -34,7 +34,7 @@ const Login = () => {
       const response = await axios.post("/api/accounts/login", data);
       console.log(response.data);
       if (response.status === 200) {
-        toast.success(response.data.message);
+        Notify.success(response.data.message);
         router.push(response.data.redirect);
       }
     } catch (err) {

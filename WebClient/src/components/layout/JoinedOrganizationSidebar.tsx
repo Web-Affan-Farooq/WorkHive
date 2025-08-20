@@ -1,9 +1,8 @@
 // state attached
 "use client";
 import { useState } from "react";
-import { LayoutGrid, Settings, ClipboardList, Users, Bell } from "lucide-react";
+import { LayoutGrid, Settings, ClipboardList, Users } from "lucide-react";
 import Link from "next/link";
-// import { useJoinedOrganization } from "@/hooks";
 import { useJoinedOrganization } from "@/stores/joinedOrg";
 
 const JoinedOrganizationSidebar = () => {
@@ -22,11 +21,6 @@ const JoinedOrganizationSidebar = () => {
       href: `/organization/joined/people`,
       label: "People",
       icon: <Users className="group-hover:text-white size-5" />,
-    },
-    {
-      href: `/organization/joined/notifications`,
-      label: "Notifications",
-      icon: <Bell className="group-hover:text-white size-5" />,
     },
     {
       href: `/organization/joined/settings`,

@@ -8,7 +8,6 @@
 // export {default as CreateEmployeeForm} from "./CreateEmployee/Form";
 
 export { default as EmployeeDashboardSection } from "./Dashboard/Dashboard";
-export { default as EmployeeTasks } from "./Dashboard/Tasks/Tasks";
 
 // export {default as EmployeeLogin} from "./LoginEmployee/Form";
 

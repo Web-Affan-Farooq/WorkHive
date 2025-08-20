@@ -2,17 +2,34 @@
 import { useState } from "react";
 import Link from "next/link";
 import axios from "axios";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { LayoutGrid, Bell, Settings } from "lucide-react";
 import { useDashboard } from "@/stores/dashboard";
 import { Building, Plus } from "lucide-react";
+import Notify from "@/utils/Notifications";
+import ShowClientError from "@/utils/Error";
 
 const menuItems = [
-  { href: `/dashboard/`, label: "Dashboard", icon: <LayoutGrid className="group-hover:text-white size-5" /> },
-  { href: `/dashboard/organizations`, label: "Organizations", icon: <Building className="group-hover:text-white size-5" /> },
-  { href: `/dashboard/notifications`, label: "Notifications", icon: <Bell className="group-hover:text-white size-5" /> },
-  { href: `/dashboard/settings`, label: "Settings", icon: <Settings className="group-hover:text-white size-5" /> },
+  {
+    href: `/dashboard/`,
+    label: "Dashboard",
+    icon: <LayoutGrid className="group-hover:text-white size-5" />,
+  },
+  {
+    href: `/dashboard/organizations`,
+    label: "Organizations",
+    icon: <Building className="group-hover:text-white size-5" />,
+  },
+  {
+    href: `/dashboard/notifications`,
+    label: "Notifications",
+    icon: <Bell className="group-hover:text-white size-5" />,
+  },
+  {
+    href: `/dashboard/settings`,
+    label: "Settings",
+    icon: <Settings className="group-hover:text-white size-5" />,
+  },
 ];
 
 const DashboardSidebar = () => {
@@ -27,18 +44,20 @@ const DashboardSidebar = () => {
   const handleLogout = async () => {
     try {
       const response = await axios.get("/api/accounts/logout");
-      toast.success(response.data.message);
+      Notify.success(response.data.message);
       router.push("/");
       clearCache();
     } catch (err) {
-      console.log(err);
+      ShowClientError(err, "Logout error");
     }
-  }
+  };
 
   return (
     <div className="relative flex h-screen">
       {/* Sidebar */}
-      <aside className={`fixed z-20 top-0 left-0 h-full bg-gray-900 text-white w-64 p-6 transform transition-transform duration-300 ease-in-out ${navOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0`}>
+      <aside
+        className={`fixed z-20 top-0 left-0 h-full bg-gray-900 text-white w-64 p-6 transform transition-transform duration-300 ease-in-out ${navOpen ? "translate-x-0" : "-translate-x-full"} md:relative md:translate-x-0`}
+      >
         <nav className="flex flex-col justify-between h-full">
           <div>
             <h2 className="text-2xl font-bold mb-8">{info.name}</h2>
@@ -52,9 +71,10 @@ const DashboardSidebar = () => {
                   {item.icon} <span>{item.label}</span>
                 </Link>
               ))}
-              <Link href={"/create-org"} >
+              <Link href={"/create-org"}>
                 <button className="cursor-pointer mt-8 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 text-center flex flex-row flex-nowrap items-center gap-[5px]">
-                  <Plus /><span>Create organization</span>
+                  <Plus />
+                  <span>Create organization</span>
                 </button>
               </Link>
             </div>
@@ -72,16 +92,38 @@ const DashboardSidebar = () => {
       {/* Toggle Button */}
       <button
         className="md:hidden fixed top-4 right-4 z-30 text-white bg-gray-900 rounded-full p-3 focus:outline-none focus:ring-2 focus:ring-white"
-        onClick={() => setNavOpen(prev => !prev)}
+        onClick={() => setNavOpen((prev) => !prev)}
         aria-label={navOpen ? "Close menu" : "Open menu"}
       >
         {navOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25H12" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25H12"
+            />
           </svg>
         )}
       </button>

@@ -1,6 +1,5 @@
 "use client";
 import { JoinedOrganizationSidebar } from "@/components/layout";
-import Link from "next/link";
 import { Profile } from "@/@types/modeltypes";
 
 import {
@@ -12,38 +11,74 @@ import {
 
 import Image from "next/image";
 import { useJoinedOrganization } from "@/stores/joinedOrg";
+import { useDashboard } from "@/stores/dashboard";
 
-const Card = ({ employeeData }: { employeeData: Profile }) => {
-  return (
-    <div className="flex items-center gap-4 md:px-[30px] py-2 w-full">
-      {/* Profile Image */}
-      <div className="flex-shrink-0">
-        <div className="rounded-lg w-[45px] h-[45px] overflow-hidden">
-          <Image
-            src="/images/profile.jpg"
-            alt={employeeData.name}
-            width={90}
-            height={90}
-            className="object-cover w-full h-full"
-          />
-        </div>
-      </div>
+const Card = ({ employeeData }: { employeeData: Omit<Profile, "id"> }) => {
+  const { info } = useDashboard();
 
-      {/* Profile Info */}
-      <div className="flex flex-col justify-center items-start min-w-0">
-        <div className="relative flex flex-row flex-nowrap justify-center items-center gap-[10px] min-w-0 w-full">
-          <h4 className="text-[15px] font-bold leading-tight flex-grow">
-            {employeeData.name}
-          </h4>
-          <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+  if (employeeData.email === info.email) {
+    return (
+      <div className="flex items-center gap-4 md:px-[30px] py-2 w-full">
+        {/* Profile Image */}
+        <div className="flex-shrink-0">
+          <div className="rounded-lg w-[45px] h-[45px] overflow-hidden">
+            <Image
+              src="/images/profile.jpg"
+              alt={"You"}
+              width={90}
+              height={90}
+              className="object-cover w-full h-full"
+            />
+          </div>
         </div>
 
-        <p className="text-sm text-pink-text break-words">
-          {employeeData.email}
-        </p>
+        {/* Profile Info */}
+        <div className="flex flex-col justify-center items-start min-w-0">
+          <div className="relative flex flex-row flex-nowrap justify-center items-center gap-[10px] min-w-0 w-full">
+            <h4 className="text-[15px] font-bold leading-tight flex-grow">
+              You
+            </h4>
+            <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+          </div>
+
+          <p className="text-sm text-pink-text break-words">
+            {employeeData.email}
+          </p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div className="flex items-center gap-4 md:px-[30px] py-2 w-full">
+        {/* Profile Image */}
+        <div className="flex-shrink-0">
+          <div className="rounded-lg w-[45px] h-[45px] overflow-hidden">
+            <Image
+              src="/images/profile.jpg"
+              alt={employeeData.name}
+              width={90}
+              height={90}
+              className="object-cover w-full h-full"
+            />
+          </div>
+        </div>
+
+        {/* Profile Info */}
+        <div className="flex flex-col justify-center items-start min-w-0">
+          <div className="relative flex flex-row flex-nowrap justify-center items-center gap-[10px] min-w-0 w-full">
+            <h4 className="text-[15px] font-bold leading-tight flex-grow">
+              {employeeData.name}
+            </h4>
+            <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+          </div>
+
+          <p className="text-sm text-pink-text break-words">
+            {employeeData.email}
+          </p>
+        </div>
+      </div>
+    );
+  }
 };
 
 const Peoples = () => {
@@ -66,9 +101,7 @@ const Peoples = () => {
             users.map((employee, idx) => (
               <ContextMenu key={idx}>
                 <ContextMenuTrigger>
-                  <Link href={`/organization/people/${employee.id}`}>
-                    <Card employeeData={employee} />
-                  </Link>
+                  <Card employeeData={employee} />
                 </ContextMenuTrigger>
                 <ContextMenuContent>
                   <ContextMenuItem>Remove</ContextMenuItem>

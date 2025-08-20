@@ -8,7 +8,7 @@ interface OrganizationInfo {
   name: string;
   email: string;
   tasks: Task[];
-  users: Omit<Profile, "id">[];
+  users: Profile[];
   department: Departments;
 }
 interface JoinedOrg {
@@ -16,10 +16,10 @@ interface JoinedOrg {
   name: string;
   email: string;
   tasks: Task[];
-  users: Omit<Profile, "id">[];
+  users: Profile[];
   department: Departments | null;
   feedTasks: (list: Task[]) => void;
-  feedUsers: (list: Omit<Profile, "id">[]) => void;
+  feedUsers: (list: Profile[]) => void;
   setJoinedOrganization: (OrganizationInfo: OrganizationInfo) => void;
 }
 
@@ -37,7 +37,7 @@ export const useJoinedOrganization = create<JoinedOrg>()(
           set(() => ({
             tasks: list,
           })),
-        feedUsers: (list: Omit<Profile, "id">[]) =>
+        feedUsers: (list: Profile[]) =>
           set(() => ({
             users: list,
           })),

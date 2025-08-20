@@ -9,7 +9,6 @@ import { useOwnedOrganization } from "@/stores/ownedOrg";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import toast from "react-hot-toast";
 
 // ___ Schemas and types ...
 import { Departments } from "@/@types/modeltypes";
@@ -37,6 +36,8 @@ import {
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { OwnedOrganizationSidebar } from "@/components/layout";
+import Notify from "@/utils/Notifications";
+import ShowClientError from "@/utils/Error";
 
 type DepartmentFormData = z.infer<typeof DepartmentSchema>;
 
@@ -74,11 +75,10 @@ const DepartmentsPage = () => {
       const newDepartment: Departments = response.data.department;
       addDepartment(newDepartment);
 
-      toast.success(response.data.message);
+      Notify.success(response.data.message);
       console.log(response.data);
     } catch (err) {
-      console.log("Error : ", err);
-      toast.error("An error occured");
+      ShowClientError(err, "Department creation error");
     }
     setdisabled(false);
   };
@@ -91,10 +91,9 @@ const DepartmentsPage = () => {
         },
       });
       deleteDepartment(id);
-      toast.success(response.data.message);
+      Notify.success(response.data.message);
     } catch (err) {
-      console.log("Error : ", err);
-      toast.error("An error occured");
+      ShowClientError(err, "department delete error");
     }
   };
 

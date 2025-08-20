@@ -4,13 +4,13 @@ import { useDashboard } from "@/stores/dashboard";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
-import toast from "react-hot-toast";
 import { Notification } from "@/@types/Notification";
 
 import {
   JoinedOrganizationData,
   OwnedOrganizationData,
 } from "@/@types/modeltypes";
+import ShowClientError from "@/utils/Error";
 
 const logger = new Logger("/FetchDashboardData.tsx");
 const FetchData = ({ children }: { children: ReactNode }) => {
@@ -50,15 +50,8 @@ const FetchData = ({ children }: { children: ReactNode }) => {
         feedOwnedOrganizations(data.ownedOrganizations);
         feedJoinedOrganizations(data.joinedOrganizations);
         setNotifications(data.notifications);
-        console.log("owned organizations : ", data.ownedOrganizations);
-        console.log("joined organizations : ", data.joinedOrganizations);
       } catch (err) {
-        if (axios.isAxiosError(err) && err.response?.status === 401) {
-          router.push("/login");
-        } else {
-          console.log(err);
-          toast.error("An error occured");
-        }
+        ShowClientError(err, "Data error");
       }
     };
     getData();
