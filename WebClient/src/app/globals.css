@@ -44,6 +44,8 @@
 }
 
 :root {
+  --fc-border-color: oklch(0.269 0 0);
+  --fc-daygrid-event-dot-width: 7px;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -76,6 +78,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --pink-primary: oklch(52.5% 0.223 3.958);
+  --pink-hover: oklch(49.415% 0.19436 2.432);
+  --indigo-primary: oklch(58.5% 0.233 277.117);
+  --indigo-secondary: oklch(51.602% 0.24697 274.243);
 }
 
 .dark {

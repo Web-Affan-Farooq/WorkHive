@@ -2,6 +2,7 @@ import { Token } from "@/@types/AuthToken";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import bcrypt from "bcrypt";
 
 /* ____ Type definitions ____ */
 import {
@@ -25,11 +26,13 @@ const CreateAccount = async (data: AccountInfo): CreateAccountResponse => {
         redirect: null,
       };
     }
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
     const newUser = await prisma.accounts.create({
       data: {
         name: data.name,
         email: data.email,
-        password: data.password, // password already hashed
+        password: hashedPassword, // password already hashed
         plan: data.plan,
         stripeCustomerId: data.customerId,
         stripeSubId: data.subscriptionId,

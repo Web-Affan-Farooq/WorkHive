@@ -8,3 +8,4 @@ export { default as AccountSignupSchema } from "./AccountSignupSchema";
 export { default as OrganizationFormSchema } from "./OrganizationFormSchema";
 export { default as DepartmentSchema } from "./DepartmentsSchema";
 export { default as TaskCreationSchema } from "./TaskCreation";
+export { default as InvitationSchema } from "./InvitationSchema";

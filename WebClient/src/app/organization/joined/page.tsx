@@ -2,6 +2,7 @@
 import { JoinedOrganizationSidebar } from "@/components/layout";
 import useJoinedOrganizationData from "./useJoinedOrganizationData";
 import JoinedOrganizationAnalytics from "./Analytics";
+import CalenderView from "./CalenderView";
 
 const OrganizationPage = () => {
   const { tasksAssignedThisMonth, tasksCompletedThisMonth, taskOverdue } =
@@ -11,7 +12,7 @@ const OrganizationPage = () => {
       <JoinedOrganizationSidebar />
       <section className="flex-1 bg-white h-screen overflow-y-auto">
         {/* main heading */}
-        <h1 className="text-[23px] font-bold text-gray-800 pt-10 pb-5 px-7 max-sm:px-5 max-sm:py-7">
+        <h1 className="text-[23px] font-bold text-gray-800 pt-10 pb-5 px-7 max-sm:px-5 max-sm:py-7 bg-indigo-500">
           Progress
         </h1>
         {/*  Flash cards  */}
@@ -43,6 +44,9 @@ const OrganizationPage = () => {
         <br />
         <div className="max-sm:p-0 px-7">
           <JoinedOrganizationAnalytics />
+        </div>
+        <div className="max-sm:p-0 px-7">
+          <CalenderView />
         </div>
       </section>
     </main>

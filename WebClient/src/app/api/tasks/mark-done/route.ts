@@ -1,90 +1,83 @@
-// import { NextRequest } from "next/server";
-// import { NextResponse } from "next/server";
-// import { prisma } from "@/lib/prisma";
+// _____ /api/tasks/mark-done ...
+import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import GetTokenPayload from "@/utils/GetTokenPayload";
 
-// interface Body {
-//     id: string;
-//     note: string;
-//     completedOn: Date;
-//     userId: string;
-//     userName: string;
-//     orgId: string;
-//     status: "LATE" | "ON-TIME"
-// }
+interface Body {
+  taskId: string;
+  note: string;
+  name: string;
+  departmentName: string;
+  organizationName: string;
+}
 
-// async function notifyManagers(orgId: string, notification: { title: string; message: string; type: "SUCCESS" | "FAILURE" }) {
+export const POST = async (req: NextRequest) => {
+  const body: Body = await req.json();
+  const payload = await GetTokenPayload();
+  if (!payload) {
+    return NextResponse.json(
+      {
+        message: "Unauthorized",
+      },
+      {
+        status: 402,
+      }
+    );
+  }
 
-//     const managers = await prisma.users.findMany({
-//         where: {
-//             organizationId: orgId,
-//             isManager: true,
-//         }
-//     });
+  try {
+    await prisma.$transaction(async (tsx) => {
+      const completedTask = await tsx.task.update({
+        where: {
+          id: body.taskId,
+        },
+        data: {
+          completed: true,
+          completedOn: new Date(),
+          note: body.note,
+        },
+      });
 
-//     console.log("Line 24    GET     Organization managers  ...     :::: ", managers);
+      const dueDate = new Date(completedTask.dueDate);
+      if (completedTask.completedOn && dueDate < completedTask.completedOn) {
+        await tsx.notification.create({
+          data: {
+            title: "Late task submission ",
+            message: `late task submission from ${body.name} belongs to ${body.departmentName} department of ${body.organizationName}`,
+            type: "SUCCESS",
+            userId: payload.accountId,
+          },
+        });
+      } else {
+        await tsx.notification.create({
+          data: {
+            title: "New task submission ",
+            message: `${body.name} has completed the given task , now waiting for review . Check ${body.departmentName} department of ${body.organizationName}`,
+            type: "SUCCESS",
+            userId: payload.accountId,
+          },
+        });
+      }
+    });
 
-//     managers.forEach(async (manager) => {
-//         await prisma.notification.create(
-//             {
-//                 data: {
-//                     ...notification,
-//                     read: false,
-//                     userId: manager.id,
-//                 }
-//             }
-//         )
-//     })
-//     console.log("Notificatoisn pushed successfully");
-// }
-
-// export const POST = async (req: NextRequest) => {
-//     const body: Body = await req.json();
-//     console.log("Line 17 GET  recieve body ::: ", body);
-
-//     try {
-//         const updatedTask = await prisma.task.update(
-//             {
-//                 where: {
-//                     id: body.id,
-//                 },
-//                 data: {
-//                     note: body.note,
-//                     completed: true,
-//                     completedOn: body.completedOn,
-//                 }
-//             }
-//         ).then(() => console.log("Marked as done"))
-
-//         if (body.status === "LATE") {
-//             console.log("Line58 GET  Late submission ...     :::: ");
-
-//             notifyManagers(body.orgId, {
-//                 title: `New task completion`,
-//                 message: `Late taks submission from ${body.userName}`,
-//                 type: "SUCCESS",
-//             });
-//         }
-//         else if (body.status === "ON-TIME") {
-//             console.log("Line 17 GET  Submissions on time  ...     :::: ");
-
-//             notifyManagers(body.orgId, {
-//                 title: `New task completion`,
-//                 message: `Task assigned to ${body.userName} hasbeen completed successfully`,
-//                 type: "SUCCESS",
-//             });
-//         }
-
-//         return NextResponse.json({
-//             message: "Marked as done",
-//             success: true,
-//             task: updatedTask,
-//         });
-
-//     } catch (err) {
-//         console.log(err);
-//         return NextResponse.json({
-//             message: "An error occured",
-//             success: false,
-//         })
-//     }
-// }
+    return NextResponse.json(
+      {
+        message: "Marked as done",
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json(
+      {
+        message: "An error occured",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+};

@@ -1,0 +1,79 @@
+/* Remove borders and clean look */
+.fc .fc-scrollgrid {
+  border: none;
+  table-layout: auto;
+  border-collapse: collapse;
+}
+
+/* Customize each day cell */
+.fc .fc-daygrid-day-frame {
+  border: none;
+  background: #f9fafb; /* light gray */
+  border-radius: 8px;
+  padding: 6px;
+  transition: background 0.2s ease;
+}
+
+/* Hover effect for day cells */
+.fc .fc-daygrid-day-frame:hover {
+  background: #e0f2fe; /* light blue */
+  cursor: pointer;
+}
+
+/* Today’s highlight */
+.fc .fc-day {
+  /* background: #e6ffe6 !important; */
+  border: none;
+  border-radius: 8px;
+  background: var(--indigo-primary) !important;
+}
+.fc .fc-day-today {
+  background: #e6ffe6 !important;
+  border: 2px solid #16a34a; /* green border */
+  border-radius: 8px;
+}
+
+/* Header (days of week) */
+.fc .fc-col-header-cell {
+  background: #1f2937; /* dark gray */
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 0;
+}
+
+/* Event cards */
+.fc-event {
+  background: var(--pink-primary) !important; /* blue */
+  color: white !important;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.85rem;
+  transition: transform 0.2s ease;
+}
+
+/* Event hover */
+.fc-event:hover {
+  background: var(--pink-hover) !important;
+}
+
+/* Calendar title (month/year) */
+.fc .fc-toolbar-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #111827;
+}
+
+/* Navigation buttons */
+.fc .fc-button {
+  background: #2563eb;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  padding: 6px 12px;
+  transition: background 0.2s ease;
+}
+
+.fc .fc-button:hover {
+  background: #1e40af;
+}

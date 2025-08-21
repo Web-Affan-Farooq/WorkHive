@@ -34,6 +34,7 @@ amir465affan@gmail.com (jsDF34#$)
 ahmedabbasi903@gmail.com (jhFG@#23)
 aqiba.li82@gmail.com (jhFG76@#)
 aliabbasi@gmail.com (djDF56@#)
+affan.farooqsbf@gmail.com (dhFG@#87)
 
 ## Achieved:
 
@@ -44,21 +45,25 @@ aliabbasi@gmail.com (djDF56@#)
 
 ### **Features checklist**:
 
-| Feature                                 | Status | | tested || linted |
-| --------------------------------------- | ------ | | ------ || -------|
-| Multi-auth system (login/signup)        | ✅     | | ⬜    || ⬜     |
-| Payments w/ Stripe                      | ✅     | | ⬜    || ⬜     |
-| Multi-org creation & management         | ✅     | | ⬜    || ⬜     |
-| Department system                       | ✅     | | ⬜    || ⬜     |
-| Invite system                           | ✅     | | ⬜    || ⬜     |
-| Task assignment to employees            | ✅     | | ⬜    || ⬜     |
-| Employee dashboard with task view       | ✅     | | ⬜    || ⬜     |
-| Task status update (done / in progress) | ⬜     | | ⬜    || ⬜     |
-| Analytics dashboard                     | ⬜     | | ⬜    || ⬜     |
-| Notifications system                    | ✅     | | ⬜    || ⬜     |
-| Comments / collaboration                | ⬜     | | ⬜    || ⬜     |
-| Mobile responsive / PWA                 | ✅     | | ⬜    || ⬜     |
-| Role-based access control               | ⬜     | | ⬜    || ⬜     |
-| Live demo hosted                        | ⬜     | | ⬜    || ⬜     |
-| GitHub README with screenshots          | ⬜     | | ⬜    || ⬜     |
-| Blog/case study write-up                | ⬜     | | ⬜    || ⬜     |
+| Feature                                 | Status | tested |
+| --------------------------------------- | ------ | ------ |
+| Multi-auth system (login/signup)        | ✅     | ⬜    |
+| Payments w/ Stripe                      | ✅     | ⬜    |
+| Multi-org creation & management         | ✅     | ⬜    |
+| Department system                       | ✅     | ⬜    |
+| Invite system                           | ✅     | ⬜    |
+| Task assignment to employees            | ✅     | ⬜    |
+| Employee dashboard with task view       | ✅     | ⬜    |
+| Task status update (done / in progress) | ✅     | ⬜    |
+| Invitation and onboarding               | ✅     | ⬜    |
+| Analytics dashboard                     | ⬜     | ⬜    |
+| Notifications system                    | ✅     | ⬜    |
+| Comments / collaboration                | ⬜     | ⬜    |
+| Task relation like a related to b       | ⬜     | ⬜    |
+| Manager creation feature                | ⬜     | ⬜    |
+| Sicial login                            | ⬜     | ⬜    |
+| Mobile responsive / PWA                 | ✅     | ⬜    |
+| Role-based access control               | ⬜     | ⬜    |
+| Live demo hosted                        | ⬜     | ⬜    |
+| GitHub README with screenshots          | ⬜     | ⬜    |
+| Blog/case study write-up                | ⬜     | ⬜    |

@@ -1,7 +1,7 @@
 "use client";
 // ____ Hooks  ...
 import { useJoinedOrganization } from "@/stores/joinedOrg";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 // ____ Utilities ...
 import convertToTitleCase from "@/lib/Convert";
@@ -28,17 +28,66 @@ import {
   AlertDialogAction,
   AlertDialogHeader,
 } from "@/components/ui/alert-dialog";
+import ShowClientError from "@/utils/Error";
+import axios from "axios";
+import { useDashboard } from "@/stores/dashboard";
+import Notify from "@/utils/Notifications";
+
+interface Payload {
+  taskId: string;
+  note: string;
+  name: string;
+  departmentName: string;
+  organizationName: string;
+}
 
 const Card = ({ task }: { task: Task }) => {
   const dueDate = new Date(task.dueDate);
+  const [loading, setLoading] = useState(false);
   const completedOn = task.completedOn ? new Date(task.completedOn) : null;
-  const { users } = useJoinedOrganization();
+  const { users, department, name, feedTasks, tasks } = useJoinedOrganization();
+  const { info } = useDashboard();
   const requiredUser = useMemo(() => {
     return users.find((user) => user.id === task.assignedTo);
   }, [users, task]);
 
+  const [note, setNote] = useState("");
+
+  const markAsDone = async () => {
+    setLoading(true);
+    if (!department) return;
+
+    try {
+      const data: Payload = {
+        taskId: task.id,
+        note: note,
+        departmentName: department.id,
+        organizationName: name,
+        name: info.name,
+      };
+      const response = await axios.post("/api/tasks/mark-done", data);
+      Notify.success(response.data.message);
+      const updatedList = tasks.map((tsk) => {
+        if (tsk.id === data.taskId) {
+          return {
+            ...tsk,
+            completedOn: response.data.completedOn,
+            completed: true,
+            note: response.data.note,
+          };
+        } else return tsk;
+      });
+      feedTasks(updatedList);
+    } catch (err) {
+      ShowClientError(err, "Mark as done error");
+    }
+    setLoading(false);
+  };
+
   if (requiredUser) {
-    return (
+    return loading ? (
+      <p className="text-sm text-gray-500">Loading ...</p>
+    ) : (
       <AlertDialog>
         <ContextMenu>
           <ContextMenuTrigger>
@@ -91,6 +140,7 @@ const Card = ({ task }: { task: Task }) => {
                   name="note"
                   id="note"
                   className="w-full px-[20px] py-[10px]"
+                  onChange={(e) => setNote(e.target.value)}
                 ></textarea>
               </label>
             </AlertDialogDescription>
@@ -99,7 +149,7 @@ const Card = ({ task }: { task: Task }) => {
             <AlertDialogCancel className="cursor-pointer">
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction className="cursor-pointer">
+            <AlertDialogAction className="cursor-pointer" onClick={markAsDone}>
               Done
             </AlertDialogAction>
           </AlertDialogFooter>
