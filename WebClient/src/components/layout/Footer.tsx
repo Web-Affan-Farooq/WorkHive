@@ -40,7 +40,12 @@ const Footer = () => {
               aria-label={social.name}
             >
               <div className="p-2 bg-white rounded-full hover:scale-110 transition duration-200 shadow-lg">
-                <Image src={social.image} alt={social.name} width={15} height={15} />
+                <Image
+                  src={social.image}
+                  alt={social.name}
+                  width={15}
+                  height={15}
+                />
               </div>
             </Link>
           ))}

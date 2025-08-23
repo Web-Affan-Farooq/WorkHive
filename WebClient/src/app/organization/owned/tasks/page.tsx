@@ -1,14 +1,11 @@
 "use client";
-
 // ____ hooks ...
 import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useOwnedOrganization } from "@/stores/ownedOrg";
-
 // ____ Types and schemas ...
-import { TaskCreationSchema } from "@/validations";
 import { Task } from "@/@types/Task";
-
+import { TaskCreationSchema } from "@/validations";
 // ____ Components ...
 import {
   AlertDialog,
@@ -30,15 +27,16 @@ import {
 import { OwnedOrganizationSidebar } from "@/components/layout";
 import { Plus } from "lucide-react";
 import Card from "./Card";
-
 // ____ Libraries ...
 import axios from "axios";
 import { v4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ShowClientError from "@/utils/Error";
-
+import { z } from "zod";
 // _____ Utils ...
 import Notify from "@/utils/Notifications";
+
+type TaskCreationFormData = z.infer<typeof TaskCreationSchema>;
 
 const Tasks = () => {
   const { departments, id, users, addTask, tasks, deleteTask } =
@@ -47,7 +45,7 @@ const Tasks = () => {
   const [selectedDepartment, setSelectedDepartment] = useState(
     departments?.[0]?.id ?? ""
   );
-
+  const [assignees, setAssignees] = useState<string[]>([]);
   const allUsers = useMemo(() => {
     return users[selectedDepartment] ?? [];
   }, [selectedDepartment, users]);
@@ -61,34 +59,24 @@ const Tasks = () => {
     resolver: zodResolver(TaskCreationSchema),
     mode: "onChange",
     defaultValues: {
-      assignedOn: new Date(),
       id: v4(),
-      completed: false,
       organizationId: id,
-      note: "",
-      completedOn: null,
     },
   });
 
   const handleCreateTask = async () => {
-    const data: Task = {
-      id: getValues().id,
-      title: getValues().title,
-      description: getValues().description,
-      assignedTo: getValues().assignedTo,
-      note: getValues().note,
-      organizationId: getValues().organizationId,
-      assignedOn: getValues().assignedOn,
-      dueDate: getValues().dueDate,
-      completed: getValues().completed,
-      completedOn: getValues().completedOn,
+    const data: TaskCreationFormData = {
+      ...getValues(),
+      assignees: assignees,
     };
+    console.log(data);
     try {
       const response = await axios.post("/api/tasks/create", data);
       const returnedTask: Task = response.data.task;
       addTask(returnedTask);
       Notify.success(response.data.message);
       reset();
+      setAssignees([]); // reset selected checkboxes
     } catch (err) {
       ShowClientError(err, "Task creation error");
     }
@@ -186,7 +174,7 @@ const Tasks = () => {
                     </option>
                   ))}
                 </select>
-
+                <br />
                 {/*  assigned to  ... */}
                 <label
                   htmlFor="Assigned this task to"
@@ -195,22 +183,36 @@ const Tasks = () => {
                 >
                   Assigned to :
                 </label>
-                <select
-                  className="placeholder:text-sm py-[4px] px-[15px] rounded-md w-full"
-                  id="employees"
-                  {...register("assignedTo")}
-                >
-                  {allUsers.length === 0 ? (
-                    <option disabled>No users available</option>
-                  ) : (
-                    allUsers.map((employee) => (
-                      <option value={employee.id} key={employee.id}>
-                        {employee.name}
-                      </option>
-                    ))
-                  )}
-                </select>
-
+                {allUsers.length === 0 ? (
+                  <p className="text-sm text-gray-500">
+                    No users available ...
+                  </p>
+                ) : (
+                  allUsers.map((employee, idx) => (
+                    <div
+                      className="flex flex-row flex-nowrap gap-[10px]"
+                      key={idx}
+                    >
+                      <input
+                        type="checkbox"
+                        name={employee.name}
+                        id={employee.id}
+                        checked={assignees.includes(employee.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAssignees((prev) => [...prev, employee.id]);
+                          } else {
+                            setAssignees((prev) =>
+                              prev.filter((id) => id !== employee.id)
+                            );
+                          }
+                        }}
+                      />
+                      <span>{employee.name}</span>
+                    </div>
+                  ))
+                )}
+                <br />
                 {/* due date ... */}
                 <label
                   htmlFor="Due date for this task"
@@ -221,7 +223,7 @@ const Tasks = () => {
                 <input
                   type="datetime-local"
                   id="due-date"
-                  className="py-[4px] px-[15px] rounded-md w-full"
+                  className="cursor-pointer rounded-md"
                   {...register("dueDate", {
                     valueAsDate: true,
                   })}
@@ -231,18 +233,18 @@ const Tasks = () => {
                     {errors.dueDate.message}
                   </p>
                 )}
-                <AlertDialogFooter>
+                <div className="flex flex-row justify-end">
                   <AlertDialogCancel onClick={() => reset()}>
                     Cancel
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleCreateTask}
-                    className="bg-gray-900 cursor-pointer px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]"
+                    className="bg-indigo-600 cursor-pointer px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]"
                   >
                     <Plus className="size-sm" />
                     <span>Create</span>
                   </AlertDialogAction>
-                </AlertDialogFooter>
+                </div>
               </form>
             </AlertDialogContent>
           </div>

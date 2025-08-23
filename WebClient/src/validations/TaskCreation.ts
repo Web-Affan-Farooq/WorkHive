@@ -10,8 +10,8 @@ const TaskCreationSchema = z
     description: z
       .string("invalid description")
       .min(20, "Descripiton must be minimum 20 characters long")
-      .max(80, "Descripiton must be maximum 200 characters long"),
-    assignedTo: z.uuid(),
+      .max(300, "Descripiton must be maximum 200 characters long"),
+    assignees: z.array(z.uuid()),
     assignedOn: z.date(),
     dueDate: z.date(),
     completed: z.boolean(),

@@ -1,4 +1,43 @@
 ## 🚀 Ultimate Feature Breakdown
+
+### 📋 Task assignment to employees ✅
+
+#### Sub-features:
+
+- Task creation with title, description, deadline, priority
+- Assign to single or multiple employees
+- Attachments (docs, images)
+- Task dependencies (Task B can’t start until Task A is done)
+- Recurring tasks (every week/month)
+
+### 🧑‍💻 Employee dashboard with task view ✅
+
+#### Sub-features:
+
+- My tasks (filter by status, deadline, priority)
+- Department tasks (overview)
+- Calendar view of tasks
+- Kanban board (To Do / In Progress / Done)
+
+### ✅ Task status update ✅
+
+#### Sub-features:
+
+- Update progress: 0% → 100%
+- Mark as blocked (needs help)
+- Add work logs (“worked 3 hours today”)
+- Comment system per task
+
+### 💬 Comments / collaboration ⬜
+
+#### Sub-features:
+
+- Comment on tasks
+- Mention users with @username
+- Upload files (docs/images)
+- Markdown formatting
+- Real-time updates (Socket.IO)
+
 ### 🔐 Multi-auth system (login/signup) ✅
 
 #### Sub-features to consider:
@@ -22,7 +61,7 @@
 
 👉 Why: Shows you understand real SaaS monetization, not just coding.
 
-### 🏢 Multi-org creation & management ✅
+### 🏢 Multi-org creation & management ✅ (completed)
 
 #### Sub-features:
 
@@ -53,34 +92,6 @@
 - Track status: Pending / Accepted / Expired
 - Auto-assign department when joining
 
-### 📋 Task assignment to employees ✅
-
-#### Sub-features:
-
-- Task creation with title, description, deadline, priority
-- Assign to single or multiple employees
-- Attachments (docs, images)
-- Task dependencies (Task B can’t start until Task A is done)
-- Recurring tasks (every week/month)
-
-### 🧑‍💻 Employee dashboard with task view ✅
-
-#### Sub-features:
-
-- My tasks (filter by status, deadline, priority)
-- Department tasks (overview)
-- Calendar view of tasks
-- Kanban board (To Do / In Progress / Done)
-
-### ✅ Task status update ✅
-
-#### Sub-features:
-
-- Update progress: 0% → 100%
-- Mark as blocked (needs help)
-- Add work logs (“worked 3 hours today”)
-- Comment system per task
-
 ### 📊 Analytics dashboard ⬜
 
 #### Sub-features:
@@ -101,7 +112,7 @@
 
 👉 Why: Recruiters love dashboards. It proves you can do data visualization with charts (Recharts, Chart.js, etc.).
 
-### 🔔 Notifications system ✅
+### 🔔 Notifications system ✅ (completed)
 
 #### Sub-features:
 
@@ -110,15 +121,6 @@
 - Push notifications (via OneSignal or Firebase)
 - Notification preferences (toggle email/on-app)
 
-### 💬 Comments / collaboration ⬜
-
-#### Sub-features:
-
-- Comment on tasks
-- Mention users with @username
-- Upload files (docs/images)
-- Markdown formatting
-- Real-time updates (Socket.IO)
 
 ### 🔗 Task relation (like A depends on B) ⬜
 

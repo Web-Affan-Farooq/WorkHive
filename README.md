@@ -56,6 +56,7 @@ affan.farooqsbf@gmail.com (dhFG@#87)
 | Employee dashboard with task view       | ✅     | ⬜    |
 | Task status update (done / in progress) | ✅     | ⬜    |
 | Invitation and onboarding               | ✅     | ⬜    |
+| 🔔 Notifications system ✅             | ✅     | ⬜    |
 | Analytics dashboard                     | ⬜     | ⬜    |
 | Notifications system                    | ✅     | ⬜    |
 | Comments / collaboration                | ⬜     | ⬜    |
