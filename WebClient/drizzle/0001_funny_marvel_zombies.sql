@@ -1,0 +1,3 @@
+ALTER TABLE "Departments" ADD CONSTRAINT "Departments_organizationId_Organizations_id_fk" FOREIGN KEY ("organizationId") REFERENCES "public"."Organizations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "notifications" ADD CONSTRAINT "notifications_user_id_Accounts_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."Accounts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "Organizations" ADD CONSTRAINT "Organizations_user_id_Accounts_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."Accounts"("id") ON DELETE cascade ON UPDATE no action;

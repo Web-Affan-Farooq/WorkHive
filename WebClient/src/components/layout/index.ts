@@ -1,5 +1,5 @@
 export { default as DashboardSidebar } from "./DashboardSidebar";
-export { default as OwnedOrganizationSidebar } from "./OwnedOrganizationDashboard";
+export { default as OwnedOrganizationSidebar } from "./OwnedOrganizationSidebar";
 export { default as JoinedOrganizationSidebar } from "./JoinedOrganizationSidebar";
 export { default as FetchDashboardData } from "./FetchDashboardData";
 

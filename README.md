@@ -20,10 +20,23 @@
 - Signup page `/signup`
 - organization joining form `/join-org`
 
+### **API overview**:
+This project is leveraging nextjs api routes . The entire architecture is divided into these components :
+#### accounts :
+Refers to the **/account** parent route in apis . This parent route can handle all the   functionalities related to accounts
+#### departments :
+Refers to the **/department** parent route in apis . This route can handle all the   functionalities related to departments .
+#### organizations :
+Refers to the **/organization** parent route in apis . This route can handle all the   functionalities related to organizations .
+#### tasks :
+Refers to the **/tasks** parent route in apis . This route can handle all the   functionalities related to tasks .
+#### notifications :
+Refers to the **/notifications** route. While notifications creation is handled on where it's needed in entire apis, this route contains the delete route for handling notification delete 
+
 ### notes :
 - Checkout payment webhook . Suspected a major level bug in the webhook route handling account creation .
 - Create manager creation logic 
-- Separate the routes of joined and owned organizations
+- create a task details page for showing comments in it 
 
 test organizations:
 abcbpo@gmail.com  jhDJ74@#
@@ -38,13 +51,23 @@ affan.farooqsbf@gmail.com (dhFG@#87)
 
 ## Achieved:
 
-### **Progress**:
-- Implement the organization join functionality (completed)
-- Setup a new table for tasks in neon (completed)
-- setup a new table for notifications
+###  **Schema overview :**
+Before taking a look at schema , remember the following points.
+
+- Each account have multiple organizations.
+- multiple organizations belongs to same accounts.
+- Each account have many notifications .
+- many notifications belongs to same account
+- Each organization have many departments
+- many departments should belongs to same organization
+- users should be joined in many departments
+- task should be assignable to more than one users
+- Each task should have many comments
+- many comments should belong to one task
+
+
 
 ### **Features checklist**:
-
 | Feature                                 | Status | tested |
 | --------------------------------------- | ------ | ------ |
 | Multi-auth system (login/signup)        | ✅     | ⬜    |

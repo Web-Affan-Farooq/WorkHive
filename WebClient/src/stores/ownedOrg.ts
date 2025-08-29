@@ -1,36 +1,19 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { createJSONStorage, devtools } from "zustand/middleware";
-import { Departments, Profile } from "@/@types/modeltypes";
-import { Task } from "@/@types/Task";
+import { TaskOwned, Department, OwnedOrganization } from "@/@types/types";
 
-interface OrganizationInfo {
-  id: string;
-  name: string;
-  email: string;
-  departments: Departments[];
-  users: Record<string, Profile[]>;
-  tasks: Task[];
-}
-
-interface OwnedOrg {
-  id: string;
-  name: string;
-  email: string;
-  users: Record<string, Profile[]>;
-
-  departments: Departments[];
-  addDepartment: (dept: Departments) => void;
+interface OwnedOrg extends OwnedOrganization {
+  addDepartment: (dept: Department) => void;
   deleteDepartment: (deptId: string) => void;
 
-  tasks: Task[];
-  addTask: (task: Task) => void;
+  addTask: (task: TaskOwned) => void;
   deleteTask: (taskId: string) => void;
 
-  feedDepartments: (list: Departments[]) => void;
-  feedTasks: (list: Task[]) => void;
+  feedDepartments: (list: Department[]) => void;
+  feedTasks: (list: TaskOwned[]) => void;
 
-  setOwnedOrganization: (info: OrganizationInfo) => void;
+  setOwnedOrganization: (info: OwnedOrganization) => void;
 }
 
 export const useOwnedOrganization = create<OwnedOrg>()(
@@ -66,12 +49,12 @@ export const useOwnedOrganization = create<OwnedOrg>()(
         users: {},
         tasks: [],
 
-        feedDepartments: (list: Departments[]) =>
+        feedDepartments: (list: Department[]) =>
           set(() => ({
             departments: list,
           })),
 
-        feedTasks: (list: Task[]) =>
+        feedTasks: (list: TaskOwned[]) =>
           set(() => ({
             tasks: list,
           })),
@@ -90,6 +73,7 @@ export const useOwnedOrganization = create<OwnedOrg>()(
           set((state) => ({
             tasks: [...state.tasks, task],
           })),
+
         deleteTask: (taskId) =>
           set((state) => ({
             tasks: state.tasks.filter((tsk) => tsk.id !== taskId),

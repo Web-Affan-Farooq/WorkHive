@@ -1,13 +1,23 @@
 "use client";
+// ___ Hooks ...
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+// ___ Components...
+import { Footer, Header } from "@/components/layout";
+import { PasswordInput } from "@/components/common";
+
+// ___ Libs...
 import * as z from "zod";
 import axios from "axios";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// ___ Types and schemas...
 import { AccountLoginSchema } from "@/validations";
-import { useState } from "react";
-import { Footer, Header } from "@/components/layout";
-import { useRouter } from "next/navigation";
-import { PasswordInput } from "@/components/common";
+import { LoginRequest, LoginResponse } from "@/routes/Login";
+
+// ___ Utils...
 import ShowClientError from "@/utils/Error";
 import Notify from "@/utils/Notifications";
 
@@ -27,16 +37,16 @@ const Login = () => {
   const [disabled, setDisabled] = useState(false);
 
   // ____ Runs on form submission ...
-  const login = async (data: AccountLoginFormData) => {
-    console.log("Data ready .... :  ", data);
+  const login = async (FormData: AccountLoginFormData) => {
     setDisabled(true);
     try {
-      const response = await axios.post("/api/accounts/login", data);
-      console.log(response.data);
-      if (response.status === 200) {
-        Notify.success(response.data.message);
-        router.push(response.data.redirect);
-      }
+      const payload: LoginRequest = {
+        ...FormData,
+      };
+      const response = await axios.post("/api/accounts/login", payload);
+      const { data }: { data: LoginResponse } = response;
+      Notify.success(data.message);
+      router.push(data.redirect ? data.redirect : "/");
     } catch (err) {
       ShowClientError(err, "Login error");
     }

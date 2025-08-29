@@ -5,8 +5,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePlan } from "@/stores/plan";
 
-/* ____ Schemas  ... */
+/* ____ Schemas and types  ... */
 import { AccountSignupSchema } from "@/validations";
+import type {
+  CreateAccountRequest,
+  CreateAccountResponse,
+} from "@/routes/CreateAccount";
 
 /* ____ Libraries  ... */
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +21,8 @@ import axios from "axios";
 import { CircleCheck, Crown } from "lucide-react";
 import { Footer, Header } from "@/components/layout";
 import { PasswordInput } from "@/components/common";
+
+/* ____ Utils ... */
 import Notify from "@/utils/Notifications";
 import ShowClientError from "@/utils/Error";
 
@@ -41,28 +47,24 @@ const Signup = () => {
   const { plans, subscriptionPlan, setPlan } = usePlan();
 
   /* ____ Runs on form submission ... */
-  const signup = async (data: AccountSignupFormData) => {
-    console.log("Data ready .... :  ", data);
+  const signup = async (formData: AccountSignupFormData) => {
     /* ____ Disable the button ... */
     setDisabled(true);
     try {
       /* ____ collect data --> Make request --> show success fallback ... */
-      const payload = {
-        ...data,
+      const payload: CreateAccountRequest = {
+        ...formData,
         plan: subscriptionPlan,
         customerId: null,
         subscriptionId: null,
       };
       if (payload.plan === "FREE") {
         const response = await axios.post("/api/accounts/create", payload);
-        console.log(response.data);
-        if (response.status === 201) {
-          Notify.success(response.data.message);
-          router.push(response.data.redirect);
-        }
+        const { data }: { data: CreateAccountResponse } = response;
+        Notify.success(data.message);
+        router.push(data.redirect ? data.redirect : "/dashboard");
       } else {
         const response = await axios.post("/api/payment/create", payload);
-        console.log("payment api response : ", response.data);
         window.document.location.href = response.data.url;
       }
     } catch (err) {

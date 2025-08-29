@@ -3,7 +3,11 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 // ____ Types ...
-import { Profile, OwnedOrganizationData } from "@/@types/modeltypes";
+import { Profile, OwnedOrganization } from "@/@types/types";
+import {
+  DeleteOrganizationAPIRequest,
+  DeleteOrganizationAPIResponse,
+} from "@/routes/DeleteOrganization";
 // ____ Hooks ...
 import { useDashboard } from "@/stores/dashboard";
 import { useOwnedOrganization } from "@/stores/ownedOrg";
@@ -25,7 +29,7 @@ const OwnedOrganizationList = () => {
   const { setOwnedOrganization } = useOwnedOrganization();
 
   // ______ for counting users in each organization  ...
-  const organizationUsersCount = (org: OwnedOrganizationData) => {
+  const organizationUsersCount = (org: OwnedOrganization) => {
     const users: Profile[] = [];
     org.departments.forEach((dept) => {
       org.users[dept.id].forEach((user) => users.push(user));
@@ -38,12 +42,14 @@ const OwnedOrganizationList = () => {
   // ______ for deleting organization ...
   const handleOrganizationDelete = async (id: string) => {
     try {
+      const payload: DeleteOrganizationAPIRequest = {
+        id: id,
+      };
       const response = await axios.delete("/api/organizations/delete", {
-        data: {
-          id: id,
-        },
+        data: payload,
       });
-      toast.success(response.data.message);
+      const { data }: { data: DeleteOrganizationAPIResponse } = response;
+      toast.success(data.message);
       feedOwnedOrganizations(ownedOrganizations.filter((org) => org.id !== id));
     } catch (err) {
       console.log("Error : ", err);

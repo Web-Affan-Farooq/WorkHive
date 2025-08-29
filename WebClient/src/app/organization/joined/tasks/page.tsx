@@ -1,24 +1,25 @@
 "use client";
 // ___ Hooks ...
 import React from "react";
-
+import { useJoinedOrganization } from "@/stores/joinedOrg";
 // ___ Components ...
 import { JoinedOrganizationSidebar } from "@/components/layout";
-import Card from "./Card";
-
-// ___ Types and schemas ...
-import { Task } from "@/@types/Task";
-
-// ___ Libraries ...
-import axios from "axios";
-
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { useJoinedOrganization } from "@/stores/joinedOrg";
+import Link from "next/link";
+import Card from "./Card";
+// ___ Types and schemas ...
+import {
+  DeleteTaskAPIRequest,
+  DeleteTaskAPIResponse,
+} from "@/routes/DeleteTask";
+// ___ Libraries ...
+import axios from "axios";
+// ___ Utils ...
 import Notify from "@/utils/Notifications";
 import ShowClientError from "@/utils/Error";
 
@@ -27,13 +28,15 @@ const Tasks = () => {
 
   const handleDeleteTask = async (id: string) => {
     try {
+      const payload: DeleteTaskAPIRequest = {
+        taskId: id,
+      };
       const response = await axios.delete("/api/tasks/delete", {
-        data: {
-          id: id,
-        },
+        data: payload,
       });
+      const { data }: { data: DeleteTaskAPIResponse } = response;
       feedTasks(tasks.filter((tsk) => tsk.id !== id));
-      Notify.success(response.data.message);
+      Notify.success(data.message);
     } catch (err) {
       ShowClientError(err, "Task deletion error");
     }
@@ -49,18 +52,23 @@ const Tasks = () => {
           {tasks.length <= 0 ? (
             <p className="text-gray-400 text-sm">No tasks found ...</p>
           ) : (
-            tasks.map((task: Task, idx) => (
-              <ContextMenu key={idx}>
-                <ContextMenuTrigger>
-                  <Card task={task} />
-                </ContextMenuTrigger>
-                <ContextMenuContent>
-                  <ContextMenuItem>Edit</ContextMenuItem>
-                  <ContextMenuItem onClick={() => handleDeleteTask(task.id)}>
-                    Delete
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
+            tasks.map((task) => (
+              <Link
+                href={`/organization/joined/tasks/${task.id}`}
+                key={task.id}
+              >
+                <ContextMenu>
+                  <ContextMenuTrigger>
+                    <Card task={task} />
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuItem>Edit</ContextMenuItem>
+                    <ContextMenuItem onClick={() => handleDeleteTask(task.id)}>
+                      Delete
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
+              </Link>
             ))
           )}
         </div>

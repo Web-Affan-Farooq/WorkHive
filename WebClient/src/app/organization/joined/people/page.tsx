@@ -1,6 +1,6 @@
 "use client";
 import { JoinedOrganizationSidebar } from "@/components/layout";
-import { Profile } from "@/@types/modeltypes";
+import { Profile } from "@/@types/types";
 
 import {
   ContextMenu,

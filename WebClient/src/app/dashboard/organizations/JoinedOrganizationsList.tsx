@@ -18,28 +18,41 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import ShowClientError from "@/utils/Error";
+import {
+  UnjoinDepartmentAPIRequest,
+  UnjoinDepartmentAPIResponse,
+} from "@/routes/UnjoinDepartment";
 
 const JoinedOrganizationsList = () => {
   // ______ joind organinization from main state ...
-  const { joinedOrganizations, feedJoinedOrganizations } = useDashboard();
+  const { joinedOrganizations, feedJoinedOrganizations, info } = useDashboard();
 
   // ______ setter for selecting orgnaization + users array
   const { setJoinedOrganization, users } = useJoinedOrganization();
 
   // ______ For leaving organization ...
-  const leaveOrganization = async (id: string) => {
+  const handleOrganizationLeave = async (orgId: string) => {
     try {
-      const response = await axios.get("/api/departments/unjoin", {
-        params: {
-          orgId: id,
-        },
-      });
-      Notify.success(response.data.message);
-      feedJoinedOrganizations(
-        joinedOrganizations.filter((org) => org.id !== id)
+      const requiredOrganization = joinedOrganizations.find(
+        (joinedOrg) => joinedOrg.id === orgId
       );
+      if (!requiredOrganization) {
+        return;
+      }
+
+      const payload: UnjoinDepartmentAPIRequest = {
+        deptId: requiredOrganization.department.id,
+        username: info.name,
+        organizationId: requiredOrganization.department.organizationId,
+      };
+
+      const response = await axios.post("/api/departments/unjoin", payload);
+      const { data }: { data: UnjoinDepartmentAPIResponse } = response;
+      const remaining = joinedOrganizations.filter((org) => org.id !== orgId);
+      feedJoinedOrganizations(remaining);
+      Notify.success(data.message);
     } catch (err) {
-      ShowClientError(err, "Leave organization error");
+      ShowClientError(err, "Leave department : ");
     }
   };
 
@@ -79,7 +92,7 @@ const JoinedOrganizationsList = () => {
               <ContextMenuContent>
                 <ContextMenuItem
                   className="text-red-500 cursor-pointer"
-                  onClick={() => leaveOrganization(org.id)}
+                  onClick={() => handleOrganizationLeave(org.id)}
                 >
                   Leave
                 </ContextMenuItem>

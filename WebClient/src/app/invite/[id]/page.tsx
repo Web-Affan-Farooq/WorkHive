@@ -23,7 +23,7 @@ const Invitepage = () => {
       }
     };
     joinOrg();
-  }, [id]);
+  }, [id, router]);
 
   return <div>Please wait</div>;
 };

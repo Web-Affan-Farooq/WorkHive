@@ -4,12 +4,7 @@ import { useDashboard } from "@/stores/dashboard";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
-import { Notification } from "@/@types/Notification";
-
-import {
-  JoinedOrganizationData,
-  OwnedOrganizationData,
-} from "@/@types/modeltypes";
+import { DashboardAPIResponse } from "@/routes/Dashboard";
 import ShowClientError from "@/utils/Error";
 
 const logger = new Logger("/FetchDashboardData.tsx");
@@ -33,15 +28,10 @@ const FetchData = ({ children }: { children: ReactNode }) => {
           ""
         );
         const response = await axios.get("/api/dashboard");
-        const data: {
-          name: string;
-          email: string;
-          plan: "FREE" | "PRO" | "TEAMS";
-          ownedOrganizations: OwnedOrganizationData[];
-          joinedOrganizations: JoinedOrganizationData[];
-          notifications: Notification[];
-        } = response.data.data;
+        const { data }: { data: DashboardAPIResponse } = response;
         /* ____ Feed the fetched data into state for maintaining cache ... */
+        console.log(data);
+
         setInfo({
           name: data.name,
           email: data.email,

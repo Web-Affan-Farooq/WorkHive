@@ -1,6 +1,6 @@
-import { Task } from "@/@types/Task";
+import { TasksAssigned } from "@/@types/types";
 
-const Badge = ({ task }: { task: Task }) => {
+const Badge = ({ task }: { task: TasksAssigned }) => {
   const now = new Date();
   const badgeStyle = "px-2 py-1 rounded-full text-white text-xs font-semibold";
 

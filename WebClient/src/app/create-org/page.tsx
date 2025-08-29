@@ -14,6 +14,10 @@ import { OrganizationFormSchema } from "@/validations";
 import { PasswordInput } from "@/components/common";
 import ShowClientError from "@/utils/Error";
 import Notify from "@/utils/Notifications";
+import type {
+  CreateOrganizationRequest,
+  CreateOrganizationResponse,
+} from "@/routes/CreateOrganization";
 
 /* ____ Infered type from  OrganizationFormSchema  ... */
 type OrganizationFormData = z.infer<typeof OrganizationFormSchema>;
@@ -36,14 +40,16 @@ const OrganizationForm = () => {
   });
 
   /* ___ For creating organization ... */
-  const createOrganization = async (data: OrganizationFormData) => {
+  const createOrganization = async (formData: OrganizationFormData) => {
     setDisabled(true);
     try {
-      const response = await axios.post("/api/organizations/create", data);
-      if (response.status === 201) {
-        Notify.success(response.data.message);
-        router.push(response.data.redirect);
-      }
+      const payload: CreateOrganizationRequest = {
+        ...formData,
+      };
+      const response = await axios.post("/api/organizations/create", payload);
+      const { data }: { data: CreateOrganizationResponse } = response;
+      Notify.success(data.message);
+      router.push(data.redirect ? data.redirect : "/dashboard/organizations");
     } catch (err) {
       ShowClientError(err, "Create organization error");
     }
