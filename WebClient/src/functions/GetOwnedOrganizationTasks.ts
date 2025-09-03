@@ -1,9 +1,7 @@
 import db from "@/db";
-import Logger from "@/lib/logger";
 import { tasks, comments, userTaskJunction } from "@/schemas";
 import { eq } from "drizzle-orm";
 
-const logger = new Logger("GetOwnedOrganizationTasks.ts");
 
 const getOwnedOrganizationTasks = async (organizationId: string) => {
   const organizationRelatedtasks = await db

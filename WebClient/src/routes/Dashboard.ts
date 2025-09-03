@@ -3,6 +3,7 @@ import db from "@/db";
 import { userDepartmentsJunction, users, organizations } from "@/schemas";
 import { eq } from "drizzle-orm";
 import GetTokenPayload from "@/utils/GetTokenPayload";
+import { PlanType } from "@/@types/types";
 
 import {
   GetOwnedOrganizationUsers,

@@ -20,6 +20,10 @@ export { default as CreateTask } from "./CreateTasks";
 export { default as DeleteTask } from "./DeleteTask";
 export { default as MarkAsDone } from "./MarkDone";
 
+export {default as AddComment} from './AddComment'
+export {default as DeleteComment} from './DeleteAccount'
+
+import { PlanType } from "@/@types/types";
 // ____ type of logout api response
 export type LogoutResponse = {
   message: string;

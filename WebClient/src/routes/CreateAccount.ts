@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import db from "@/db";
 import { users } from "@/schemas/index";
 import { eq } from "drizzle-orm";
+import { PlanType } from "@/@types/types";
 
 // ____ export types of route ...
 type CreateAccountResponse = {

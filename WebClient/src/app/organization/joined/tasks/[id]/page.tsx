@@ -1,101 +1,21 @@
 "use client";
-// _____ Components ...
-import { JoinedOrganizationSidebar } from "@/components/layout";
-
-// _____ Hooks ...
-import { useJoinedOrganization } from "@/stores/joinedOrg";
-
-// _____ Utils ...
-// import ShowClientError from "@/utils/Error";
-import { useParams } from "next/navigation";
+// ____ Hooks ...
+import React from "react";
 import { useMemo } from "react";
-import { Comment, TasksAssigned } from "@/@types/types";
-
-// src/components/CommentForm.tsx
-import React, { useState } from "react";
-
-interface CommentFormProps {
-  onAddComment: (text: string) => void;
-}
-
-// Comment form component ...
-const CommentForm: React.FC<CommentFormProps> = ({ onAddComment }) => {
-  const [commentText, setCommentText] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (commentText.trim()) {
-      onAddComment(commentText.trim());
-      setCommentText("");
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="mt-4">
-      <div className="flex items-center space-x-2">
-        <input
-          type="text"
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          placeholder="Add a comment..."
-          className="flex-grow rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <button
-          type="submit"
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-white shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          Post
-        </button>
-      </div>
-    </form>
-  );
-};
-
-// Comment card ...
-// src/components/CommentItem.tsx
-
-interface CommentItemProps {
-  comment: Comment;
-}
-
-const CommentItem: React.FC<CommentItemProps> = ({ comment }) => {
-  // A simple function to format the date
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-    return new Date(dateString).toLocaleDateString("en-US", options);
-  };
-
-  return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="flex items-center space-x-3">
-        {/* Placeholder for a user avatar/icon */}
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-600">
-          {comment.userId.charAt(0).toUpperCase()}
-        </div>
-        <div>
-          <p className="text-sm font-medium text-gray-900">{comment.userId}</p>
-          <p className="text-xs text-gray-500">
-            {formatDate(comment.createdAt)}
-          </p>
-        </div>
-      </div>
-      <p className="mt-2 text-gray-700">{comment.text}</p>
-    </div>
-  );
-};
+import { useJoinedOrganization } from "@/stores/joinedOrg";
+import { useParams } from "next/navigation";
+// ____ Components ...
+import { JoinedOrganizationSidebar } from "@/components/layout";
+import CommentForm from "./CommentForm";
+import CommentCard from "./CommentCard";
 
 // src/components/TaskDetails.tsx
-
 const TaskDetails = () => {
+  // _____ Hook calls ...
   const { id } = useParams();
   const { tasks } = useJoinedOrganization();
 
+  // ____ Find task to show details ...
   const requiredTask = useMemo(() => {
     return tasks.find((t) => t.id === id)!;
   }, [tasks, id]);
@@ -104,10 +24,7 @@ const TaskDetails = () => {
     return <div>Loading</div>;
   }
 
-  const handleAddComment = () => {
-    return;
-  };
-
+  // ____ Format dates ...
   const formattedDueDate = new Date(requiredTask.dueDate).toLocaleDateString();
 
   if (requiredTask) {
@@ -156,11 +73,12 @@ const TaskDetails = () => {
               <h2 className="mb-4 text-2xl font-semibold text-gray-800">
                 Comments ({requiredTask.comments.length})
               </h2>
-              <CommentForm onAddComment={handleAddComment} />
+              <CommentForm taskId={requiredTask.id} />
               <div className="mt-4 space-y-4">
                 {requiredTask.comments.length > 0 ? (
                   requiredTask.comments.map((comment) => (
-                    <CommentItem key={comment.id} comment={comment} />
+                    // <div key={comment.id}>{comment.text}</div>
+                    <CommentCard key={comment.id} comment={comment} />
                   ))
                 ) : (
                   <p className="text-center text-gray-500">

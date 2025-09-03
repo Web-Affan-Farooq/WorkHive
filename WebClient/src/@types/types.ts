@@ -55,6 +55,13 @@ interface Comment {
   userId: string;
   createdAt: string;
 }
+interface ExtendedComment {
+  id:string;
+  createdAt:string;
+  userEmail:string;
+  text:string;
+  taskId:string;
+}
 
 // ____ Type of tasks in joined organization
 interface TasksAssigned {
@@ -67,7 +74,7 @@ interface TasksAssigned {
   completedOn: string | null;
   note?: string;
   organizationId: string;
-  comments: Comment[];
+  comments: ExtendedComment[];
 }
 // ____ Type of tasks in owned organization
 interface TaskOwned {
@@ -120,7 +127,7 @@ interface joinedOrganization {
   name: string;
   email: string;
   department: Department;
-  users: Profile[];
+  users: Omit<Profile, "id">[];
   tasks: TasksAssigned[];
 }
 
@@ -135,4 +142,5 @@ export type {
   OwnedOrganization,
   joinedOrganization,
   PlanType,
+  ExtendedComment
 };

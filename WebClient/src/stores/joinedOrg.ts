@@ -5,16 +5,20 @@ import {
   TasksAssigned,
   joinedOrganization,
   Department,
+  ExtendedComment,
 } from "@/@types/types";
 
 interface JoinedOrganizationState extends joinedOrganization {
   id: string;
   name: string;
   email: string;
-  users: Profile[];
+  users: Omit<Profile, "id">[];
   department: Department;
+
+  addComment: (comment: ExtendedComment) => void;
+  deleteComment: (commentId: string) => void;
   feedTasks: (list: TasksAssigned[]) => void;
-  feedUsers: (list: Profile[]) => void;
+  feedUsers: (list: Omit<Profile, "id">[]) => void;
   setJoinedOrganization: (OrganizationInfo: joinedOrganization) => void;
 }
 
@@ -32,11 +36,38 @@ export const useJoinedOrganization = create<JoinedOrganizationState>()(
           name: "",
           organizationId: "",
         },
+        addComment: (comment) =>
+          set((state) => {
+            const updatedTaskList = state.tasks.map((tsk) => {
+              if (tsk.id === comment.taskId) {
+                return {
+                  ...tsk,
+                  comments: [...tsk.comments, comment],
+                };
+              } else return tsk;
+            });
+
+            return {
+              tasks: updatedTaskList,
+            };
+          }),
+        deleteComment: (commentId) =>
+          set((state) => {
+            const updatedTaskList = state.tasks.map((tsk) => {
+              return {
+                ...tsk,
+                comments: tsk.comments.filter((comm) => comm.id === commentId),
+              };
+            });
+            return {
+              tasks: updatedTaskList,
+            };
+          }),
         feedTasks: (list: TasksAssigned[]) =>
           set(() => ({
             tasks: list,
           })),
-        feedUsers: (list: Profile[]) =>
+        feedUsers: (list: Omit<Profile, "id">[]) =>
           set(() => ({
             users: list,
           })),

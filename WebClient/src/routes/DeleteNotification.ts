@@ -10,6 +10,7 @@ type DeleteNotificationRequest = {
 type DeleteNotificationResponse = {
   message: string;
 };
+export type {DeleteNotificationRequest , DeleteNotificationResponse}
 const DeleteNotification = async (req: NextRequest) => {
   const { id } = await req.json();
 

@@ -1,4 +1,4 @@
-import { comments, tasks, userTaskJunction } from "@/schemas";
+import { comments, tasks, userTaskJunction, users } from "@/schemas";
 import db from "@/db";
 import { and, inArray, eq } from "drizzle-orm";
 
@@ -19,20 +19,33 @@ const getJoinedOrganizationTasks = async (userId: string, orgId: string) => {
     .from(tasks)
     .where(and(eq(tasks.organizationId, orgId), inArray(tasks.id, taskIds)));
 
-  const userTasks = await Promise.all(
-    taskList.map(async (tsk) => {
-      const relatedComments = await db
-        .select()
-        .from(comments)
-        .where(eq(comments.taskId, tsk.id));
-
-      return {
-        ...tsk,
-        comments: relatedComments,
-      };
+  const selectedComments = await db
+    .select({
+      text: comments.text,
+      taskId: comments.taskId,
+      email: users.email,
+      createdAt: comments.createdAt,
+      id: comments.id,
     })
-  );
+    .from(comments)
+    .innerJoin(users, eq(comments.userId, users.id))
+    .where(inArray(comments.taskId, taskIds));
 
+  const userTasks = taskList.map((tsk) => {
+    const relevantComments = selectedComments.filter(
+      (comment) => comment.taskId === tsk.id
+    );
+    return {
+      ...tsk,
+      comments: relevantComments.map((comm) => ({
+        text: comm.text,
+        taskId: comm.taskId,
+        userEmail: comm.email, // -------------  must return "userEmail" instead of "email"
+        createdAt: comm.createdAt,
+        id: comm.id,
+      })),
+    };
+  });
   return userTasks;
 };
 export default getJoinedOrganizationTasks;

@@ -3,7 +3,9 @@ import { useMemo } from "react";
 
 const useJoinedOrganizationData = () => {
   const { tasks } = useJoinedOrganization();
-  const now = new Date();
+  const now = useMemo(() => {
+    return new Date();
+  }, []);
 
   // ___ Helper for month name
   const getMonthName = (monthIndex: number) => {

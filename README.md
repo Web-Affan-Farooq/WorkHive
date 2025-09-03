@@ -43,11 +43,11 @@ abcbpo@gmail.com  jhDJ74@#
 
 ### Test accounts:
 
-amir465affan@gmail.com (jsDF34#$)
-ahmedabbasi903@gmail.com (jhFG@#23)
-aqiba.li82@gmail.com (jhFG76@#)
-aliabbasi@gmail.com (djDF56@#)
-affan.farooqsbf@gmail.com (dhFG@#87)
+- amir465affan@gmail.com (jsDF34#$)
+- ahmedabbasi903@gmail.com (jhFG@#23)
+- aqiba.li82@gmail.com (jhFG76@#)
+- aliabbasi@gmail.com (djDF56@#)
+- affan.farooqsbf@gmail.com (dhFG@#87)
 
 ## Achieved:
 

@@ -11,7 +11,6 @@ import { eq } from "drizzle-orm";
 // export type ChangePasswordAPIResponse = {
 //   message: string;
 // };
-const response = new Object();
 
 export type ChangePasswordAPIRequest = {
   newPassword: string;
