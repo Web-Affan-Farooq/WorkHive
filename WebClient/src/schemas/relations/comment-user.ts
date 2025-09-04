@@ -11,4 +11,4 @@ export const commentsRelationWithUser = relations(comments, ({ one }) => ({
     fields: [comments.userId],
     references: [users.id],
   }),
-}));
+}))

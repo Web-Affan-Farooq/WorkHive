@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { createJSONStorage, devtools } from "zustand/middleware";
-import { TaskOwned, Department, OwnedOrganization } from "@/@types/types";
+import { TaskOwned, Department, OwnedOrganization, ExtendedComment } from "@/@types/types";
 
 interface OwnedOrg extends OwnedOrganization {
   addDepartment: (dept: Department) => void;
@@ -10,6 +10,8 @@ interface OwnedOrg extends OwnedOrganization {
   addTask: (task: TaskOwned) => void;
   deleteTask: (taskId: string) => void;
 
+  addComment:(comment:ExtendedComment) => void;
+  deleteComment:(commentId:string) => void;
   feedDepartments: (list: Department[]) => void;
   feedTasks: (list: TaskOwned[]) => void;
 
@@ -24,6 +26,19 @@ export const useOwnedOrganization = create<OwnedOrg>()(
         name: "",
         email: "",
         departments: [],
+        allUsers:[],
+
+        setOwnedOrganization: (info) =>
+          set(() => ({
+            id: info.id,
+            name: info.name,
+            email: info.email,
+            departments: info.departments,
+            users: info.users,
+            allUsers:info.allUsers,
+            tasks: info.tasks,
+          })),
+
 
         addDepartment: (dept) =>
           set((state) => ({
@@ -59,15 +74,6 @@ export const useOwnedOrganization = create<OwnedOrg>()(
             tasks: list,
           })),
 
-        setOwnedOrganization: (info) =>
-          set(() => ({
-            id: info.id,
-            name: info.name,
-            email: info.email,
-            departments: info.departments,
-            users: info.users,
-            tasks: info.tasks,
-          })),
 
         addTask: (task) =>
           set((state) => ({
@@ -78,6 +84,34 @@ export const useOwnedOrganization = create<OwnedOrg>()(
           set((state) => ({
             tasks: state.tasks.filter((tsk) => tsk.id !== taskId),
           })),
+
+          addComment:(comment) => set((state) => {
+            const updatedTaskList = state.tasks.map((tsk) => {
+              return {
+                ...tsk,
+                comments:[...tsk.comments, comment]
+              }
+            });
+
+            return {
+              tasks:updatedTaskList,
+            }
+
+          } ),
+
+        deleteComment: (commentId) =>
+          set((state) => {
+            const updatedTaskList = state.tasks.map((tsk) => {
+              return {
+                ...tsk,
+                comments: tsk.comments.filter((comm) => comm.id !== commentId),
+              };
+            });
+            return {
+              tasks: updatedTaskList,
+            };
+          }),
+
       }),
       {
         name: "owned-organization-data",

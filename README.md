@@ -36,7 +36,12 @@ Refers to the **/notifications** route. While notifications creation is handled 
 ### notes :
 - Checkout payment webhook . Suspected a major level bug in the webhook route handling account creation .
 - Create manager creation logic 
-- create a task details page for showing comments in it 
+- The task can only contain comments with userEmail instead of userId
+- Fix the theming of main dashboard of joined organization
+- implement linkedin like tagging functionality in comments section 
+- Remove emailing of link and implement functionality of handling invitations in notification panels of dashboard
+- Add red dot when there is a notification in panel which is unseen
+- Complete seening notification in frontend
 
 test organizations:
 abcbpo@gmail.com  jhDJ74@#
@@ -66,7 +71,6 @@ Before taking a look at schema , remember the following points.
 - many comments should belong to one task
 
 
-
 ### **Features checklist**:
 | Feature                                 | Status | tested |
 | --------------------------------------- | ------ | ------ |
@@ -82,6 +86,8 @@ Before taking a look at schema , remember the following points.
 | 🔔 Notifications system ✅             | ✅     | ⬜    |
 | Analytics dashboard                     | ⬜     | ⬜    |
 | Notifications system                    | ✅     | ⬜    |
+| Saas management dashboard               | ⬜     | ⬜    |
+| guest mode in  dashboard                | ⬜     | ⬜    |
 | Comments / collaboration                | ⬜     | ⬜    |
 | Task relation like a related to b       | ⬜     | ⬜    |
 | Manager creation feature                | ⬜     | ⬜    |

@@ -6,9 +6,9 @@ import GetTokenPayload from "@/utils/GetTokenPayload";
 import { PlanType } from "@/@types/types";
 
 import {
-  GetOwnedOrganizationUsers,
+  GetOrganizationUsersWithDepartment,
   GetDepartments,
-  GetJoinedOrganizationUsers,
+  GetOrganizationUsersList,
   GetOwnedOrganizationTasks,
   GetJoinedOrganizationTasks,
 } from "@/functions";
@@ -72,9 +72,10 @@ const DashboardData = async () => {
         name: ownedOrg.name,
         email: ownedOrg.organizationEmail,
         departments: ownedOrganizationDepartments,
-        users: await GetOwnedOrganizationUsers(
+        users: await GetOrganizationUsersWithDepartment(
           ownedOrganizationDepartments.map((dept) => dept.id)
         ),
+        allUsers:await GetOrganizationUsersList(ownedOrg.id),
         tasks: organizationTasks,
       };
       return result;
@@ -113,7 +114,8 @@ const DashboardData = async () => {
       })!;
 
       // ____ returns an array of all users in the joined organization ..
-      const allUsers = await GetJoinedOrganizationUsers(orgId);
+      const allUsers = await GetOrganizationUsersList(orgId);
+      
 
       // ____ returns array of all the tasks that are assigned to you  ..
       const allAssignedTasks = await GetJoinedOrganizationTasks(

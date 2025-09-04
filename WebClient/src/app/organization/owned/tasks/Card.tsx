@@ -3,25 +3,9 @@
 import convertToTitleCase from "@/lib/Convert";
 import Badge from "./Badge";
 import Link from "next/link";
-import { Task } from "@/@types/Task";
-// import { useOwnedOrganization } from "@/stores/ownedOrg";
-// import { useMemo } from "react";
-// import { Profile } from "@/@types/modeltypes";
-
-const Card = ({ task }: { task: Task }) => {
+import { TaskOwned } from "@/@types/types";
+const Card = ({ task }: { task: TaskOwned }) => {
   const dueDate = new Date(task.dueDate);
-  // const { users } = useOwnedOrganization();
-
-  // const allUsers = useMemo(() => {
-  //   if (users) {
-  //     const usersArray: Profile[] = Object.keys(users).flatMap(
-  //       (key) => users[key] || []
-  //     );
-  //     return usersArray;
-  //   }
-  //   return [];
-  // }, [users]);
-
   const completedOn = task.completedOn ? new Date(task.completedOn) : null;
 
   return (

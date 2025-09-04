@@ -14,4 +14,4 @@ export const comments = pgTable("Comments", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+})

@@ -4,7 +4,6 @@ import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useOwnedOrganization } from "@/stores/ownedOrg";
 // ____ Types and schemas ...
-import { Task } from "@/@types/Task";
 import { TaskCreationSchema } from "@/validations";
 // ____ Components ...
 import {
@@ -35,6 +34,7 @@ import ShowClientError from "@/utils/Error";
 import { z } from "zod";
 // _____ Utils ...
 import Notify from "@/utils/Notifications";
+import { TaskOwned } from "@/@types/types";
 
 type TaskCreationFormData = z.infer<typeof TaskCreationSchema>;
 
@@ -72,7 +72,7 @@ const Tasks = () => {
     console.log(data);
     try {
       const response = await axios.post("/api/tasks/create", data);
-      const returnedTask: Task = response.data.task;
+      const returnedTask: TaskOwned = response.data.task;
       addTask(returnedTask);
       Notify.success(response.data.message);
       reset();
@@ -253,7 +253,7 @@ const Tasks = () => {
             {tasks.length <= 0 ? (
               <p className="text-gray-400">No tasks found ...</p>
             ) : (
-              tasks.map((task: Task, idx) => (
+              tasks.map((task: TaskOwned, idx) => (
                 <ContextMenu key={idx}>
                   <ContextMenuTrigger>
                     <Card task={task} />

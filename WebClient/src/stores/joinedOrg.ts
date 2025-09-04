@@ -56,7 +56,8 @@ export const useJoinedOrganization = create<JoinedOrganizationState>()(
             const updatedTaskList = state.tasks.map((tsk) => {
               return {
                 ...tsk,
-                comments: tsk.comments.filter((comm) => comm.id === commentId),
+                comments: tsk.comments.filter((comm) => comm.id 
+                !== commentId),
               };
             });
             return {

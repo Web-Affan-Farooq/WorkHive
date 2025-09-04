@@ -11,4 +11,4 @@ export const commentsTaskRelation = relations(comments, ({ one }) => ({
     fields: [comments.taskId],
     references: [tasks.id],
   }),
-}));
+}))

@@ -1,43 +1,3 @@
-// interface Department {
-//   id: string;
-//   name: string;
-//   organizationId: string;
-// }
-// interface Profile {
-//   id: string;
-//   name: string;
-//   email: string;
-// }
-// interface Comment {
-//   id: string;
-//   text: string;
-//   taskId: string;
-//   userId: string;
-//   createdAt: Date;
-// }
-// interface Task {
-//   id: string;
-//   title: string;
-//   description: string;
-//   assignedOn: Date;
-//   dueDate: Date;
-//   completed: boolean;
-//   completedOn: Date | null;
-//   note: string | null;
-//   organizationId: string;
-//   assignees: string[];
-//   comments: Comment[];
-// }
-
-// interface OwnedOrganization {
-//   id: string;
-//   name: string;
-//   email: string;
-//   departments: Department[];
-//   users: Record<string, Profile[]>;
-//   tasks: Task[];
-// }
-
 // ____ Type of other user's data
 interface Profile {
   id: string;
@@ -87,7 +47,7 @@ interface TaskOwned {
   completedOn: string | null;
   note?: string;
   organizationId: string;
-  comments: Comment[];
+  comments: ExtendedComment[];
   assignees: string[];
 }
 // ____ Type of department
@@ -117,6 +77,7 @@ interface OwnedOrganization {
   name: string;
   email: string;
   departments: Department[];
+  allUsers:Omit<Profile,"id">[];
   users: Record<string, Profile[]>;
   tasks: TaskOwned[];
 }
