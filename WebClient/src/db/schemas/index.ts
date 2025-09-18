@@ -6,6 +6,9 @@ export { organizations } from "./tables/organizations";
 export { tasks } from "./tables/tasks";
 export { users } from "./tables/users";
 
+export * from "./relations"
+export * from "./tables";
+
 // ____ relations ...
 export {
   commentsTaskRelation,
