@@ -1,8 +1,6 @@
 import { uuid, pgTable, primaryKey } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-
-import { users } from "../tables/users";
-import { departments } from "../tables/departments";
+import { department ,user} from "@/db/schemas";
 
 // junction table for enrolling users in departments :
 export const userDepartmentsJunction = pgTable(
@@ -10,10 +8,10 @@ export const userDepartmentsJunction = pgTable(
   {
     userId: uuid("user_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => user.id, { onDelete: "cascade" }),
     departmentId: uuid("department_id")
       .notNull()
-      .references(() => departments.id, { onDelete: "cascade" }),
+      .references(() => department.id, { onDelete: "cascade" }),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.userId, t.departmentId] }),
@@ -21,24 +19,24 @@ export const userDepartmentsJunction = pgTable(
 );
 
 // relations of user with department
-export const userDepartments = relations(users, ({ many }) => ({
+export const userDepartments = relations(user, ({ many }) => ({
   departments: many(userDepartmentsJunction),
 }));
 // relations of department with user
-export const departmentUsers = relations(departments, ({ many }) => ({
+export const departmentUsers = relations(department, ({ many }) => ({
   accounts: many(userDepartmentsJunction),
 }));
 // combine many to many relation
 export const userDepartmentsRelation = relations(
   userDepartmentsJunction,
   ({ one }) => ({
-    user: one(users, {
+    user: one(user, {
       fields: [userDepartmentsJunction.userId],
-      references: [users.id],
+      references: [user.id],
     }),
-    department: one(departments, {
+    department: one(department, {
       fields: [userDepartmentsJunction.departmentId],
-      references: [departments.id],
+      references: [department.id],
     }),
   })
 );

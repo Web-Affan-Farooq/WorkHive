@@ -1,47 +1,36 @@
-import { NextResponse } from "next/server";
+"use server"
 import GetTokenPayload from "@/utils/GetTokenPayload";
-import { users } from "@/schemas";
+import { user } from "@/db/schemas";
 import db from "@/db";
 import { eq } from "drizzle-orm";
 
 type DeleteAccountResponse = {
   message: string;
+  success:boolean
 };
-export type { DeleteAccountResponse };
-
-const DeleteAccount = async () => {
+const DeleteAccount = async ():Promise<DeleteAccountResponse> => {
   const payload = await GetTokenPayload();
 
   if (!payload) {
-    return NextResponse.json(
-      {
+    return{
         message: "Unauthorized",
-      },
-      {
-        status: 401,
+        success:false,
       }
-    );
   }
   const accountId = payload.accountId;
 
   try {
-    await db.delete(users).where(eq(users.id, accountId));
-    return NextResponse.json(
-      {
+    await db.delete(user).where(eq(user.id, accountId));
+    return {
         message: "Account deleted successfully",
-      },
-      {
-        status: 200,
+        success:true
       }
-    );
   } catch (err) {
     console.log(err);
-    return NextResponse.json(
-      {
+    return {
         message: "An error occured",
-      },
-      { status: 500 }
-    );
+        success:false
+      }
   }
 };
 export default DeleteAccount;

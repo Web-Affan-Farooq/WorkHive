@@ -1,8 +1,6 @@
 import { uuid, pgTable, primaryKey } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-
-import { users } from "../tables/users";
-import { tasks } from "../tables/tasks";
+import { user ,task } from "@/db/schemas";
 
 // junction table for task and users:
 export const userTaskJunction = pgTable(
@@ -10,10 +8,10 @@ export const userTaskJunction = pgTable(
   {
     userId: uuid("user_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => user.id, { onDelete: "cascade" }),
     taskId: uuid("task_id")
       .notNull()
-      .references(() => tasks.id, { onDelete: "cascade" }),
+      .references(() => task.id, { onDelete: "cascade" }),
   },
   (t) => ({
     pk: primaryKey({
@@ -22,21 +20,21 @@ export const userTaskJunction = pgTable(
   })
 );
 // relations of user with tasks
-export const userTasks = relations(users, ({ many }) => ({
+export const userTasks = relations(user, ({ many }) => ({
   tasks: many(userTaskJunction),
 }));
 // relations of task with user
-export const taskAssignees = relations(tasks, ({ many }) => ({
+export const taskAssignees = relations(task, ({ many }) => ({
   assignees: many(userTaskJunction),
 }));
 // combine for many to many
 export const usersTasksRelation = relations(userTaskJunction, ({ one }) => ({
-  user: one(users, {
+  user: one(user, {
     fields: [userTaskJunction.userId],
-    references: [users.id],
+    references: [user.id],
   }),
-  task: one(tasks, {
+  task: one(task, {
     fields: [userTaskJunction.taskId],
-    references: [tasks.id],
+    references: [task.id],
   }),
 }));

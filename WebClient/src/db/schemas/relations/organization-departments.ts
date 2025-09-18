@@ -1,20 +1,19 @@
 import { relations } from "drizzle-orm";
-import { organizations } from "../tables/organizations";
-import { departments } from "../tables/departments";
+import { organization ,department } from "@/db/schemas";
 // relations between organization and its departments
 export const organizationRelationWithDepartments = relations(
-  organizations,
+  organization,
   ({ many }) => ({
-    departments: many(departments),
+    departments: many(department),
   })
 );
 
 export const departmentsRelationWithOrganization = relations(
-  departments,
+  department,
   ({ one }) => ({
-    organization: one(organizations, {
-      fields: [departments.organizationId],
-      references: [organizations.id],
+    organization: one(organization, {
+      fields: [department.organizationId],
+      references: [organization.id],
     }),
   })
 );

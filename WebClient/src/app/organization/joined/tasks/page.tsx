@@ -16,7 +16,7 @@ import Card from "./Card";
 import {
   DeleteTaskAPIRequest,
   DeleteTaskAPIResponse,
-} from "@/routes/DeleteTask";
+} from "@/actions/tasks/DeleteTask";
 // ___ Libraries ...
 import axios from "axios";
 // ___ Utils ...

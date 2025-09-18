@@ -1,14 +1,13 @@
 import { relations } from "drizzle-orm";
+import { task ,comment } from "@/db/schemas";
 
-import { tasks } from "../tables/tasks";
-import { comments } from "../tables/comment";
-export const taskCommentsRelation = relations(tasks, ({ many }) => ({
-  comments: many(comments),
+export const taskCommentsRelation = relations(task, ({ many }) => ({
+  comments: many(comment),
 }));
 
-export const commentsTaskRelation = relations(comments, ({ one }) => ({
-  task: one(tasks, {
-    fields: [comments.taskId],
-    references: [tasks.id],
+export const commentsTaskRelation = relations(comment, ({ one }) => ({
+  task: one(task, {
+    fields: [comment.taskId],
+    references: [task.id],
   }),
 }))

@@ -19,7 +19,7 @@ import Notify from "@/utils/Notifications";
 import {
   UnjoinDepartmentAPIRequest,
   UnjoinDepartmentAPIResponse,
-} from "@/routes/UnjoinDepartment";
+} from "@/actions/departments/UnjoinDepartmentAction";
 
 const LeaveOrganization = () => {
   const router = useRouter();

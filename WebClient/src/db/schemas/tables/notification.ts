@@ -6,7 +6,7 @@ import {
   timestamp,
   boolean,
 } from "drizzle-orm/pg-core";
-import { users } from "./users";
+import { user } from "./users";
 
 // ✅ Step 1: Define Enum separately
 export const notificationTypeEnum = pgEnum("NotificationType", [
@@ -16,7 +16,7 @@ export const notificationTypeEnum = pgEnum("NotificationType", [
 ]);
 
 // ✅ Step 2: Use Enum in table
-export const notifications = pgTable("notifications", {
+export const notification = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: varchar("title", { length: 100 }).notNull(),
   message: varchar("message", { length: 255 }).notNull(),
@@ -27,5 +27,5 @@ export const notifications = pgTable("notifications", {
   read: boolean().default(false),
   userId: uuid("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
 });

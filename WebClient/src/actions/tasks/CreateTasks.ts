@@ -1,14 +1,12 @@
-// app/api/tasks/route.ts
+"use server"
 import {
-  tasks,
+  task,
   userTaskJunction,
-  notifications,
-  organizations,
-} from "@/schemas";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+  notification,
+  organization,
+} from "@/db/schemas";
 import db from "@/db";
-import { eq, InferInsertModel } from "drizzle-orm";
+import { eq, InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 type CreateTaskRequest = {
   id: string;
@@ -20,29 +18,18 @@ type CreateTaskRequest = {
 };
 type CreateTaskResponse = {
   message: string;
-  task: {
-    id: string;
-    title: string;
-    description: string;
-    assignedOn: Date;
-    dueDate: Date;
-    completed: boolean;
-    completedOn: Date | null;
-    note: string | null;
-    organizationId: string;
+  success:boolean;
+  task?: InferSelectModel<typeof task> & {
     assignees: string[];
     comments: [];
   };
 };
 
-export type { CreateTaskRequest, CreateTaskResponse };
-
-const CreateTask = async (req: NextRequest) => {
+const CreateTaskAction = async (body:CreateTaskRequest):Promise<CreateTaskResponse> => {
   try {
-    const body: CreateTaskRequest = await req.json();
     // ______ insert task into table ...
     const [newTask] = await db
-      .insert(tasks)
+      .insert(task)
       .values({
         title: body.title,
         description: body.description,
@@ -56,8 +43,8 @@ const CreateTask = async (req: NextRequest) => {
     // ______ Find the organization which task is related ...
     const [taskOrganization] = await db
       .select()
-      .from(organizations)
-      .where(eq(organizations.id, body.organizationId));
+      .from(organization)
+      .where(eq(organization.id, body.organizationId));
 
     // ______ assign the task to users ...
     const assignees: InferInsertModel<typeof userTaskJunction>[] =
@@ -68,32 +55,27 @@ const CreateTask = async (req: NextRequest) => {
     await db.insert(userTaskJunction).values(assignees);
 
     // ______ Push reminders to users  ...
-    const newNotifications: InferInsertModel<typeof notifications>[] =
+    const newNotifications: InferInsertModel<typeof notification>[] =
       body.assignees.map((id) => ({
         title: `A new task is assigned to you`,
         type: "SUCCESS",
         userId: id,
         message: `New task is assigned to you in ${taskOrganization.name}`,
       }));
-    await db.insert(notifications).values(newNotifications);
+    await db.insert(notification).values(newNotifications);
 
-    return NextResponse.json(
-      {
+    return {
         message: "Task Created Successfully",
+        success:true,
         task: {
           ...newTask,
           assignees: body.assignees,
           comments: [],
         },
-      },
-      { status: 201 }
-    );
+      }
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { message: "Internal Server Error", task: null },
-      { status: 500 }
-    );
+    return { message: "Internal Server Error", success:false }
   }
 };
-export default CreateTask;
+export default CreateTaskAction;

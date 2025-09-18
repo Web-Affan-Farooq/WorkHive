@@ -1,17 +1,16 @@
 import { relations } from "drizzle-orm";
-import { organizations } from "../tables/organizations";
-import { tasks } from "../tables/tasks";
+import { organization ,task } from "@/db/schemas";
 
 export const organizationRelationsWithTasks = relations(
-  organizations,
+  organization,
   ({ many }) => ({
-    tasks: many(tasks),
+    tasks: many(task),
   })
 );
 
-export const taskRelationsWithOrganization = relations(tasks, ({ one }) => ({
-  organization: one(organizations, {
-    fields: [tasks.organizationId],
-    references: [organizations.id],
+export const taskRelationsWithOrganization = relations(task, ({ one }) => ({
+  organization: one(organization, {
+    fields: [task.organizationId],
+    references: [organization.id],
   }),
 }));

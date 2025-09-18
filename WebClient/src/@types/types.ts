@@ -1,3 +1,6 @@
+import { comment } from "@/db/schemas";
+import { InferSelectModel } from "drizzle-orm";
+
 // ____ Type of other user's data
 interface Profile {
   id: string;
@@ -8,19 +11,10 @@ interface Profile {
 type PlanType = "FREE" | "TEAMS" | "PRO";
 
 // ____ Type of tasks comments
-interface Comment {
-  id: string;
-  text: string;
-  taskId: string;
-  userId: string;
-  createdAt: string;
-}
-interface ExtendedComment {
-  id:string;
-  createdAt:string;
+type Comment = InferSelectModel<typeof comment>;
+
+type ExtendedComment = Omit<Comment , "userId"> & {
   userEmail:string;
-  text:string;
-  taskId:string;
 }
 
 // ____ Type of tasks in joined organization

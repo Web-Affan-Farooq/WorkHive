@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+"use server"
 import db from "@/db";
-import { userDepartmentsJunction, users, organizations } from "@/schemas";
+import { userDepartmentsJunction, user, organization } from "@/db/schemas";
 import { eq } from "drizzle-orm";
 import GetTokenPayload from "@/utils/GetTokenPayload";
 import { PlanType } from "@/@types/types";
@@ -20,6 +20,7 @@ import {
 } from "@/@types/types";
 
 type DashboardAPIResponse = {
+  data?:{
   id: string;
   name: string;
   email: string;
@@ -27,20 +28,21 @@ type DashboardAPIResponse = {
   notifications: Notification[];
   joinedOrganizations: joinedOrganization[];
   ownedOrganizations: OwnedOrganization[];
+},
+success:boolean;
+message:string
 };
 
-export type { DashboardAPIResponse };
-
-const DashboardData = async () => {
+const DashboardData = async ():Promise<DashboardAPIResponse>=> {
   const payload = await GetTokenPayload();
   if (!payload) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return { message: "Unauthorized",success:false };
   }
 
   const accountId = payload.accountId;
 
-  const account = await db.query.users.findFirst({
-    where: eq(users.id, accountId),
+  const account = await db.query.user.findFirst({
+    where: eq(user.id, accountId),
     columns: {
       createdAt: false,
       updatedAt: false,
@@ -53,13 +55,16 @@ const DashboardData = async () => {
       departments: true,
     },
   });
+  if(!account) {
+    return {message:"User not found",success:false}
+  }
 
-  const accountOrganizations = await db.query.organizations.findMany({
+  const accountOrganizations = await db.query.organization.findMany({
     columns: {
       organizationPassword: false, // dont return account password to client
       userId: false, // because we are already have account id
     },
-    where: eq(organizations.userId, accountId),
+    where: eq(organization.userId, accountId),
   });
 
   const ownedOrganizations = await Promise.all(
@@ -97,9 +102,9 @@ const DashboardData = async () => {
 
   const joinedOrganizations = await Promise.all(
     joinedOrganizationIds.map(async (orgId) => {
-      const requiredJoinedOrganization = await db.query.organizations.findFirst(
+      const requiredJoinedOrganization = await db.query.organization.findFirst(
         {
-          where: eq(organizations.id, orgId),
+          where: eq(organization.id, orgId),
           columns: {
             name: true,
             organizationEmail: true,
@@ -137,15 +142,19 @@ const DashboardData = async () => {
   if (account) {
     const data = {
       id: account.id,
-      name: account?.name,
-      email: account?.email,
-      plan: account?.plan,
-      notifications: account?.notifications, // ignore this error
+      name: account.name,
+      email: account.email,
+      plan: account.plan,
+      notifications: account.notifications, // ignore this error
       ownedOrganizations,
       joinedOrganizations,
     };
 
-    return NextResponse.json(data, { status: 200 });
+    return {
+      data:data,
+      message:"",
+      success:true
+    }
   }
 };
 export default DashboardData;

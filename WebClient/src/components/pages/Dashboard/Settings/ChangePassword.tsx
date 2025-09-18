@@ -16,7 +16,7 @@ import { ChangePasswordSchema } from "@/validations";
 import {
   ChangePasswordAPIResponse,
   ChangePasswordAPIRequest,
-} from "@/routes/ChangePassword";
+} from "@/actions/accounts/ChangePasswordAction";
 
 type ChangePasswordFormData = z.infer<typeof ChangePasswordSchema>;
 

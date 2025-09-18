@@ -1,52 +1,41 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+"use server"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import db from "@/db";
-import { users } from "@/schemas";
+import { user } from "@/db/schemas";
 import { eq } from "drizzle-orm";
 
-type LoginRequest = {
-  email: string;
-  password: string;
-};
 type LoginResponse = {
   message: string;
-  redirect: "/dashboard" | null;
+  success:boolean;
+  redirect?: "/dashboard";
 };
 
-export type { LoginRequest, LoginResponse };
-const Login = async (req: NextRequest) => {
+const LoginAction = async (email:string, password:string):Promise<LoginResponse> => {
   // Get body and initialize cookies ...
   const clientCookies = await cookies();
-  const { email, password }: LoginRequest = await req.json();
 
   /* verify user ... */
   const [requiredUser] = await db
     .select()
-    .from(users)
-    .where(eq(users.email, email));
+    .from(user)
+    .where(eq(user.email, email));
 
   if (!requiredUser) {
-    return NextResponse.json(
-      {
+    return {
         message: "User not found",
-        redirect: null,
-      },
-      {
-        status: 404,
+        success:false
       }
-    );
   }
 
   const passwordMatched = await bcrypt.compare(password, requiredUser.password);
 
   if (!passwordMatched) {
-    return NextResponse.json({
+    return {
       message: "Invalid password",
-      redirect: null,
-    });
+      success:false
+    }
   }
 
   const payload = {
@@ -62,9 +51,10 @@ const Login = async (req: NextRequest) => {
     maxAge: 60 * 60 * 24 * 30,
   });
 
-  return NextResponse.json({
+  return {
     message: "Login successfull",
+    success:true,
     redirect: "/dashboard",
-  });
+  }
 };
-export default Login;
+export default LoginAction;

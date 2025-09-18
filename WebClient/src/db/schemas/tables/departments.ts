@@ -1,10 +1,10 @@
 import { uuid, pgTable, varchar } from "drizzle-orm/pg-core";
-import { organizations } from "./organizations";
+import { organization } from "./organizations";
 
-export const departments = pgTable("Departments", {
+export const department= pgTable("Departments", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name"),
+  name: varchar("name").notNull(),
   organizationId: uuid("organizationId")
     .notNull()
-    .references(() => organizations.id, { onDelete: "cascade" }),
+    .references(() => organization.id, { onDelete: "cascade" }),
 });

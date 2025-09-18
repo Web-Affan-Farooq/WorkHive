@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // ___ Types and schemas...
 import { AccountLoginSchema } from "@/validations";
-import { LoginRequest, LoginResponse } from "@/routes/Login";
+import { LoginRequest, LoginResponse } from "@/actions/accounts/Login";
 
 // ___ Utils...
 import ShowClientError from "@/utils/Error";

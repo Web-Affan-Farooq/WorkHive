@@ -4,7 +4,7 @@ import { useDashboard } from "@/stores/dashboard";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
-import { DashboardAPIResponse } from "@/routes/Dashboard";
+import { DashboardAPIResponse } from "@/actions/dashboard";
 import ShowClientError from "@/utils/Error";
 
 const logger = new Logger("/FetchDashboardData.tsx");

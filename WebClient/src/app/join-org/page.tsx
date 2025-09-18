@@ -10,7 +10,7 @@ import ShowClientError from "@/utils/Error";
 import type {
   JoinDepartmentRequest,
   JoinDepartmentResponse,
-} from "@/routes/JoinDepartment";
+} from "@/actions/departments/JoinDepartmentAction";
 
 const OrganizationForm = () => {
   const router = useRouter();

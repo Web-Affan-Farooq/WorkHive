@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import {
   DeleteOrganizationAPIRequest,
   DeleteOrganizationAPIResponse,
-} from "@/routes/DeleteOrganization";
+} from "@/actions/organizations/DeleteOrganization";
 // ____ Hooks ...
 import { useDashboard } from "@/stores/dashboard";
 import { useOwnedOrganization } from "@/stores/ownedOrg";

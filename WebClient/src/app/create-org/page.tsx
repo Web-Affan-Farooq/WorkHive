@@ -17,7 +17,7 @@ import Notify from "@/utils/Notifications";
 import type {
   CreateOrganizationRequest,
   CreateOrganizationResponse,
-} from "@/routes/CreateOrganization";
+} from "@/actions/organizations/CreateOrganization";
 
 /* ____ Infered type from  OrganizationFormSchema  ... */
 type OrganizationFormData = z.infer<typeof OrganizationFormSchema>;

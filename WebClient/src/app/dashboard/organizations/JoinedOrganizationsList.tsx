@@ -21,7 +21,7 @@ import ShowClientError from "@/utils/Error";
 import {
   UnjoinDepartmentAPIRequest,
   UnjoinDepartmentAPIResponse,
-} from "@/routes/UnjoinDepartment";
+} from "@/actions/departments/UnjoinDepartmentAction";
 
 const JoinedOrganizationsList = () => {
   // ______ joind organinization from main state ...

@@ -8,7 +8,7 @@ import { ExtendedComment } from "@/@types/types";
 import type {
   DeleteCommentAPIRequest,
   DeleteCommentAPIResponse,
-} from "@/routes/DeleteComment";
+} from "@/actions/comments/DeleteCommentAction";
 // _____ Libraries ...
 import axios from "axios";
 // _____ Components ...

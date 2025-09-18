@@ -1,18 +1,16 @@
 import { relations } from "drizzle-orm";
-
-import { users } from "../tables/users";
-import { notifications } from "../tables/notification";
+import { user ,notification } from "@/db/schemas";
 
 // ____ Relations between account and notifications ...
-export const userRelationWithNotifications = relations(users, ({ many }) => ({
-  notifications: many(notifications),
+export const userRelationWithNotifications = relations(user, ({ many }) => ({
+  notifications: many(notification),
 }));
 export const notificationsRelationWithUser = relations(
-  notifications,
+  notification,
   ({ one }) => ({
-    account: one(users, {
-      fields: [notifications.userId],
-      references: [users.id],
+    account: one(user, {
+      fields: [notification.userId],
+      references: [user.id],
     }),
   })
 );

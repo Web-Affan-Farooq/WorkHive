@@ -1,10 +1,8 @@
-// _____ /api/tasks/mark-done ...
-import { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+"use server"
 import GetTokenPayload from "@/utils/GetTokenPayload";
 import db from "@/db";
 import { eq, InferInsertModel } from "drizzle-orm";
-import { notifications, organizations, tasks } from "@/schemas";
+import { notification, organization, task } from "@/db/schemas";
 
 type MarkDoneRequest = {
   taskId: string;
@@ -15,26 +13,21 @@ type MarkDoneRequest = {
 };
 type MarkAsDoneResponse = {
   message: string;
+  success:boolean
 };
-export type { MarkAsDoneResponse, MarkDoneRequest };
 
-const MarkAsDone = async (req: NextRequest) => {
-  const body: MarkDoneRequest = await req.json();
+const MarkAsDoneAction = async (body:MarkDoneRequest):Promise<MarkAsDoneResponse> => {
   const payload = await GetTokenPayload();
   if (!payload) {
-    return NextResponse.json(
-      {
+    return {
         message: "Unauthorized",
-      },
-      {
-        status: 402,
+        success:false
       }
-    );
   }
 
   try {
     const [completedTask] = await db
-      .update(tasks)
+      .update(task)
       .set({
         completed: true,
         completedOn: new Date(),
@@ -43,46 +36,38 @@ const MarkAsDone = async (req: NextRequest) => {
       .returning();
     const [requiredOrganization] = await db
       .select()
-      .from(organizations)
-      .where(eq(organizations.id, completedTask.organizationId));
+      .from(organization)
+      .where(eq(organization.id, completedTask.organizationId));
 
     const dueDate = new Date(completedTask.dueDate);
 
     if (completedTask.completedOn && dueDate < completedTask.completedOn) {
-      const newNotification: InferInsertModel<typeof notifications> = {
+      const newNotification: InferInsertModel<typeof notification> = {
         title: "Late task submission ",
         message: `late task submission from ${body.name} belongs to ${body.departmentName} department of ${body.organizationName}`,
         type: "SUCCESS",
         userId: requiredOrganization.userId,
       };
-      await db.insert(notifications).values(newNotification);
+      await db.insert(notification).values(newNotification);
     } else {
-      const newNotification: InferInsertModel<typeof notifications> = {
+      const newNotification: InferInsertModel<typeof notification> = {
         title: "New task submission ",
         message: `${body.name} has completed the given task , now waiting for review . Check ${body.departmentName} department of ${requiredOrganization.name}`,
         type: "SUCCESS",
         userId: payload.accountId,
       };
-      await db.insert(notifications).values(newNotification);
+      await db.insert(notification).values(newNotification);
     }
-    return NextResponse.json(
-      {
+    return {
         message: "Marked as done",
-      },
-      {
-        status: 200,
+        success:true,
       }
-    );
   } catch (err) {
     console.log(err);
-    return NextResponse.json(
-      {
+    return {
         message: "An error occured",
-      },
-      {
-        status: 500,
+        success:false
       }
-    );
   }
 };
-export default MarkAsDone;
+export default MarkAsDoneAction;

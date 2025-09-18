@@ -6,9 +6,9 @@ import {
   timestamp,
   text,
 } from "drizzle-orm/pg-core";
-import { organizations } from "./organizations";
+import { organization } from "./organizations";
 
-export const tasks = pgTable("Tasks", {
+export const task = pgTable("Tasks", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: varchar("title", { length: 100 }).notNull(),
   description: varchar("description", { length: 255 }).notNull(),
@@ -21,5 +21,5 @@ export const tasks = pgTable("Tasks", {
   note: text(),
   organizationId: uuid("organization_id")
     .notNull()
-    .references(() => organizations.id, { onDelete: "cascade" }),
+    .references(() => organization.id, { onDelete: "cascade" }),
 });

@@ -10,7 +10,7 @@ import {
 const PlanEnum = pgEnum("Plan", ["FREE", "TEAMS", "PRO"]);
 
 // ____ Main table for accounts ....
-export const users = pgTable("Accounts", {
+export const user = pgTable("Accounts", {
   id: uuid("id").defaultRandom().primaryKey(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

@@ -1,14 +1,12 @@
 import { relations } from "drizzle-orm";
-
-import { users } from "../tables/users";
-import { comments } from "../tables/comment";
-export const userRelationWithComments = relations(users, ({ many }) => ({
-  comments: many(comments),
+import { user ,comment } from "@/db/schemas";
+export const userRelationWithComments = relations(user, ({ many }) => ({
+  comments: many(comment),
 }));
 
-export const commentsRelationWithUser = relations(comments, ({ one }) => ({
-  user: one(users, {
-    fields: [comments.userId],
-    references: [users.id],
+export const commentsRelationWithUser = relations(comment, ({ one }) => ({
+  user: one(user, {
+    fields: [comment.userId],
+    references: [user.id],
   }),
 }))

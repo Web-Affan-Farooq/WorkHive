@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import bcrypt from "bcrypt";
 import db from "@/db";
-import { users } from "@/schemas/index";
+import { user } from "@/db/schemas/index";
 import { eq } from "drizzle-orm";
 import { PlanType } from "@/@types/types";
 
@@ -33,8 +33,8 @@ const CreateAccount = async (req: NextRequest) => {
     // _____ Check if account already exists ...
     const alreadyExists = await db
       .select()
-      .from(users)
-      .where(eq(users.email, body.email));
+      .from(user)
+      .where(eq(user.email, body.email));
 
     if (alreadyExists.length > 0) {
       return NextResponse.json(
@@ -53,7 +53,7 @@ const CreateAccount = async (req: NextRequest) => {
 
     // _____ Create new user ...
     const [newUser] = await db
-      .insert(users)
+      .insert(user)
       .values({
         name: body.name,
         email: body.email,

@@ -6,7 +6,7 @@ import { ExtendedComment } from "@/@types/types";
 import type {
   DeleteCommentAPIRequest,
   DeleteCommentAPIResponse,
-} from "@/routes/DeleteComment";
+} from "@/actions/comments/DeleteCommentAction";
 import axios from "axios";
 import {
   ContextMenu,

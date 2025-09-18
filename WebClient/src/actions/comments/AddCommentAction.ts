@@ -1,27 +1,28 @@
 "use server"
 import db from "@/db";
 import { Comment,ExtendedComment } from "@/@types/types";
-import { comments } from "@/db/schemas";
+import { comment } from "@/db/schemas";
 import GetTokenPayload from "@/utils/GetTokenPayload";
 
-type AddCommentAPIRequest = Omit<Comment, "userId"|"id"|"createdAt">;;
 
+// ____ Types ...
+type AddCommentAPIRequest = Omit<Comment, "userId"|"id"|"createdAt">;
 type AddCommentAPIResponse = {
   message: string;
-  comment: ExtendedComment;
+  success:boolean;
+  comment?: ExtendedComment;
 };
 
-export type { AddCommentAPIRequest, AddCommentAPIResponse };
-
-const AddCommentAction = async ({taskId, text}:AddCommentAPIRequest) => {
+const AddCommentAction = async ({taskId, text}:AddCommentAPIRequest) :Promise<AddCommentAPIResponse> => {
   const payload = await GetTokenPayload();
   if (!payload) {
     return { message: "Unauthorized", success:false}
   }
 
   try {
+    // ____ Insert the comment ...
     const [newComment] = await db
-      .insert(comments)
+      .insert(comment)
       .values({
         taskId:taskId,
         userId: payload.accountId,
@@ -31,6 +32,7 @@ const AddCommentAction = async ({taskId, text}:AddCommentAPIRequest) => {
       
       return {
         message: "An error occured",
+        success:true,
         comment: {
             id:newComment.id,
   createdAt:newComment.createdAt,
@@ -42,7 +44,8 @@ const AddCommentAction = async ({taskId, text}:AddCommentAPIRequest) => {
   } catch (err) {
     console.log(err);
     return {
-        message:"An error occured"
+        message:"An error occured",
+        success:false,
     }
   }
 };
