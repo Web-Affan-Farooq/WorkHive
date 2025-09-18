@@ -1,8 +1,7 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+"use server"
 import db from "@/db";
 import { Comment,ExtendedComment } from "@/@types/types";
-import { comments } from "@/schemas";
+import { comments } from "@/db/schemas";
 import GetTokenPayload from "@/utils/GetTokenPayload";
 
 type AddCommentAPIRequest = Omit<Comment, "userId"|"id"|"createdAt">;;
@@ -14,26 +13,23 @@ type AddCommentAPIResponse = {
 
 export type { AddCommentAPIRequest, AddCommentAPIResponse };
 
-const AddComment = async (req: NextRequest) => {
-  const body: AddCommentAPIRequest = await req.json();
-  console.log(body)
+const AddCommentAction = async ({taskId, text}:AddCommentAPIRequest) => {
   const payload = await GetTokenPayload();
   if (!payload) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return { message: "Unauthorized", success:false}
   }
 
   try {
     const [newComment] = await db
       .insert(comments)
       .values({
-        taskId: body.taskId,
+        taskId:taskId,
         userId: payload.accountId,
-        text: body.text,
+        text: text,
       })
       .returning();
       
-    return NextResponse.json(
-      {
+      return {
         message: "An error occured",
         comment: {
             id:newComment.id,
@@ -42,21 +38,12 @@ const AddComment = async (req: NextRequest) => {
   text:newComment.text,
   taskId:newComment.taskId
         },
-      },
-      {
-        status: 201,
       }
-    );
   } catch (err) {
     console.log(err);
-    return NextResponse.json(
-      {
-        message: "An error occured",
-      },
-      {
-        status: 500,
-      }
-    );
+    return {
+        message:"An error occured"
+    }
   }
 };
-export default AddComment;
+export default AddCommentAction;
