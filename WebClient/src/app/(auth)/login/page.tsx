@@ -10,12 +10,11 @@ import { PasswordInput } from "@/components/common";
 
 // ___ Libs...
 import * as z from "zod";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // ___ Types and schemas...
 import { AccountLoginSchema } from "@/validations";
-import { LoginRequest, LoginResponse } from "@/actions/accounts/Login";
+import LoginAction from "@/actions/accounts/Login";
 
 // ___ Utils...
 import ShowClientError from "@/utils/Error";
@@ -38,19 +37,19 @@ const Login = () => {
 
   // ____ Runs on form submission ...
   const login = async (FormData: AccountLoginFormData) => {
-    setDisabled(true);
     try {
-      const payload: LoginRequest = {
-        ...FormData,
-      };
-      const response = await axios.post("/api/accounts/login", payload);
-      const { data }: { data: LoginResponse } = response;
-      Notify.success(data.message);
-      router.push(data.redirect ? data.redirect : "/");
+      const { message, success, redirect } = await LoginAction(
+        FormData.email,
+        FormData.password
+      );
+      if (!success) {
+        Notify.error(message);
+      }
+      Notify.success(message);
+      router.push(redirect ? redirect : "/");
     } catch (err) {
       ShowClientError(err, "Login error");
     }
-    setDisabled(false);
   };
 
   return (

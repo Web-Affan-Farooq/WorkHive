@@ -46,9 +46,6 @@ const Card = ({ task }: { task: TasksAssigned }) => {
   const completedOn = task.completedOn ? new Date(task.completedOn) : null;
   const { department, name, feedTasks, tasks } = useJoinedOrganization();
   const { info } = useDashboard();
-  // const requiredUser = useMemo(() => {
-  //   return users.find((user) => user.id === task.assignedTo);
-  // }, [users, task]);
 
   const [note, setNote] = useState("");
 

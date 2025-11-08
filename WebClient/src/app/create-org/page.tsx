@@ -1,23 +1,20 @@
 "use client";
 /* ____ Hooks  ... */
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 /* ____ Libraries  ... */
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 
 /* ____ Components and validations  ... */
 import { OrganizationFormSchema } from "@/validations";
 import { PasswordInput } from "@/components/common";
 import ShowClientError from "@/utils/Error";
 import Notify from "@/utils/Notifications";
-import type {
-  CreateOrganizationRequest,
-  CreateOrganizationResponse,
-} from "@/actions/organizations/CreateOrganization";
+
+// _____ Actions
+import { CreateOrganzationAction } from "@/actions/organizations";
 
 /* ____ Infered type from  OrganizationFormSchema  ... */
 type OrganizationFormData = z.infer<typeof OrganizationFormSchema>;
@@ -26,13 +23,10 @@ const OrganizationForm = () => {
   /* ____ For redirecting logic ... */
   const router = useRouter();
 
-  /* ____ For disabling button ... */
-  const [disabled, setDisabled] = useState(false);
-
   /* ___ react hook form ... */
   const {
     register,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
   } = useForm<OrganizationFormData>({
     resolver: zodResolver(OrganizationFormSchema),
@@ -41,19 +35,18 @@ const OrganizationForm = () => {
 
   /* ___ For creating organization ... */
   const createOrganization = async (formData: OrganizationFormData) => {
-    setDisabled(true);
     try {
-      const payload: CreateOrganizationRequest = {
+      const payload = {
         ...formData,
       };
-      const response = await axios.post("/api/organizations/create", payload);
-      const { data }: { data: CreateOrganizationResponse } = response;
-      Notify.success(data.message);
-      router.push(data.redirect ? data.redirect : "/dashboard/organizations");
+      const response = await CreateOrganzationAction(payload);
+      Notify.success(response.message);
+      router.push(
+        response.redirect ? response.redirect : "/dashboard/organizations"
+      );
     } catch (err) {
       ShowClientError(err, "Create organization error");
     }
-    setDisabled(false);
   };
 
   return (
@@ -124,7 +117,7 @@ const OrganizationForm = () => {
 
             <button
               type="submit"
-              className={`w-full ${disabled ? "bg-indigo-700 cursor-not-allowed" : "bg-indigo-600 cursor-pointer"} hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition`}
+              className={`w-full ${isSubmitting ? "bg-indigo-700 cursor-not-allowed" : "bg-indigo-600 cursor-pointer"} hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition`}
             >
               Continue
             </button>

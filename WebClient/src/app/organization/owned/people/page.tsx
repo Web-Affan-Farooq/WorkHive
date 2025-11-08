@@ -28,8 +28,6 @@ import {
 import Image from "next/image";
 import { useMemo } from "react";
 import Logger from "@/lib/logger";
-// import toast from 'react-hot-toast';
-// import axios from 'axios';
 
 const Card = ({ employeeData }: { employeeData: Profile }) => {
   return (

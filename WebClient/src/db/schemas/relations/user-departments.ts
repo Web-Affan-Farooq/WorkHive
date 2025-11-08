@@ -1,6 +1,6 @@
 import { uuid, pgTable, primaryKey } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { department ,user} from "@/db/schemas";
+import { department, user } from "@/db/schemas";
 
 // junction table for enrolling users in departments :
 export const userDepartmentsJunction = pgTable(

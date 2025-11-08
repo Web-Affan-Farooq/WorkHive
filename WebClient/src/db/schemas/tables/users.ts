@@ -1,9 +1,10 @@
 import {
   uuid,
+  timestamp,
   pgTable,
   pgEnum,
   varchar,
-  timestamp,
+  boolean,
   text,
 } from "drizzle-orm/pg-core";
 
@@ -24,4 +25,5 @@ export const user = pgTable("Accounts", {
   plan: PlanEnum("plan").default("FREE").notNull(),
   stripeCustomerId: varchar("stripe_customer_id", { length: 255 }).unique(),
   stripeSubId: varchar("stripe_sub_id", { length: 255 }).unique(),
+  isPaid:boolean("is_paid").default(false)
 });

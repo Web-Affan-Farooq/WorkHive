@@ -10,6 +10,7 @@ type Response = {
   departments?: InferSelectModel<typeof department>[];
 };
 
+
 const VerifyOrganization = async (id: string): Promise<Response> => {
   const payload = await GetTokenPayload();
   if (!payload) {
@@ -33,7 +34,7 @@ const VerifyOrganization = async (id: string): Promise<Response> => {
 
   if (requiredOrganization) {
     return {
-      departments: (requiredOrganization) .departments, // ignore the type error
+      departments: requiredOrganization.departments, // ignore the type error
       message: "Organization found",
       success: true,
     };

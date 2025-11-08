@@ -8,7 +8,7 @@ type DeleteNotificationResponse = {
   success:boolean
 };
 
-const DeleteNotification = async (id:string) :Promise<DeleteNotificationResponse>=> {
+const DeleteNotificationAction = async (id:string) :Promise<DeleteNotificationResponse>=> {
   try {
     await db.delete(notification).where(eq(notification.id, id));
     return {
@@ -23,4 +23,4 @@ const DeleteNotification = async (id:string) :Promise<DeleteNotificationResponse
       }
   }
 };
-export default DeleteNotification;
+export default DeleteNotificationAction;

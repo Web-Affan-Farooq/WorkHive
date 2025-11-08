@@ -13,33 +13,19 @@ import {
 import Link from "next/link";
 import Card from "./Card";
 // ___ Types and schemas ...
-import {
-  DeleteTaskAPIRequest,
-  DeleteTaskAPIResponse,
-} from "@/actions/tasks/DeleteTask";
-// ___ Libraries ...
-import axios from "axios";
-// ___ Utils ...
-import Notify from "@/utils/Notifications";
-import ShowClientError from "@/utils/Error";
+import { DeleteTaskAction } from "@/actions/tasks/";
+import { toast } from "sonner";
 
 const Tasks = () => {
   const { tasks, feedTasks } = useJoinedOrganization();
 
   const handleDeleteTask = async (id: string) => {
-    try {
-      const payload: DeleteTaskAPIRequest = {
-        taskId: id,
-      };
-      const response = await axios.delete("/api/tasks/delete", {
-        data: payload,
-      });
-      const { data }: { data: DeleteTaskAPIResponse } = response;
-      feedTasks(tasks.filter((tsk) => tsk.id !== id));
-      Notify.success(data.message);
-    } catch (err) {
-      ShowClientError(err, "Task deletion error");
+    const { success, message } = await DeleteTaskAction(id);
+    if (!success) {
+      toast.error(message);
     }
+    feedTasks(tasks.filter((tsk) => tsk.id !== id));
+    toast.success(message);
   };
 
   return (

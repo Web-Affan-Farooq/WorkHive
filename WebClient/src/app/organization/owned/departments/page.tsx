@@ -1,14 +1,13 @@
 "use client";
 
 // ___ Hooks ...
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useOwnedOrganization } from "@/stores/ownedOrg";
 
 // ___ Libraries ...
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 
 // ___ Schemas and types ...
 import { Departments } from "@/@types/modeltypes";
@@ -37,16 +36,11 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { OwnedOrganizationSidebar } from "@/components/layout";
 
-// ___ Utils ...
-import Notify from "@/utils/Notifications";
-import ShowClientError from "@/utils/Error";
-
 type DepartmentFormData = z.infer<typeof DepartmentSchema>;
 
 const DepartmentsPage = () => {
   const { id, departments, users, addDepartment, deleteDepartment } =
     useOwnedOrganization();
-  // const { createDepartment } = useDashboard();
 
   const countEmployees = useCallback(
     (deptId: string) => {
@@ -56,12 +50,10 @@ const DepartmentsPage = () => {
     [users]
   );
 
-  const [disabled, setdisabled] = useState(false);
-
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(DepartmentSchema),
     mode: "onChange",
@@ -70,33 +62,7 @@ const DepartmentsPage = () => {
     },
   });
   const handleDepartmentCreation = async (data: DepartmentFormData) => {
-    setdisabled(true);
-    try {
-      const response = await axios.post("/api/departments/create", data);
-
-      const newDepartment: Departments = response.data.department;
-      addDepartment(newDepartment);
-
-      Notify.success(response.data.message);
-      console.log(response.data);
-    } catch (err) {
-      ShowClientError(err, "Department creation error");
-    }
-    setdisabled(false);
-  };
-
-  const handleDepartmentDelete = async (id: string) => {
-    try {
-      const response = await axios.delete("/api/departments/delete", {
-        data: {
-          id: id,
-        },
-      });
-      deleteDepartment(id);
-      Notify.success(response.data.message);
-    } catch (err) {
-      ShowClientError(err, "department delete error");
-    }
+    addDepartment(data.name, data.organizationId);
   };
 
   return (
@@ -142,8 +108,8 @@ const DepartmentsPage = () => {
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
                     type="submit"
-                    disabled={disabled}
-                    className={`${disabled ? "bg-gray-700 cursor-not-allowed" : "bg-gray-900 cursor-pointer"} px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]`}
+                    disabled={isSubmitting}
+                    className={`${isSubmitting ? "bg-gray-700 cursor-not-allowed" : "bg-gray-900 cursor-pointer"} px-[10px] text-sm py-[5px] rounded-md text-white flex flex-row flex-nowrap justify-start items-center gap-[3px]`}
                   >
                     <Plus className="size-sm" />
                     <span>Create</span>
@@ -173,7 +139,7 @@ const DepartmentsPage = () => {
                     <ContextMenuContent>
                       <ContextMenuItem>Edit</ContextMenuItem>
                       <ContextMenuItem
-                        onClick={() => handleDepartmentDelete(dept.id)}
+                        onClick={() => deleteDepartment(dept.id)}
                       >
                         Delete
                       </ContextMenuItem>

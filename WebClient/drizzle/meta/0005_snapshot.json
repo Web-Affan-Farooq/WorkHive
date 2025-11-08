@@ -1,9 +1,129 @@
 {
-  "id": "0ab5ca4d-cda9-4917-8b0d-5a273c6e7c26",
+  "id": "ef9b6002-c9a6-488d-b221-f236e3ca72be",
   "prevId": "9f587d6e-c23c-4f9c-b32d-6621ea4c3489",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.user_tasks": {
+      "name": "user_tasks",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "task_id": {
+          "name": "task_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_tasks_user_id_Accounts_id_fk": {
+          "name": "user_tasks_user_id_Accounts_id_fk",
+          "tableFrom": "user_tasks",
+          "tableTo": "Accounts",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_tasks_task_id_Tasks_id_fk": {
+          "name": "user_tasks_task_id_Tasks_id_fk",
+          "tableFrom": "user_tasks",
+          "tableTo": "Tasks",
+          "columnsFrom": [
+            "task_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_tasks_user_id_task_id_pk": {
+          "name": "user_tasks_user_id_task_id_pk",
+          "columns": [
+            "user_id",
+            "task_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_departments": {
+      "name": "user_departments",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "department_id": {
+          "name": "department_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_departments_user_id_Accounts_id_fk": {
+          "name": "user_departments_user_id_Accounts_id_fk",
+          "tableFrom": "user_departments",
+          "tableTo": "Accounts",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_departments_department_id_Departments_id_fk": {
+          "name": "user_departments_department_id_Departments_id_fk",
+          "tableFrom": "user_departments",
+          "tableTo": "Departments",
+          "columnsFrom": [
+            "department_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_departments_user_id_department_id_pk": {
+          "name": "user_departments_user_id_department_id_pk",
+          "columns": [
+            "user_id",
+            "department_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.Comments": {
       "name": "Comments",
       "schema": "",
@@ -99,7 +219,7 @@
           "name": "name",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "organizationId": {
           "name": "organizationId",
@@ -344,126 +464,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user_departments": {
-      "name": "user_departments",
-      "schema": "",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "department_id": {
-          "name": "department_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_departments_user_id_Accounts_id_fk": {
-          "name": "user_departments_user_id_Accounts_id_fk",
-          "tableFrom": "user_departments",
-          "tableTo": "Accounts",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "user_departments_department_id_Departments_id_fk": {
-          "name": "user_departments_department_id_Departments_id_fk",
-          "tableFrom": "user_departments",
-          "tableTo": "Departments",
-          "columnsFrom": [
-            "department_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "user_departments_user_id_department_id_pk": {
-          "name": "user_departments_user_id_department_id_pk",
-          "columns": [
-            "user_id",
-            "department_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.user_tasks": {
-      "name": "user_tasks",
-      "schema": "",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "task_id": {
-          "name": "task_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_tasks_user_id_Accounts_id_fk": {
-          "name": "user_tasks_user_id_Accounts_id_fk",
-          "tableFrom": "user_tasks",
-          "tableTo": "Accounts",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "user_tasks_task_id_Tasks_id_fk": {
-          "name": "user_tasks_task_id_Tasks_id_fk",
-          "tableFrom": "user_tasks",
-          "tableTo": "Tasks",
-          "columnsFrom": [
-            "task_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "user_tasks_user_id_task_id_pk": {
-          "name": "user_tasks_user_id_task_id_pk",
-          "columns": [
-            "user_id",
-            "task_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.Accounts": {
       "name": "Accounts",
       "schema": "",
@@ -526,6 +526,13 @@
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
+        },
+        "is_paid": {
+          "name": "is_paid",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         }
       },
       "indexes": {},
@@ -559,7 +566,17 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.NotificationType": {
+      "name": "NotificationType",
+      "schema": "public",
+      "values": [
+        "SUCCESS",
+        "FAILURE",
+        "REMINDER"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

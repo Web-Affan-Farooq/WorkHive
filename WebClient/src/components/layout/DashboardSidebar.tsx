@@ -8,6 +8,7 @@ import { useDashboard } from "@/stores/dashboard";
 import { Building, Plus } from "lucide-react";
 import Notify from "@/utils/Notifications";
 import ShowClientError from "@/utils/Error";
+import { logoutAction } from "@/actions/accounts";
 
 const menuItems = [
   {
@@ -42,14 +43,10 @@ const DashboardSidebar = () => {
 
   //   /* onclick Event : attemp GET request on logout api and redirect the user to landing page ... */
   const handleLogout = async () => {
-    try {
-      const response = await axios.get("/api/accounts/logout");
-      Notify.success(response.data.message);
-      router.push("/");
-      clearCache();
-    } catch (err) {
-      ShowClientError(err, "Logout error");
-    }
+    const { message } = await logoutAction();
+    Notify.success(message);
+    router.push("/");
+    clearCache();
   };
 
   return (

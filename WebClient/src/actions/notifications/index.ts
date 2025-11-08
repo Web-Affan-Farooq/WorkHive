@@ -1,1 +1,1 @@
-export * from "./DeleteNotification"
+export {default as DeleteNotificationAction} from "./DeleteNotification"

@@ -7,6 +7,7 @@ import {
   boolean,
 } from "drizzle-orm/pg-core";
 import { user } from "./users";
+import { InferSelectModel } from "drizzle-orm";
 
 // ✅ Step 1: Define Enum separately
 export const notificationTypeEnum = pgEnum("NotificationType", [
@@ -29,3 +30,5 @@ export const notification = pgTable("notifications", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
 });
+
+export type Notification = InferSelectModel<typeof notification>

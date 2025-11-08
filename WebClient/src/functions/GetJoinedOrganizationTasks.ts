@@ -1,8 +1,8 @@
-import { comments, tasks, userTaskJunction, users } from "@/schemas";
+import { comment, task, userTaskJunction, user } from "@/db/schemas";
 import db from "@/db";
 import { and, inArray, eq } from "drizzle-orm";
 
-const getJoinedOrganizationTasks = async (userId: string, orgId: string) => {
+const getJoinedOrganizationtask = async (userId: string, orgId: string) => {
   // 1. Find all taskIds for this user
   const junctions = await db
     .select({ taskId: userTaskJunction.taskId })
@@ -11,33 +11,33 @@ const getJoinedOrganizationTasks = async (userId: string, orgId: string) => {
 
   const taskIds = junctions.map((j) => j.taskId);
 
-  if (taskIds.length === 0) return []; // user has no tasks
+  if (taskIds.length === 0) return []; // user has no task
 
-  // 2. Find all tasks that belong to the org and are in that taskIds list
+  // 2. Find all task that belong to the org and are in that taskIds list
   const taskList = await db
     .select()
-    .from(tasks)
-    .where(and(eq(tasks.organizationId, orgId), inArray(tasks.id, taskIds)));
+    .from(task)
+    .where(and(eq(task.organizationId, orgId), inArray(task.id, taskIds)));
 
-  const selectedComments = await db
+  const selectedcomment = await db
     .select({
-      text: comments.text,
-      taskId: comments.taskId,
-      email: users.email,
-      createdAt: comments.createdAt,
-      id: comments.id,
+      text: comment.text,
+      taskId: comment.taskId,
+      email: user.email,
+      createdAt: comment.createdAt,
+      id: comment.id,
     })
-    .from(comments)
-    .innerJoin(users, eq(comments.userId, users.id))
-    .where(inArray(comments.taskId, taskIds));
+    .from(comment)
+    .innerJoin(user, eq(comment.userId, user.id))
+    .where(inArray(comment.taskId, taskIds));
 
-  const userTasks = taskList.map((tsk) => {
-    const relevantComments = selectedComments.filter(
+  const usertask = taskList.map((tsk) => {
+    const relevantcomment = selectedcomment.filter(
       (comment) => comment.taskId === tsk.id
     );
     return {
       ...tsk,
-      comments: relevantComments.map((comm) => ({
+      comment: relevantcomment.map((comm) => ({
         text: comm.text,
         taskId: comm.taskId,
         userEmail: comm.email, // -------------  must return "userEmail" instead of "email"
@@ -46,6 +46,6 @@ const getJoinedOrganizationTasks = async (userId: string, orgId: string) => {
       })),
     };
   });
-  return userTasks;
+  return usertask;
 };
-export default getJoinedOrganizationTasks;
+export default getJoinedOrganizationtask;

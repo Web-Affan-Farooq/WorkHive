@@ -1,7 +1,5 @@
 /*   these types are under testing cases */
 
-import { Task } from "./Task";
-
 /* ____ types for dashboard data  ... */
 interface Accounts {
   id: string;

@@ -1,5 +1,4 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+"use server"
 import { Token } from "@/@types/AuthToken";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
@@ -12,7 +11,8 @@ import { PlanType } from "@/@types/types";
 // ____ export types of route ...
 type CreateAccountResponse = {
   message: string;
-  redirect: "/dashboard" | null;
+  success:boolean
+  redirect?: string;
 };
 
 type CreateAccountRequest = {
@@ -20,15 +20,9 @@ type CreateAccountRequest = {
   email: string;
   password: string;
   plan: PlanType;
-  customerId: string | null;
-  subscriptionId: string | null;
 };
 
-export type { CreateAccountRequest, CreateAccountResponse };
-
-const CreateAccount = async (req: NextRequest) => {
-  /* ____ Getting body and cookies ... */
-  const body: CreateAccountRequest = await req.json();
+const CreateAccount = async (body:CreateAccountRequest) :Promise<CreateAccountResponse>=> {
   try {
     // _____ Check if account already exists ...
     const alreadyExists = await db
@@ -37,15 +31,10 @@ const CreateAccount = async (req: NextRequest) => {
       .where(eq(user.email, body.email));
 
     if (alreadyExists.length > 0) {
-      return NextResponse.json(
-        {
+      return {
           message: "Account already exists",
-          redirect: null,
-        },
-        {
-          status: 422,
+          success:false
         }
-      );
     }
 
     // _____ Hash password ...
@@ -59,21 +48,16 @@ const CreateAccount = async (req: NextRequest) => {
         email: body.email,
         password: hashedPassword,
         plan: body.plan,
-        stripeCustomerId: body.customerId,
-        stripeSubId: body.subscriptionId,
+        stripeCustomerId: null,
+        stripeSubId: null,
       })
       .returning();
 
     if (!newUser) {
-      return NextResponse.json(
-        {
+      return {
           message: "Failed to create account",
-          redirect: null,
-        },
-        {
-          status: 500,
+          success:false
         }
-      );
     }
 
     // _____ Generate JWT ...
@@ -92,26 +76,17 @@ const CreateAccount = async (req: NextRequest) => {
       maxAge: 60 * 60 * 24 * 30, // 30 days
     });
 
-    return NextResponse.json(
-      {
+    return {
         message: "Account created successfully",
+        success:true,
         redirect: "/dashboard",
-      },
-      {
-        status: 201,
       }
-    );
   } catch (err) {
     console.log(err);
-    return NextResponse.json(
-      {
+    return {
         message: "An error occurred while creating account",
-        redirect: null,
-      },
-      {
-        status: 500,
+        success:true,
       }
-    );
   }
 };
 export default CreateAccount;

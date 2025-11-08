@@ -1,40 +1,40 @@
-import { comments, tasks, userTaskJunction, users } from "@/schemas";
+import { comment, task, userTaskJunction, user } from "@/db/schemas";
 import db from "@/db";
 import { inArray, eq } from "drizzle-orm";
 import Logger from "@/lib/logger";
 
-const logger = new Logger("/routes/GetOwnedOrganizationTasks.ts");
+const logger = new Logger("/routes/GetOwnedOrganizationtask.ts");
 
-const getOwnedOrganizationTasks = async (organizationId:string) => {
+const getOwnedOrganizationtask = async (organizationId:string) => {
   // 1. Find all taskIds for this user
-  const orgTasks = await db.select().from(tasks).where(eq(tasks.organizationId , organizationId));
-  logger.log(11, "Get organization tasks : ",orgTasks)
+  const orgtask = await db.select().from(task).where(eq(task.organizationId , organizationId));
+  logger.log(11, "Get organization task : ",orgtask)
   
-  const taskIds = orgTasks.map((tsk) => tsk.id);
+  const taskIds = orgtask.map((tsk) => tsk.id);
   logger.log(13, "Task ids : ",taskIds)
   
-  const selectedComments = await db.select(
+  const selectedcomment = await db.select(
     {
-      id:comments.id,
-      text:comments.text,
-      taskId:comments.taskId,
-      email:users.email,
-      createdAt:comments.createdAt
+      id:comment.id,
+      text:comment.text,
+      taskId:comment.taskId,
+      email:user.email,
+      createdAt:comment.createdAt
     }
-  ).from(comments)
-  .leftJoin(users, eq(comments.userId, users.id))
-  .where(inArray(comments.taskId, taskIds))
+  ).from(comment)
+  .leftJoin(user, eq(comment.userId, user.id))
+  .where(inArray(comment.taskId, taskIds))
     
-  logger.log(27, "Selected comments : ",selectedComments)
+  logger.log(27, "Selected comment : ",selectedcomment)
 
   const selectedJunctionRows = await db.select().from(userTaskJunction).where(inArray(userTaskJunction.taskId , taskIds))
   logger.log(30, "selectedJunctionRows from userTaskJunction : ",selectedJunctionRows)
-  if (taskIds.length === 0) return []; // user has no tasks
+  if (taskIds.length === 0) return []; // user has no task
 
-  // 2. Find all tasks that belong to the org and are in that taskIds list
-  const userTasks = orgTasks.map((tsk) => {
+  // 2. Find all task that belong to the org and are in that taskIds list
+  const usertask = orgtask.map((tsk) => {
 
-    const relevantComments = selectedComments.filter(
+    const relevantcomment = selectedcomment.filter(
       (comment) => comment.taskId === tsk.id
     );
     const requiredAssignees = selectedJunctionRows.filter((row) => row.taskId === tsk.id);
@@ -42,7 +42,7 @@ const getOwnedOrganizationTasks = async (organizationId:string) => {
     return {
       ...tsk,
       assignees:requiredAssignees.map((ass) =>ass.userId),
-      comments: relevantComments.map((comm) => ({
+      comment: relevantcomment.map((comm) => ({
         text: comm.text,
         taskId: comm.taskId,
         userEmail: comm.email, // -------------  must return "userEmail" instead of "email"
@@ -51,6 +51,6 @@ const getOwnedOrganizationTasks = async (organizationId:string) => {
       })),
     };
   });
-  return userTasks;
+  return usertask;
 };
-export default getOwnedOrganizationTasks;
+export default getOwnedOrganizationtask;

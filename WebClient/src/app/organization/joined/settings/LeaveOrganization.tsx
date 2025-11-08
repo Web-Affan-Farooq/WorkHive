@@ -11,15 +11,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import axios from "axios";
-import ShowClientError from "@/utils/Error";
 import { useRouter } from "next/navigation";
 import { useDashboard } from "@/stores/dashboard";
-import Notify from "@/utils/Notifications";
-import {
-  UnjoinDepartmentAPIRequest,
-  UnjoinDepartmentAPIResponse,
-} from "@/actions/departments/UnjoinDepartmentAction";
+import { UnjoinDepartmentAction } from "@/actions/departments";
+import { toast } from "sonner";
 
 const LeaveOrganization = () => {
   const router = useRouter();
@@ -34,24 +29,23 @@ const LeaveOrganization = () => {
     );
   }
   const handleOrganizationLeave = async () => {
-    try {
-      const payload: UnjoinDepartmentAPIRequest = {
-        deptId: department.id,
-        username: info.name,
-        organizationId: department.organizationId,
-      };
+    const payload = {
+      deptId: department.id,
+      username: info.name,
+      organizationId: department.organizationId,
+    };
 
-      const response = await axios.post("/api/departments/unjoin", payload);
-      const { data }: { data: UnjoinDepartmentAPIResponse } = response;
-      const remaining = joinedOrganizations.filter((org) => org.id !== id);
-      Notify.success(data.message);
-      if (data.redirect) {
-        router.push(data.redirect);
-      }
-      feedJoinedOrganizations(remaining);
-    } catch (err) {
-      ShowClientError(err, "Leave department : ");
+    const { message, success, redirect } =
+      await UnjoinDepartmentAction(payload);
+    if (!success) {
+      toast.error(message);
     }
+    if (redirect) {
+      router.push(redirect);
+    }
+    const remaining = joinedOrganizations.filter((org) => org.id !== id);
+    toast.success(message);
+    feedJoinedOrganizations(remaining);
   };
 
   return (

@@ -2,13 +2,6 @@
 
 import { useOwnedOrganization } from "@/stores/ownedOrg";
 import { useState } from "react";
-import {
-  AddCommentAPIRequest,
-  AddCommentAPIResponse,
-} from "@/routes/AddComment";
-import ShowClientError from "@/utils/Error";
-import Notify from "@/utils/Notifications";
-import axios from "axios";
 
 // Comment form component ...
 const CommentForm = ({ taskId }: { taskId: string }) => {
@@ -17,19 +10,8 @@ const CommentForm = ({ taskId }: { taskId: string }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newComment: AddCommentAPIRequest = {
-      taskId: taskId,
-      text: commentText,
-    };
     if (commentText.trim()) {
-      try {
-        const response = await axios.post("/api/comments/add", newComment);
-        const { data }: { data: AddCommentAPIResponse } = response;
-        addComment(data.comment);
-        Notify.success(data.message);
-      } catch (err) {
-        ShowClientError(err, "Create comment error");
-      }
+      addComment(taskId, commentText);
       setCommentText("");
     }
   };

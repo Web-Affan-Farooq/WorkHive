@@ -2,8 +2,6 @@
 // ____ Hooks ...
 import { useDashboard } from "@/stores/dashboard";
 import { useJoinedOrganization } from "@/stores/joinedOrg";
-// ____ Libraries ...
-import axios from "axios";
 
 // ____ Utils ...
 import Notify from "@/utils/Notifications";
@@ -18,10 +16,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import ShowClientError from "@/utils/Error";
-import {
-  UnjoinDepartmentAPIRequest,
-  UnjoinDepartmentAPIResponse,
-} from "@/actions/departments/UnjoinDepartmentAction";
+import { UnjoinDepartmentAction } from "@/actions/departments";
 
 const JoinedOrganizationsList = () => {
   // ______ joind organinization from main state ...
@@ -32,28 +27,25 @@ const JoinedOrganizationsList = () => {
 
   // ______ For leaving organization ...
   const handleOrganizationLeave = async (orgId: string) => {
-    try {
-      const requiredOrganization = joinedOrganizations.find(
-        (joinedOrg) => joinedOrg.id === orgId
-      );
-      if (!requiredOrganization) {
-        return;
-      }
-
-      const payload: UnjoinDepartmentAPIRequest = {
-        deptId: requiredOrganization.department.id,
-        username: info.name,
-        organizationId: requiredOrganization.department.organizationId,
-      };
-
-      const response = await axios.post("/api/departments/unjoin", payload);
-      const { data }: { data: UnjoinDepartmentAPIResponse } = response;
-      const remaining = joinedOrganizations.filter((org) => org.id !== orgId);
-      feedJoinedOrganizations(remaining);
-      Notify.success(data.message);
-    } catch (err) {
-      ShowClientError(err, "Leave department : ");
+    const requiredOrganization = joinedOrganizations.find(
+      (joinedOrg) => joinedOrg.id === orgId
+    );
+    if (!requiredOrganization) {
+      return;
     }
+
+    const payload: UnjoinDepartmentAPIRequest = {
+      deptId: requiredOrganization.department.id,
+      username: info.name,
+      organizationId: requiredOrganization.department.organizationId,
+    };
+
+    const { message, success, redirect } =
+      await UnjoinDepartmentAction(payload);
+
+    const remaining = joinedOrganizations.filter((org) => org.id !== orgId);
+    feedJoinedOrganizations(remaining);
+    Notify.success(data.message);
   };
 
   return (

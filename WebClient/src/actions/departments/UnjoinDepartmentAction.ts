@@ -20,7 +20,7 @@ type UnjoinDepartmentAPIResponse = {
   redirect?: "/dashboard/organizations";
 };
 
-const UnjoinDepartment = async (body:UnjoinDepartmentAPIRequest) :Promise<UnjoinDepartmentAPIResponse>=> {
+const UnjoinDepartmentAction = async (body:UnjoinDepartmentAPIRequest) :Promise<UnjoinDepartmentAPIResponse>=> {
   try {
     const payload = await GetTokenPayload();
 
@@ -75,4 +75,4 @@ const UnjoinDepartment = async (body:UnjoinDepartmentAPIRequest) :Promise<Unjoin
     return { message: "Internal Server Error" ,success:false}
   }
 };
-export default UnjoinDepartment;
+export default UnjoinDepartmentAction

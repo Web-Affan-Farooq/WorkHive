@@ -1,32 +1,30 @@
 "use client";
-
+// ____ Hooks...
 import { useJoinedOrganization } from "@/stores/joinedOrg";
 import { useState } from "react";
-import {
-  AddCommentAPIRequest,
-  AddCommentAPIResponse,
-} from "@/routes/AddComment";
-import ShowClientError from "@/utils/Error";
-import axios from "axios";
 
-// Comment form component ...
+// ____ Server actions ...
+import { AddCommentAction } from "@/actions/comments";
+import { toast } from "sonner";
+
 const CommentForm = ({ taskId }: { taskId: string }) => {
   const [commentText, setCommentText] = useState("");
   const { addComment } = useJoinedOrganization();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newComment: AddCommentAPIRequest = {
+    const newComment = {
       taskId: taskId,
       text: commentText,
     };
     if (commentText.trim()) {
-      try {
-        const response = await axios.post("/api/comments/add", newComment);
-        const { data }: { data: AddCommentAPIResponse } = response;
-        addComment(data.comment);
-      } catch (err) {
-        ShowClientError(err, "Create comment error");
+      const { message, success, comment } = await AddCommentAction(newComment);
+      if (!success) {
+        toast.error(message);
+      }
+      if (comment) {
+        addComment(comment);
+        toast.success(message);
       }
       setCommentText("");
     }

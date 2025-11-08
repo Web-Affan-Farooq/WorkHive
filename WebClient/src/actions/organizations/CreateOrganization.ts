@@ -9,6 +9,7 @@ import { eq, InferInsertModel } from "drizzle-orm";
 
 /* Type defination for request body */
 type CreateOrganizationRequest = z.infer<typeof OrganizationFormSchema>;
+
 type CreateOrganizationResponse = {
   message: string;
   success:boolean;
@@ -20,7 +21,7 @@ type CreateOrganizationResponse = {
   };
 }
 
-const CreateOrganization = async (body:CreateOrganizationRequest):Promise<CreateOrganizationResponse> => {
+const CreateOrganizationAction = async (body:CreateOrganizationRequest):Promise<CreateOrganizationResponse> => {
   try {
     /* ____ Check if org email already exists ... */
     const existingOrgList = await db
@@ -72,4 +73,4 @@ const CreateOrganization = async (body:CreateOrganizationRequest):Promise<Create
     console.error("Error during organization creation :", error);
     return { message: "Internal Server Error", success:false }  }
 };
-export default CreateOrganization;
+export default CreateOrganizationAction;

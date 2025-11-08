@@ -3,14 +3,11 @@
 import { useJoinedOrganization } from "@/stores/joinedOrg";
 import { useMemo } from "react";
 import { useDashboard } from "@/stores/dashboard";
+
 // _____ Types and schemas ...
 import { ExtendedComment } from "@/@types/types";
-import type {
-  DeleteCommentAPIRequest,
-  DeleteCommentAPIResponse,
-} from "@/actions/comments/DeleteCommentAction";
-// _____ Libraries ...
-import axios from "axios";
+import { DeleteCommentAction } from "@/actions/comments/";
+
 // _____ Components ...
 import {
   ContextMenu,
@@ -19,16 +16,12 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import Image from "next/image";
+
 // _____ Utils ...
 import convertToTitleCase from "@/lib/Convert";
-import ShowClientError from "@/utils/Error";
-import Notify from "@/utils/Notifications";
+import { toast } from "sonner";
 
-interface CommentItemProps {
-  comment: ExtendedComment;
-}
-
-const CommentCard: React.FC<CommentItemProps> = ({ comment }) => {
+const CommentCard = ({ comment }: { comment: ExtendedComment }) => {
   // Hook Calls
   const { users, deleteComment } = useJoinedOrganization();
   const { info } = useDashboard();
@@ -52,19 +45,12 @@ const CommentCard: React.FC<CommentItemProps> = ({ comment }) => {
 
   // For deleting comment
   const handleCommentDelete = async () => {
-    try {
-      const payload: DeleteCommentAPIRequest = {
-        commentId: comment.id,
-      };
-      const response = await axios.delete("/api/comments/delete", {
-        data: payload,
-      });
-      const { data }: { data: DeleteCommentAPIResponse } = response;
-      Notify.success(data.message);
-      deleteComment(payload.commentId);
-    } catch (err) {
-      ShowClientError(err, "Delete comment error");
+    const { message, success } = await DeleteCommentAction(comment.id);
+    if (!success) {
+      toast.error(message);
     }
+    toast.success(message);
+    deleteComment(comment.id);
   };
 
   if (userProfile) {
@@ -84,7 +70,7 @@ const CommentCard: React.FC<CommentItemProps> = ({ comment }) => {
                 <div>
                   <p className="text-sm font-medium text-gray-900">You</p>
                   <p className="text-xs text-gray-500">
-                    {formatDate(comment.createdAt)}
+                    {formatDate(comment.createdAt.toISOString())}
                   </p>
                 </div>
               </div>
@@ -119,7 +105,7 @@ const CommentCard: React.FC<CommentItemProps> = ({ comment }) => {
                   {convertToTitleCase(userProfile.name)}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {formatDate(comment.createdAt)}
+                  {formatDate(comment.createdAt.toISOString())}
                 </p>
               </div>
             </div>

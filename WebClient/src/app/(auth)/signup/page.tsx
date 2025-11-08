@@ -1,33 +1,29 @@
 "use client";
-/* ____ Hooks  ... */
+// ____ Hooks  ...
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePlan } from "@/stores/plan";
 
-/* ____ Schemas and types  ... */
+// ____ Schemas and types  ...
 import { AccountSignupSchema } from "@/validations";
-import type {
-  CreateAccountRequest,
-  CreateAccountResponse,
-} from "@/routes/CreateAccount";
 
-/* ____ Libraries  ... */
+// ____ Libraries  ...
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import axios from "axios";
 
-/* ____ Components  ... */
-import { CircleCheck, Crown } from "lucide-react";
+// ____ Components  ...
 import { Footer, Header } from "@/components/layout";
 import { PasswordInput } from "@/components/common";
 
-/* ____ Utils ... */
+// ____ Utils ...
 import Notify from "@/utils/Notifications";
-import ShowClientError from "@/utils/Error";
 
-/* ____ infers type from schema  ... */
-type AccountSignupFormData = z.infer<typeof AccountSignupSchema>;
+// ____ Server actions ...
+import { CreateAccountAction } from "@/actions/accounts";
+import { toast } from "sonner";
+
+// ____ infers type from schema  ...
+type SignupFormData = z.infer<typeof AccountSignupSchema>;
 
 const Signup = () => {
   /* ___ react hook form ... */
@@ -35,43 +31,29 @@ const Signup = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<AccountSignupFormData>({
+    formState: { errors, isSubmitting },
+  } = useForm<SignupFormData>({
     resolver: zodResolver(AccountSignupSchema),
     mode: "onChange",
   });
-  /* ____ For controlling button  ... */
-  const [disabled, setDisabled] = useState(false);
 
   /* ____ Getting plan from global state ... */
-  const { plans, subscriptionPlan, setPlan } = usePlan();
+  const { subscriptionPlan } = usePlan();
 
   /* ____ Runs on form submission ... */
-  const signup = async (formData: AccountSignupFormData) => {
-    /* ____ Disable the button ... */
-    setDisabled(true);
-    try {
-      /* ____ collect data --> Make request --> show success fallback ... */
-      const payload: CreateAccountRequest = {
-        ...formData,
-        plan: subscriptionPlan,
-        customerId: null,
-        subscriptionId: null,
-      };
-      if (payload.plan === "FREE") {
-        const response = await axios.post("/api/accounts/create", payload);
-        const { data }: { data: CreateAccountResponse } = response;
-        Notify.success(data.message);
-        router.push(data.redirect ? data.redirect : "/dashboard");
-      } else {
-        const response = await axios.post("/api/payment/create", payload);
-        window.document.location.href = response.data.url;
-      }
-    } catch (err) {
-      ShowClientError(err, "Signup error");
+  const signup = async (formData: SignupFormData) => {
+    /* ____ collect data --> Make request --> show success fallback ... */
+    const { message, success, redirect } = await CreateAccountAction({
+      ...formData,
+      plan: subscriptionPlan,
+    });
+    if (!success) {
+      toast.error(message);
     }
-    /* ____ Initialize button ... */
-    setDisabled(false);
+    if (redirect) {
+      Notify.success(message);
+      router.push(redirect);
+    }
   };
   return (
     <>
@@ -151,64 +133,12 @@ const Signup = () => {
                 )}
               </div>
 
-              {/* select plan */}
-              <div>
-                <label className={`text-slate-700 font-medium mb-1`}>
-                  Select plan
-                </label>
-                <div className="flex flex-col gap-[10px]">
-                  {plans.map((plan, idx) => (
-                    <div
-                      className={`border-3 py-2 px-5 rounded-lg cursor-pointer ${subscriptionPlan === plan.value ? "border-indigo-600" : "border-white"} `}
-                      onClick={() => setPlan(plan.value)}
-                      key={idx}
-                    >
-                      <h3 className="text-[16px] font-bold mb-1 flex flex-row flex-nowrap justify-between items-center ">
-                        <span className="flex flex-row flex-nowrap gap-[10px]">
-                          <Crown
-                            className={`stroke-yellow-500 size-5 items-center ${plan.value !== "FREE" ? "" : "hidden"}`}
-                          />
-                          {plan.name}
-                        </span>
-                        <span className="text-indigo-600">${plan.price}</span>
-                      </h3>
-                      <ul>
-                        <li
-                          className={`flex flex-row  flex-nowrap items-center gap-[7px]`}
-                        >
-                          <CircleCheck className="size-4 text-green-600" />{" "}
-                          <p className="text-sm text-gray-500">
-                            {plan.organizations} organizations
-                          </p>
-                        </li>
-                        <li
-                          className={`flex flex-row flex-nowrap items-center gap-[7px]`}
-                        >
-                          <CircleCheck className="size-4 text-green-600" />{" "}
-                          <p className="text-sm text-gray-500">
-                            {plan.departments} departments
-                          </p>
-                        </li>
-                        <li
-                          className={`flex flex-row flex-nowrap items-center gap-[7px]`}
-                        >
-                          <CircleCheck className="size-4 text-green-600" />{" "}
-                          <p className="text-sm text-gray-500">
-                            {plan.employeesInEach} employees in each department
-                          </p>
-                        </li>
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={disabled}
+                disabled={isSubmitting}
                 className={`w-full py-2 text-white font-semibold rounded-lg transition ${
-                  disabled
+                  isSubmitting
                     ? "bg-gray-500 cursor-not-allowed"
                     : "bg-black cursor-pointer"
                 }`}

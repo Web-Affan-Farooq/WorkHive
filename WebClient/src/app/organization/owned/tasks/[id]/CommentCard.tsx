@@ -1,13 +1,13 @@
 "use client";
+// _____ Hooks ...
 import { useOwnedOrganization } from "@/stores/ownedOrg";
 import { useMemo } from "react";
 import { useDashboard } from "@/stores/dashboard";
+
+// _____ Types and schemas  ...
 import { ExtendedComment } from "@/@types/types";
-import type {
-  DeleteCommentAPIRequest,
-  DeleteCommentAPIResponse,
-} from "@/actions/comments/DeleteCommentAction";
-import axios from "axios";
+
+// _____ Components ...
 import {
   ContextMenu,
   ContextMenuContent,
@@ -15,15 +15,11 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import Image from "next/image";
+
+// _____ Utilities ...
 import convertToTitleCase from "@/lib/Convert";
-import ShowClientError from "@/utils/Error";
-import Notify from "@/utils/Notifications";
 
-interface CommentItemProps {
-  comment: ExtendedComment;
-}
-
-const CommentCard: React.FC<CommentItemProps> = ({ comment }) => {
+const CommentCard = ({ comment }: { comment: ExtendedComment }) => {
   const { allUsers, deleteComment } = useOwnedOrganization();
   const { info } = useDashboard();
 
@@ -41,20 +37,6 @@ const CommentCard: React.FC<CommentItemProps> = ({ comment }) => {
   const userProfile = useMemo(() => {
     return allUsers.find((usr) => usr.email === comment.userEmail);
   }, [allUsers, comment]);
-
-  const handleCommentDelete = async () => {
-    try {
-      const payload: DeleteCommentAPIRequest = { commentId: comment.id };
-      const response = await axios.delete("/api/comments/delete", {
-        data: payload,
-      });
-      const { data }: { data: DeleteCommentAPIResponse } = response;
-      Notify.success(data.message);
-      deleteComment(payload.commentId);
-    } catch (err) {
-      ShowClientError(err, "Delete comment error");
-    }
-  };
 
   // Fallback values
   const displayName = userProfile
@@ -77,7 +59,7 @@ const CommentCard: React.FC<CommentItemProps> = ({ comment }) => {
             <div className="flex flex-col">
               <p className="text-sm font-medium text-gray-900">{displayName}</p>
               <p className="text-xs text-gray-500">
-                {formatDate(comment.createdAt)}
+                {formatDate(comment.createdAt.toISOString())}
               </p>
               <p className="mt-2 text-gray-700 text-sm">{comment.text}</p>
             </div>
@@ -88,7 +70,7 @@ const CommentCard: React.FC<CommentItemProps> = ({ comment }) => {
       <ContextMenuContent>
         <ContextMenuItem
           className="text-red-500 text-sm"
-          onClick={handleCommentDelete}
+          onClick={() => deleteComment(comment.id)}
         >
           Delete comment
         </ContextMenuItem>

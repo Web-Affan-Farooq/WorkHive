@@ -9,11 +9,13 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { DashboardSidebar } from "@/components/layout";
-// ______ Libraries ...
-import axios from "axios";
+
 // ______ Utils ...
 import Notify from "@/utils/Notifications";
 import ShowClientError from "@/utils/Error";
+// ______ Server action ...
+import { DeleteNotificationAction } from "@/actions/notifications";
+import { toast } from "sonner";
 
 // ______ Function for calculating timestamp when notification is created...
 const timeAgo = (dateStr: string): string => {
@@ -82,18 +84,17 @@ const Notifications = () => {
   const handleDelete = async (id: string) => {
     // ______ Create a DELETE request to /api/notifications/delete + show error / success fallback and then update the ui ...
     try {
-      const response = await axios.delete("/api/notifications/delete", {
-        data: {
-          id: id,
-        },
-      });
-      Notify.success(response.data.message);
+      const { success, message } = await DeleteNotificationAction(id);
+      if (!success) {
+        Notify.error(message);
+      }
+      Notify.success(message);
       const remainingNotifications = notifications.filter(
         (not) => not.id !== id
       );
       setNotifications(remainingNotifications);
     } catch (err) {
-      ShowClientError(err, "notification delete error");
+      toast.error("An error occured");
     }
   };
   return (

@@ -70,16 +70,9 @@ const Tasks = () => {
       assignees: assignees,
     };
     console.log(data);
-    try {
-      const response = await axios.post("/api/tasks/create", data);
-      const returnedTask: TaskOwned = response.data.task;
-      addTask(returnedTask);
-      Notify.success(response.data.message);
-      reset();
-      setAssignees([]); // reset selected checkboxes
-    } catch (err) {
-      ShowClientError(err, "Task creation error");
-    }
+    addTask(data);
+    reset();
+    setAssignees([]); // reset selected checkboxes
   };
 
   const handleDeleteTask = async (id: string) => {

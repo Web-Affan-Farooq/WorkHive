@@ -1,17 +1,34 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { createJSONStorage, devtools } from "zustand/middleware";
-import { TaskOwned, Department, OwnedOrganization, ExtendedComment } from "@/@types/types";
+import {
+  TaskOwned,
+  Department,
+  OwnedOrganization,
+  ExtendedComment,
+} from "@/@types/types";
+import {
+  CreateDepartmentAction,
+  DeleteDepartmentAction,
+} from "@/actions/departments";
+import { toast } from "sonner";
+import { AddCommentAction, DeleteCommentAction } from "@/actions/comments";
+import { CreateTaskAction } from "@/actions/tasks";
+
+import z from "zod";
+import { TaskCreationSchema } from "@/validations";
+
+type TaskCreationFormData = z.infer<typeof TaskCreationSchema>;
 
 interface OwnedOrg extends OwnedOrganization {
-  addDepartment: (dept: Department) => void;
+  addDepartment: (name: string, organizationId: string) => void;
   deleteDepartment: (deptId: string) => void;
 
-  addTask: (task: TaskOwned) => void;
+  addTask: (task: TaskCreationFormData) => void;
   deleteTask: (taskId: string) => void;
 
-  addComment:(comment:ExtendedComment) => void;
-  deleteComment:(commentId:string) => void;
+  addComment: (taskId: string, text: string) => void;
+  deleteComment: (commentId: string) => void;
   feedDepartments: (list: Department[]) => void;
   feedTasks: (list: TaskOwned[]) => void;
 
@@ -26,7 +43,7 @@ export const useOwnedOrganization = create<OwnedOrg>()(
         name: "",
         email: "",
         departments: [],
-        allUsers:[],
+        allUsers: [],
 
         setOwnedOrganization: (info) =>
           set(() => ({
@@ -35,21 +52,39 @@ export const useOwnedOrganization = create<OwnedOrg>()(
             email: info.email,
             departments: info.departments,
             users: info.users,
-            allUsers:info.allUsers,
+            allUsers: info.allUsers,
             tasks: info.tasks,
           })),
 
+        addDepartment: async (name, organizationId) => {
+          const { message, success, department } = await CreateDepartmentAction(
+            {
+              name: name,
+              organizationId: organizationId,
+            }
+          );
+          if (!success) {
+            toast.error(message);
+          }
+          if (department) {
+            set((state) => ({
+              departments: [...state.departments, department],
+              users: {
+                ...state.users,
+                [department.id]: [],
+              },
+            }));
+          }
+        },
 
-        addDepartment: (dept) =>
-          set((state) => ({
-            departments: [...state.departments, dept],
-            users: {
-              ...state.users,
-              [dept.id]: [],
-            },
-          })),
+        deleteDepartment: async (deptId) => {
+          // ______ utilize server action for deletingd epartment from database ...
+          const { message, success } = await DeleteDepartmentAction(deptId);
+          if (!success) {
+            toast.error(message);
+          }
 
-        deleteDepartment: (deptId) =>
+          // ______ Update the state ...
           set((state) => {
             /* eslint-disable-next-line  @typescript-eslint/no-unused-vars */
             const { [deptId]: _, ...restUsers } = state.users;
@@ -59,7 +94,10 @@ export const useOwnedOrganization = create<OwnedOrg>()(
               ),
               users: restUsers,
             };
-          }),
+          });
+          // ______ Show success message  ...
+          toast.success(message);
+        },
 
         users: {},
         tasks: [],
@@ -74,32 +112,53 @@ export const useOwnedOrganization = create<OwnedOrg>()(
             tasks: list,
           })),
 
-
-        addTask: (task) =>
-          set((state) => ({
+        addTask: async (t) => {
+          const {message , success  , task} = await CreateTaskAction(t)
+          if(!success) {
+            toast.error(message)
+          }
+          if(task) {
+            set((state) => ({
             tasks: [...state.tasks, task],
-          })),
+          }));
+          }
+        },
 
         deleteTask: (taskId) =>
           set((state) => ({
             tasks: state.tasks.filter((tsk) => tsk.id !== taskId),
           })),
 
-          addComment:(comment) => set((state) => {
-            const updatedTaskList = state.tasks.map((tsk) => {
+        addComment: async (taskId, text) => {
+          const { message, success, comment } = await AddCommentAction({
+            taskId: taskId,
+            text: text,
+          });
+          if (!success) {
+            toast.error(message);
+          }
+          if (comment) {
+            set((state) => {
+              const updatedTaskList = state.tasks.map((tsk) => {
+                return {
+                  ...tsk,
+                  comments: [...tsk.comments, comment],
+                };
+              });
+
               return {
-                ...tsk,
-                comments:[...tsk.comments, comment]
-              }
+                tasks: updatedTaskList,
+              };
             });
+          }
+        },
 
-            return {
-              tasks:updatedTaskList,
-            }
+        deleteComment: async (commentId) => {
+          const { message, success } = await DeleteCommentAction(commentId);
+          if (!success) {
+            toast.error(message);
+          }
 
-          } ),
-
-        deleteComment: (commentId) =>
           set((state) => {
             const updatedTaskList = state.tasks.map((tsk) => {
               return {
@@ -110,8 +169,10 @@ export const useOwnedOrganization = create<OwnedOrg>()(
             return {
               tasks: updatedTaskList,
             };
-          }),
+          });
 
+          toast.success(message);
+        },
       }),
       {
         name: "owned-organization-data",

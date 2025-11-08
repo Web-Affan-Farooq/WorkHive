@@ -19,7 +19,11 @@ const DeleteOrganization = async (id:string):Promise<DeleteOrganizationAPIRespon
     // 1. Get all departments for this org
     const orgDepartments = await db.query.department.findMany({
       where: eq(department.organizationId, id),
-    });
+      columns:{
+        id:true
+      }
+  })
+
     const departmentIds = orgDepartments.map((dept) => dept.id);
 
     if (departmentIds.length === 0) {
@@ -32,7 +36,7 @@ const DeleteOrganization = async (id:string):Promise<DeleteOrganizationAPIRespon
     const usersInDepartments = await db
       .select({
         userId: user.id,
-        email: user.email, // or whatever field you need
+        email: user.email
       })
       .from(userDepartmentsJunction)
       .innerJoin(user, eq(user.id, userDepartmentsJunction.userId))

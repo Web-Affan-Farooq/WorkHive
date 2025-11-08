@@ -15,7 +15,6 @@ type CreateDepartmentResponse = {
     organizationId: string;
   };
 };
-export type { CreateDepartmentRequest, CreateDepartmentResponse };
 
 const CreateDepartmentAction = async (body: CreateDepartmentRequest ) :Promise<CreateDepartmentResponse>=> {
   try {
